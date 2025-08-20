@@ -15,4 +15,9 @@
     <string name="txt_setting">Setting</string>
     <string name="txt_background_music">Background Music</string>
     <string name="txt_effect_music">Sound Effect</string>
+
+    <string name="alert_is_not_enough_coin">You don\'t have enough coin</string>
+    <string name="alear_you_are_in_first_map">You are in first map</string>
+    <string name="alert_you_are_in_last_map">You are in last map</string>
+    <string name="alert_map_is_not_unlock">Map is not unlock</string>
 </resources>

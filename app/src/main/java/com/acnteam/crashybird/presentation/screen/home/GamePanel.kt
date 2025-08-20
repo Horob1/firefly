@@ -1,5 +1,6 @@
 package com.acnteam.crashybird.presentation.screen.home
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -29,6 +30,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.acnteam.crashybird.R
+import com.acnteam.crashybird.domain.model.Level
+import com.acnteam.crashybird.domain.model.LevelState
 import com.acnteam.crashybird.presentation.common.CrashyBirdButton
 import com.acnteam.crashybird.presentation.ui.theme.Pink80
 import com.acnteam.crashybird.presentation.ui.theme.White
@@ -37,6 +40,8 @@ import com.acnteam.crashybird.presentation.ui.theme.White
 @Composable
 fun GamePanel(
     modifier: Modifier = Modifier,
+    selectedMap: Level = Level.One,
+    levels: List<LevelState> = emptyList(),
     onPlayClick: () -> Unit = {},
     onSettingClick: () -> Unit = {},
     onLeftCharacterClick: () -> Unit = {},
@@ -64,11 +69,16 @@ fun GamePanel(
             )
         }
 
-        GameController()
+        GameController(
+            selectedMap = selectedMap,
+            levels = levels,
+            onLeftMapClick = onLeftMapClick,
+            onRightMapClick = onRightMapClick,
+        )
 
 
         CrashyBirdButton(
-            modifier = Modifier.width(160.dp),
+            modifier = Modifier.width(240.dp),
             onClick = onSettingClick,
         ) {
             Row(
@@ -89,7 +99,12 @@ fun GamePanel(
 
 @Preview
 @Composable
-fun GameController() {
+fun GameController(
+    selectedMap: Level = Level.One,
+    levels: List<LevelState> = emptyList(),
+    onLeftMapClick: () -> Unit = {},
+    onRightMapClick: () -> Unit = {},
+) {
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -97,7 +112,9 @@ fun GameController() {
         verticalAlignment = Alignment.CenterVertically
     ) {
         CrashyBirdButton(
-            onClick = { /*TODO*/ },
+            onClick = {
+                if (levels.isNotEmpty() && levels.first().level.levelNumber != selectedMap.levelNumber) onLeftMapClick()
+            },
             paddingVertical = 0,
             paddingHorizontal = 0
         ) {
@@ -116,19 +133,24 @@ fun GameController() {
             contentAlignment = Alignment.Center
         ) {
 
-            Image(
-                painter = painterResource(id = R.drawable.ice_backgroud),
-                contentDescription = "Map",
-                contentScale = ContentScale.FillBounds,
-                modifier = Modifier
-                    .clip(MaterialTheme.shapes.medium)
-                    .border(
-                        width = 2.dp,
-                        color = Pink80,
-                        shape = MaterialTheme.shapes.medium
-                    )
+            AnimatedContent(
+                targetState = selectedMap,
+                label = "Level",
+            ) {
+                Image(
+                    painter = painterResource(id = it.image),
+                    contentDescription = "Map",
+                    contentScale = ContentScale.FillBounds,
+                    modifier = Modifier
+                        .clip(MaterialTheme.shapes.medium)
+                        .border(
+                            width = 2.dp,
+                            color = Pink80,
+                            shape = MaterialTheme.shapes.medium
+                        )
 
-            )
+                )
+            }
 
             Row(
                 modifier = Modifier
@@ -185,7 +207,9 @@ fun GameController() {
         }
 
         CrashyBirdButton(
-            onClick = { /*TODO*/ },
+            onClick = {
+                if (levels.isNotEmpty() && levels.last().level.levelNumber != selectedMap.levelNumber) onRightMapClick()
+            },
             paddingVertical = 0,
             paddingHorizontal = 0
         ) {
@@ -197,5 +221,4 @@ fun GameController() {
             )
         }
     }
-
 }

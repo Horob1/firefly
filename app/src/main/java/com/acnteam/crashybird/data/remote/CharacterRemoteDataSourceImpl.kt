@@ -1,0 +1,3 @@
+package com.acnteam.crashybird.data.remote
+
+class CharacterRemoteDataSourceImpl

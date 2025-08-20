@@ -56,8 +56,13 @@ dependencies {
     implementation(libs.koin.compose.viewmodel)
     implementation(libs.koin.compose.viewmodel.navigation)
 
+    // Mp3
+    implementation(libs.androidx.media3.session)
+
+    // Gson
+    implementation(libs.gson)
+
     // Room
-    
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)

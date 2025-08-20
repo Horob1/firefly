@@ -9,12 +9,13 @@ import androidx.compose.runtime.getValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
+import com.acnteam.crashybird.presentation.navigation.NavViewModel
 import com.acnteam.crashybird.presentation.navigation.SetupNavGraph
 import com.acnteam.crashybird.presentation.screen.splash.SplashViewModel
 import com.acnteam.crashybird.presentation.ui.theme.CrashyBirdTheme
+import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import kotlin.getValue
 
 class MainActivity : ComponentActivity(), KoinComponent {
     private val viewModel: SplashViewModel by inject()
@@ -29,10 +30,12 @@ class MainActivity : ComponentActivity(), KoinComponent {
         setContent {
             val startScreen by viewModel.startScreen.collectAsStateWithLifecycle()
             val navController = rememberNavController()
+            val navViewModel = koinViewModel<NavViewModel>()
             CrashyBirdTheme {
                 SetupNavGraph(
                     navController = navController,
                     startDestination = startScreen,
+                    viewModel = navViewModel
                 )
             }
         }

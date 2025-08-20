@@ -16,9 +16,9 @@
             android:name=".presentation.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.CrashyBird.Splash"
-            android:screenOrientation="fullSensor"
-            tools:ignore="DiscouragedApi,RedundantLabel">
+            tools:ignore="DiscouragedApi,LockedOrientationActivity,RedundantLabel">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
