@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">Firefly Jump</string>
+
+    <string name="story_1_title">… a happy firefly family</string>
+    <string name="story_2_title">… humans robbed him of his family …</string>
+    <string name="story_3_title">… a journey to reunite with his family!</string>
+
+    <string name="btn_skip">Skip</string>
+    <string name="btn_start">Play</string>
+    <string name="btn_click_here">Click here</string>
+    <string name="btn_setting">Setting</string>
+
+    <string name="txt_score">Score</string>
+    <string name="txt_coin">Coin</string>
+    <string name="txt_setting">Setting</string>
+    <string name="txt_background_music">Background Music</string>
+    <string name="txt_effect_music">Sound Effect</string>
+</resources>
