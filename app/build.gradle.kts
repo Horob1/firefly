@@ -42,6 +42,8 @@ android {
 }
 
 dependencies {
+    //audio player
+    implementation(libs.exoplayer)
     // Datastore
     implementation(libs.androidx.datastore.preferences)
 
