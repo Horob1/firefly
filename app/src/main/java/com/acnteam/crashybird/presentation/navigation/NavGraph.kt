@@ -6,12 +6,16 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.acnteam.crashybird.presentation.screen.home.HomeScreen
+import com.acnteam.crashybird.presentation.screen.home.HomeViewModel
 import com.acnteam.crashybird.presentation.screen.play.PlayScreen
 import com.acnteam.crashybird.presentation.screen.setting.SettingScreen
+import com.acnteam.crashybird.presentation.screen.setting.SettingViewModel
 import com.acnteam.crashybird.presentation.screen.user.UserScreen
 import com.acnteam.crashybird.presentation.screen.welcome.WelcomeScreen
 import com.acnteam.crashybird.presentation.screen.welcome.WelcomeViewModel
@@ -22,7 +26,16 @@ import org.koin.compose.viewmodel.koinViewModel
 fun SetupNavGraph(
     navController: NavHostController,
     startDestination: NavScreen,
+    viewModel: NavViewModel,
 ) {
+
+    val musicSettings by viewModel.musicSettings.collectAsStateWithLifecycle()
+    BackgroundMusicPlayer(
+        musicResId = musicSettings.music.music,
+        isPlaying = musicSettings.isEnabled,
+        volume = musicSettings.volume
+    )
+
     NavHost(
         navController = navController,
         startDestination = startDestination,
@@ -30,8 +43,10 @@ fun SetupNavGraph(
         exitTransition = { slideOutHorizontally(targetOffsetX = { -1000 }) + fadeOut() },
     ) {
         composable<NavScreen.Home> {
+            val viewModel = koinViewModel<HomeViewModel>()
             HomeScreen(
-                navController = navController
+                navController = navController,
+                viewModel = viewModel
             )
         }
         composable<NavScreen.Welcome> {
@@ -44,8 +59,10 @@ fun SetupNavGraph(
             PlayScreen()
         }
         composable<NavScreen.Setting> {
+            val viewModel = koinViewModel<SettingViewModel>()
             SettingScreen(
-                onBackClick = { navController.popBackStack() }
+                onBackClick = { navController.popBackStack() },
+                viewModel = viewModel
             )
         }
         composable<NavScreen.User> {

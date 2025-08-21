@@ -2,6 +2,7 @@ package com.acnteam.crashybird.presentation.screen.welcome
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInHorizontally
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.AdsClick
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import com.acnteam.crashybird.R
 import com.acnteam.crashybird.presentation.common.CrashyBirdButton
 import com.acnteam.crashybird.presentation.common.rememberScreenHeight
+import com.acnteam.crashybird.presentation.ui.theme.Black
 import com.acnteam.crashybird.presentation.ui.theme.White
 import kotlinx.coroutines.delay
 
@@ -70,9 +73,12 @@ fun WelcomeScreen(
         }
     }
 
-    Scaffold { innerPadding ->
+    Scaffold{ innerPadding ->
         Box(
             modifier = Modifier
+                .background(
+                    Black
+                )
                 .fillMaxSize()
                 .padding(innerPadding)
 

@@ -3,6 +3,8 @@ package com.acnteam.crashybird.data.local.entity
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.acnteam.crashybird.data.remote.dto.LevelDto
+import com.acnteam.crashybird.domain.model.Level
+import com.acnteam.crashybird.domain.model.LevelState
 
 @Entity(tableName = "levels")
 data class LevelEntity(
@@ -17,6 +19,13 @@ data class LevelEntity(
             levelNumber = levelNumber,
             isUnlocked = isUnlocked,
             highScore = highScore
+        )
+    }
+
+    fun toLevelState(): LevelState {
+        return LevelState(
+            level = Level.getByLevelNumber(levelNumber),
+            isUnlocked = isUnlocked
         )
     }
 }

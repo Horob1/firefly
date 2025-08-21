@@ -14,6 +14,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.VolumeOff
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -85,7 +88,7 @@ fun MusicVolumePicker(
                     paddingHorizontal = 0
                 ) {
                     Icon(
-                        painter = painterResource(if (isEnabled) R.drawable.volume_on else R.drawable.volume_off),
+                        imageVector = if(isEnabled) Icons.AutoMirrored.Filled.VolumeUp else Icons.AutoMirrored.Filled.VolumeOff,
                         contentDescription = "Left map button",
                         modifier = Modifier.size(36.dp),
                         tint = White
@@ -97,6 +100,7 @@ fun MusicVolumePicker(
                 Slider(
                     value = sliderValue,
                     onValueChange = { onValueChange(it) },
+                    valueRange = 0.1f..1f,
                     modifier = Modifier
                         .weight(1f)
                         .height(24.dp),
