@@ -16,13 +16,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.res.ResourcesCompat
 import com.acnteam.crashybird.R
+import com.acnteam.crashybird.presentation.ui.theme.OrangeAccent
 
 @Preview
 @Composable
 fun Banner(
     text: String = "Banner",
     fontSize: Float = 160f,
-    textColor: Color = Color.White,
+    textColor: Color = OrangeAccent,
     strokeColor: Color = Color.Black,
     strokeWidth: Float = 10f,
     @FontRes fontRes: Int = R.font.comic_neue_bold_italic,

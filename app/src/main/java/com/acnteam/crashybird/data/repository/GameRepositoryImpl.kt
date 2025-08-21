@@ -3,7 +3,9 @@ package com.acnteam.crashybird.data.repository
 import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.acnteam.crashybird.domain.model.Character
 import com.acnteam.crashybird.domain.model.Level
 import com.acnteam.crashybird.domain.repository.GameRepository
 import kotlinx.coroutines.flow.Flow
@@ -21,6 +23,8 @@ class GameRepositoryImpl(context: Context) : GameRepository {
     private object PreferencesKeys {
         val CURRENT_LEVEL = intPreferencesKey("current_level")
         val COIN = intPreferencesKey("coin")
+
+        val CURRENT_CHARACTER = stringPreferencesKey("current_character")
     }
 
     override fun getCoin(): Flow<Int> {
@@ -33,6 +37,20 @@ class GameRepositoryImpl(context: Context) : GameRepository {
         return dataStore.data.map {
             val levelNumber = it[PreferencesKeys.CURRENT_LEVEL] ?: 1
             Level.getByLevelNumber(levelNumber)
+        }
+    }
+
+    override fun getCurrentCharacter(): Flow<Character> {
+        return dataStore.data.map {
+            val characterName = it[PreferencesKeys.CURRENT_CHARACTER] ?: ""
+            Character.getByName(characterName)
+        }
+
+    }
+
+    override suspend fun setCurrentCharacter(character: Character) {
+        dataStore.edit {
+            it[PreferencesKeys.CURRENT_CHARACTER] = character.name
         }
     }
 
@@ -53,5 +71,4 @@ class GameRepositoryImpl(context: Context) : GameRepository {
             it[PreferencesKeys.COIN] = (it[PreferencesKeys.COIN] ?: 0) - coin
         }
     }
-
 }

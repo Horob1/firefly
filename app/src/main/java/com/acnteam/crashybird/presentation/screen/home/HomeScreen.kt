@@ -26,8 +26,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.acnteam.crashybird.R
-import com.acnteam.crashybird.domain.model.Level
-import com.acnteam.crashybird.domain.model.LevelState
 import com.acnteam.crashybird.presentation.common.TextCard
 import com.acnteam.crashybird.presentation.common.UiState
 import com.acnteam.crashybird.presentation.navigation.NavScreen
@@ -40,13 +38,11 @@ fun HomeScreen(
     viewModel: HomeViewModel,
 ) {
     val context = LocalContext.current
-    val selectedLevelUiState by viewModel.currentLevelUiState.collectAsStateWithLifecycle()
-    val coinUiState by viewModel.coinUiState.collectAsStateWithLifecycle()
-    val levelsUiState by viewModel.levelsUiState.collectAsStateWithLifecycle()
+    val homeUiState by viewModel.homeUiState.collectAsStateWithLifecycle()
 
 
     Scaffold {
-        if (selectedLevelUiState !is UiState.Success || coinUiState !is UiState.Success || levelsUiState !is UiState.Success) {
+        if (homeUiState is UiState.Loading) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -60,10 +56,7 @@ fun HomeScreen(
                 CircularProgressIndicator()
             }
         } else {
-            val selectedLevel = (selectedLevelUiState as UiState.Success<Level>).data
-            val levels = (levelsUiState as UiState.Success<List<LevelState>>).data
-            val coin = (coinUiState as UiState.Success<Int>).data
-            (levelsUiState as UiState.Success<List<LevelState>>).data
+            val homeState = (homeUiState as UiState.Success<HomeState>).data
 
             Box(
                 modifier = Modifier
@@ -71,7 +64,7 @@ fun HomeScreen(
                     .padding(it)
             ) {
                 Image(
-                    painter = painterResource(id = selectedLevel.image),
+                    painter = painterResource(id = homeState.currentLevel.image),
                     contentDescription = "Background",
                     modifier = Modifier
                         .fillMaxSize(),
@@ -112,7 +105,7 @@ fun HomeScreen(
 
                         TextCard(
                             string = "${stringResource(R.string.txt_coin)}: ${
-                                coin.toString().center(8)
+                                homeState.coin.toString().center(8)
                             }",
                         )
 
@@ -126,8 +119,8 @@ fun HomeScreen(
 
                     // Game Star Control
                     GamePanel(
-                        selectedMap = selectedLevel,
-                        levels = levels,
+                        selectedMap = homeState.currentLevel,
+                        levels = homeState.levels,
                         onLeftMapClick = {
                             viewModel.onLeftMapClick {
                                 Toast.makeText(

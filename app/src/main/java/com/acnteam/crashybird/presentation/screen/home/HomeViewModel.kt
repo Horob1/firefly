@@ -2,8 +2,6 @@ package com.acnteam.crashybird.presentation.screen.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.acnteam.crashybird.domain.model.Level
-import com.acnteam.crashybird.domain.model.LevelState
 import com.acnteam.crashybird.domain.usecase.GetCoinUseCase
 import com.acnteam.crashybird.domain.usecase.GetCurrentLevelUseCase
 import com.acnteam.crashybird.domain.usecase.GetLevelStateListUseCase
@@ -13,6 +11,7 @@ import com.acnteam.crashybird.presentation.common.UiState
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
@@ -32,40 +31,21 @@ class HomeViewModel(
         }
     }
 
-    val levelsUiState: StateFlow<UiState<List<LevelState>>> =
-        getLevelStateListUseCase()
-            .map<List<LevelState>, UiState<List<LevelState>>> { states ->
-                UiState.Success(states)
-            }
-            .onStart { emit(UiState.Loading) }
-            .catch { e -> emit(UiState.Error(e.message ?: "Unknown error")) }
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5_000),
-                initialValue = UiState.Loading
-            )
-
-    val coinUiState: StateFlow<UiState<Int>> = getCoinUseCase().map<Int, UiState<Int>> { coin ->
-        UiState.Success(coin)
-    }
-        .onStart {
-            emit(UiState.Loading)
-        }.catch { e ->
-            emit(UiState.Error(e.message ?: "Unknown error"))
-        }.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = UiState.Loading
+    val homeUiState: StateFlow<UiState<HomeState>> = combine(
+        getLevelStateListUseCase(),
+        getCoinUseCase(),
+        getCurrentLevelUseCase()
+    ) { levels, coin, currentLevel ->
+        HomeState(
+            levels = levels,
+            coin = coin,
+            currentLevel = currentLevel
         )
-
-    val currentLevelUiState: StateFlow<UiState<Level>> =
-        getCurrentLevelUseCase().map<Level, UiState<Level>> { level ->
-            UiState.Success(level)
-        }.onStart {
-            emit(UiState.Loading)
-        }.catch { e ->
-            emit(UiState.Error(e.message ?: "Unknown error"))
-        }.stateIn(
+    }
+        .map<HomeState, UiState<HomeState>> { UiState.Success(it) }
+        .onStart { emit(UiState.Loading) }
+        .catch { e -> emit(UiState.Error(e.message ?: "Unknown error")) }
+        .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = UiState.Loading
@@ -75,37 +55,40 @@ class HomeViewModel(
     fun onLeftMapClick(
         errorCallback: () -> Unit,
     ) {
-        if (currentLevelUiState.value is UiState.Success && levelsUiState.value is UiState.Success) {
-            val currentLevel = (currentLevelUiState.value as UiState.Success).data
-            val currentLevelIndex = (levelsUiState.value as UiState.Success).data.indexOf(
-                (levelsUiState.value as UiState.Success).data.find { it.level.levelNumber == currentLevel.levelNumber }
-            )
-            if (currentLevelIndex > 0) {
-                val newLevel = (levelsUiState.value as UiState.Success).data[currentLevelIndex - 1]
-                if (!newLevel.isUnlocked) errorCallback()
-                else viewModelScope.launch {
-                    setCurrentLevelUseCase(newLevel.level)
-                }
+        val data = (homeUiState.value as UiState.Success<HomeState>).data
+        val currentLevel = data.currentLevel
+        val currentLevelIndex =
+            data.levels.indexOfFirst { it.level.levelNumber == currentLevel.levelNumber }
+        if (currentLevelIndex == 0 || currentLevelIndex == -1) {
+            return
+        }
+        val newLevel = data.levels[currentLevelIndex - 1]
+        if (newLevel.isUnlocked) {
+            viewModelScope.launch {
+                setCurrentLevelUseCase(newLevel.level)
             }
+        } else {
+            errorCallback()
         }
     }
 
     fun onRightMapClick(
         errorCallback: () -> Unit,
     ) {
-        if (currentLevelUiState.value is UiState.Success && levelsUiState.value is UiState.Success) {
-            val currentLevel = (currentLevelUiState.value as UiState.Success).data
-            val currentLevelIndex = (levelsUiState.value as UiState.Success).data.indexOf(
-                (levelsUiState.value as UiState.Success).data.find { it.level.levelNumber == currentLevel.levelNumber }
-            )
-            if (currentLevelIndex < (levelsUiState.value as UiState.Success).data.size - 1 || currentLevelIndex > -1) {
-                val newLevel =
-                    (levelsUiState.value as UiState.Success).data[currentLevelIndex + 1]
-                if (!newLevel.isUnlocked) errorCallback()
-                else viewModelScope.launch {
-                    setCurrentLevelUseCase(newLevel.level)
-                }
+        val data = (homeUiState.value as UiState.Success<HomeState>).data
+        val currentLevel = data.currentLevel
+        val currentLevelIndex =
+            data.levels.indexOfFirst { it.level.levelNumber == currentLevel.levelNumber }
+        if (currentLevelIndex == data.levels.size - 1 || currentLevelIndex == -1) {
+            return
+        }
+        val newLevel = data.levels[currentLevelIndex + 1]
+        if (newLevel.isUnlocked) {
+            viewModelScope.launch {
+                setCurrentLevelUseCase(newLevel.level)
             }
+        } else {
+            errorCallback()
         }
     }
 }
