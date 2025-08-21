@@ -42,6 +42,7 @@ android {
 }
 
 dependencies {
+
     //audio player
     implementation(libs.exoplayer)
     // Datastore
@@ -64,6 +65,9 @@ dependencies {
 
     // Room
     implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.ui.unit)
+    implementation(libs.ui)
+    implementation(libs.androidx.foundation)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
 
