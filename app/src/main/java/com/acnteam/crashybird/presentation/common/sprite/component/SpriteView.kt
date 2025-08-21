@@ -1,12 +1,9 @@
-package com.acnteam.crashybird.presentation.common.sprite
+package com.acnteam.crashybird.presentation.common.sprite.component
 
-import androidx.annotation.DrawableRes
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -14,33 +11,25 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.withTransform
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
+import com.acnteam.crashybird.presentation.common.sprite.domain.SpriteFlip
+import com.acnteam.crashybird.presentation.common.sprite.domain.SpriteSpec
+import com.acnteam.crashybird.presentation.common.sprite.domain.SpriteState
 
-/**
- * Composable function which is used to display and animate the
- * Sprite Sheet within a composable hierarchy.
- *
- * @param modifier Optional modifier.
- * @param spriteState [SpriteState] manages the state of a sprite sheet animation.
- * @param spriteSpec [SpriteSpec] sprite sheet specification.
- * @param spriteFlip Use it to flip the sprite Vertically, Horizontally or both.
- */
 @Composable
 fun SpriteView(
     modifier: Modifier = Modifier,
     spriteState: SpriteState,
     spriteSpec: SpriteSpec,
-    spriteFlip: SpriteFlip = SpriteFlip.None
+    spriteFlip: SpriteFlip? = null
 ) {
-    val screenCategory = getCurrentScreenCategory()
-    val spriteSheet = spriteSpec.getSpriteSheet(screenCategory)
-    val spriteImage = spriteSpec.getImageBitmap(screenCategory)
-
+    val spriteImage = spriteSpec.imageBitmap
     val currentFrame = spriteState.currentFrame.collectAsState().value
-
     // Get the row and column position based on the current frame
     val row by rememberUpdatedState(
         newValue = currentFrame / spriteState.framesPerRow
@@ -48,17 +37,15 @@ fun SpriteView(
     val column by rememberUpdatedState(
         newValue = currentFrame % spriteState.framesPerRow
     )
-
-    val frameSize by remember(spriteSheet) {
+    val frameSize by remember {
         derivedStateOf {
             IntSize(
-                spriteSheet.frameWidth,
-                spriteSheet.frameHeight
+                spriteSpec.spriteSheet.frameWidth,
+                spriteSpec.spriteSheet.frameHeight
             )
         }
     }
-
-    val frameOffset by remember(row, column, frameSize) {
+    val frameOffset by remember {
         derivedStateOf {
             IntOffset(
                 x = column * frameSize.width,
@@ -77,7 +64,7 @@ fun SpriteView(
 
         withTransform(
             transformBlock = {
-                if (spriteFlip != SpriteFlip.None) {
+                if (spriteFlip != null) {
                     scale(
                         scaleX = when (spriteFlip) {
                             SpriteFlip.Both -> -1f
@@ -112,7 +99,7 @@ fun SpriteView(
                     )
                 }
             }
-        ) {
+        ){
             drawImage(
                 image = spriteImage,
                 srcOffset = frameOffset,
@@ -127,83 +114,30 @@ fun SpriteView(
     }
 }
 
-/**
- * Composable function to create SpriteView directly from drawable resource
- *
- * @param modifier Optional modifier.
- * @param spriteState [SpriteState] manages the state of a sprite sheet animation.
- * @param drawableRes Drawable resource ID (R.drawable.sprite_sheet)
- * @param frameWidth Width of each frame in pixels
- * @param frameHeight Height of each frame in pixels
- * @param totalFrames Total number of frames in the sprite sheet
- * @param framesPerRow Number of frames per row
- * @param spriteFlip Use it to flip the sprite Vertically, Horizontally or both.
- * @param screenCategory Screen category for responsive design
- */
-@Composable
-fun SpriteView(
-    modifier: Modifier = Modifier,
-    spriteState: SpriteState,
-    @DrawableRes drawableRes: Int,
-    frameWidth: Int,
-    frameHeight: Int,
-    totalFrames: Int,
-    framesPerRow: Int,
-    spriteFlip: SpriteFlip = SpriteFlip.None,
-    screenCategory: ScreenCategory = ScreenCategory.Medium
-) {
-    val spriteSpec = spriteSpecFromResource(
-        drawableRes = drawableRes,
-        frameWidth = frameWidth,
-        frameHeight = frameHeight,
-        totalFrames = totalFrames,
-        framesPerRow = framesPerRow,
-        screenCategory = screenCategory
-    )
-
-    SpriteView(
-        modifier = modifier,
-        spriteState = spriteState,
-        spriteSpec = spriteSpec,
-        spriteFlip = spriteFlip
-    )
-}
-
-/**
- * Function which is used to draw a sprite sheet inside the DrawScope of the Canvas.
- *
- * @param spriteState Control the sprite sheet animation.
- * @param spriteSpec Sprite sheet specification with optional parameters for various screen dimensions.
- * @param currentFrame The current frame of the sprite sheet animation.
- * @param image Sprite sheet image that needs to be drawn on the canvas.
- * @param offset An optional offset.
- * @param spriteFlip Use it to flip the sprite Vertically, Horizontally or both.
- */
 fun DrawScope.drawSpriteView(
     spriteState: SpriteState,
     spriteSpec: SpriteSpec,
     currentFrame: Int,
     image: ImageBitmap,
     offset: IntOffset = IntOffset.Zero,
-    spriteFlip: SpriteFlip = SpriteFlip.None
+    spriteFlip: SpriteFlip? = null
 ) {
     // Get the row and column position based on the current frame
     val row = currentFrame / spriteState.framesPerRow
     val column = currentFrame % spriteState.framesPerRow
 
     val frameSize = IntSize(
-        spriteSpec.spriteSheets.values.first().frameWidth,
-        spriteSpec.spriteSheets.values.first().frameHeight
+        spriteSpec.spriteSheet.frameWidth,
+        spriteSpec.spriteSheet.frameHeight
     )
 
     val frameOffset = IntOffset(
         x = column * frameSize.width,
         y = row * frameSize.height
     )
-
     withTransform(
         transformBlock = {
-            if (spriteFlip != SpriteFlip.None) {
+            if (spriteFlip != null) {
                 scale(
                     scaleX = when (spriteFlip) {
                         SpriteFlip.Both -> -1f
