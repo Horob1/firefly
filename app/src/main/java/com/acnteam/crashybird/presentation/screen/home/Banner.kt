@@ -26,6 +26,7 @@ fun Banner(
     textColor: Color = OrangeAccent,
     strokeColor: Color = Color.Black,
     strokeWidth: Float = 10f,
+    height: Float = 120f,
     @FontRes fontRes: Int = R.font.comic_neue_bold_italic,
 ) {
     val context = LocalContext.current
@@ -36,7 +37,7 @@ fun Banner(
     Canvas(
         modifier = Modifier
             .fillMaxWidth()
-            .height(120.dp)
+            .height(height.dp),
     ) {
         val paint = Paint().asFrameworkPaint().apply {
             isAntiAlias = true

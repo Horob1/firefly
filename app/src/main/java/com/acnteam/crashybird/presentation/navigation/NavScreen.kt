@@ -11,7 +11,7 @@ sealed class NavScreen {
     data object Home : NavScreen()
 
     @Serializable
-    data object Play : NavScreen()
+    data class Play(val levelNumber: Int, val characterName: String) : NavScreen()
 
     @Serializable
     data object Setting : NavScreen()

@@ -9,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -21,18 +22,20 @@ fun TextCard(
     string: String = "Click here",
     enabled: Boolean = false,
     textStyle: TextStyle = MaterialTheme.typography.bodyLarge,
+    bgColor: Color = GrayDark,
+    color: Color = White,
     onClick: () -> Unit = {},
 ) {
     Card(
         colors = CardDefaults.cardColors(
-            containerColor = GrayDark.copy(
+            containerColor = bgColor.copy(
                 alpha = 0.3f
             ),
-            disabledContainerColor = GrayDark.copy(
+            disabledContainerColor = bgColor.copy(
                 alpha = 0.3f
             ),
-            disabledContentColor = White,
-            contentColor = White,
+            disabledContentColor = color,
+            contentColor = color,
         ),
         shape = MaterialTheme.shapes.extraLarge,
         enabled = enabled,

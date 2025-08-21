@@ -4,7 +4,7 @@ import com.acnteam.crashybird.domain.usecase.CompleteOnBoardingUseCase
 import com.acnteam.crashybird.domain.usecase.GetBackgroundMusicSettingsUseCase
 import com.acnteam.crashybird.domain.usecase.GetCharacterListUseCase
 import com.acnteam.crashybird.domain.usecase.GetCoinUseCase
-import com.acnteam.crashybird.domain.usecase.GetCurrentCharacter
+import com.acnteam.crashybird.domain.usecase.GetCurrentCharacterUseCase
 import com.acnteam.crashybird.domain.usecase.GetCurrentLevelUseCase
 import com.acnteam.crashybird.domain.usecase.GetLevelStateListUseCase
 import com.acnteam.crashybird.domain.usecase.GetOnBoardingStateUseCase
@@ -15,6 +15,7 @@ import com.acnteam.crashybird.domain.usecase.SetCurrentCharacterUseCase
 import com.acnteam.crashybird.domain.usecase.SetCurrentLevelUseCase
 import com.acnteam.crashybird.domain.usecase.SetSoundEffectSettingsUseCase
 import com.acnteam.crashybird.domain.usecase.UnlockCharacterUseCase
+import com.acnteam.crashybird.domain.usecase.WithDrawCoinUseCase
 import org.koin.dsl.module
 
 val useCaseModule = module {
@@ -70,7 +71,7 @@ val useCaseModule = module {
     }
 
     single {
-        GetCurrentCharacter(get())
+        GetCurrentCharacterUseCase(get())
     }
 
     single {
@@ -79,5 +80,9 @@ val useCaseModule = module {
 
     single {
         UnlockCharacterUseCase(get())
+    }
+
+    single {
+        WithDrawCoinUseCase(get())
     }
 }

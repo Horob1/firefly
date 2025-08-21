@@ -1,15 +1,16 @@
 package com.acnteam.crashybird.domain.model
 
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import com.acnteam.crashybird.R
-import kotlinx.serialization.Serializable
 
-@Serializable
 sealed class Character(
     val name: String,
     @DrawableRes val sprite: Int,
     val frameWidth: Int,
     val frameHeight: Int,
+    @StringRes val desc: Int,
+    val coin: Int = 0,
 ) {
     companion object {
         fun getByName(name: String): Character {
@@ -27,15 +28,33 @@ sealed class Character(
         }
     }
 
-    @Serializable
-    data object Jack : Character("Jack", R.drawable.jack, frameWidth = 160, frameHeight = 103)
+    data object Jack :
+        Character("Jack", R.drawable.jack, frameWidth = 160, frameHeight = 103, R.string.desc_jack)
 
-    @Serializable
-    data object Oii : Character("Oii", R.drawable.jack, frameWidth = 160, frameHeight = 103)
+    data object Oii : Character(
+        "Oii",
+        R.drawable.jack,
+        frameWidth = 160,
+        frameHeight = 103,
+        R.string.desc_oii,
+        coin = 10000
+    )
 
-    @Serializable
-    data object Bee : Character("Bee", R.drawable.jack, frameWidth = 160, frameHeight = 103)
+    data object Bee : Character(
+        "Bee",
+        R.drawable.bee_sprite,
+        frameWidth = 80,
+        frameHeight = 80,
+        R.string.desc_bee,
+        coin = 1000
+    )
 
-    @Serializable
-    data object Virus : Character("Virus", R.drawable.jack, frameWidth = 160, frameHeight = 103)
+    data object Virus : Character(
+        "Virus",
+        R.drawable.jack,
+        frameWidth = 160,
+        frameHeight = 103,
+        R.string.desc_virus,
+        coin = 5000
+    )
 }

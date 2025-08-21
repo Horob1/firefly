@@ -29,7 +29,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.graphicsLayer
@@ -58,6 +57,8 @@ fun GamePanel(
     modifier: Modifier = Modifier,
     selectedMap: Level = Level.One,
     levels: List<LevelState> = emptyList(),
+    selectedCharacter: Character = Character.Jack,
+    characterList: List<CharacterState> = emptyList(),
     onPlayClick: () -> Unit = {},
     onSettingClick: () -> Unit = {},
     onLeftCharacterClick: () -> Unit = {},
@@ -88,8 +89,13 @@ fun GamePanel(
         GameController(
             selectedMap = selectedMap,
             levels = levels,
+            selectedCharacter = selectedCharacter,
+            characters = characterList,
+            onLeftCharacterClick = onLeftCharacterClick,
+            onRightCharacterClick = onRightCharacterClick,
             onLeftMapClick = onLeftMapClick,
             onRightMapClick = onRightMapClick,
+            onUnlockClick = onUnlockClick
         )
 
 
@@ -122,9 +128,12 @@ fun GameController(
     onRightMapClick: () -> Unit = {},
     selectedCharacter: Character = Character.Jack,
     characters: List<CharacterState> = emptyList(),
+    onLeftCharacterClick: () -> Unit = {},
+    onRightCharacterClick: () -> Unit = {},
+    onUnlockClick: () -> Unit = {},
 ) {
     // định nghĩa kích thước của sprite và sheet(kích thước mỗi frame và ảnh nhân vật)
-    val spriteSpec = remember {
+    val spriteSpec = remember(selectedCharacter) {
         SpriteSpec(
             screenWidth = 240f,
             default = SpriteSheet(
@@ -203,7 +212,7 @@ fun GameController(
             ) {
                 IconButton(
                     onClick = {
-                        //if (characters.isNotEmpty() && characters.first().character.name != selectedCharacter.name) onLeftCharacterClick()
+                        onLeftCharacterClick()
                     },
                 ) {
                     Icon(
@@ -217,17 +226,7 @@ fun GameController(
                 Box(
                     modifier = Modifier
                         .size(140.dp) // khung nhân vật
-                        .graphicsLayer {
-                            // scale animation nhẹ để nổi bật
-                            scaleX = if (selectedCharacter == Character.Jack) 1.1f else 1f
-                            scaleY = if (selectedCharacter == Character.Jack) 1.1f else 1f
-                        }
-                        .shadow(
-                            elevation = 16.dp,
-                            shape = MaterialTheme.shapes.medium,
-                            ambientColor = Pink80.copy(alpha = 0.6f),
-                            spotColor = Pink80.copy(alpha = 0.6f)
-                        ),
+                    ,
                     contentAlignment = Alignment.Center
                 ) {
                     Canvas(modifier = Modifier.size(120.dp)) {
@@ -247,23 +246,23 @@ fun GameController(
                             )
                         }
                     }
-
-                    IconButton(
-                        onClick = { /* TODO unlock */ },
-                        modifier = Modifier.align(Alignment.Center)
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.lock),
-                            contentDescription = "Lock",
-                            modifier = Modifier.size(32.dp)
-                        )
-                    }
+                    if (characters.isNotEmpty() && characters.find { it.character == selectedCharacter }?.isUnlocked == false)
+                        IconButton(
+                            onClick = { onUnlockClick() },
+                            modifier = Modifier.align(Alignment.Center)
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.lock),
+                                contentDescription = "Lock",
+                                modifier = Modifier.size(32.dp)
+                            )
+                        }
                 }
 
 
                 IconButton(
                     onClick = {
-                        //if (characters.isNotEmpty() && characters.last().character.name != selectedCharacter.name) onRightCharacterClick()
+                        onRightCharacterClick()
                     },
                 ) {
                     Icon(

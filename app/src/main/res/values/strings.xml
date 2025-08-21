@@ -9,15 +9,27 @@
     <string name="btn_start">Play</string>
     <string name="btn_click_here">Click here</string>
     <string name="btn_setting">Setting</string>
+    <string name="btn_confirm">Confirm</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="btn_back">Back</string>
 
     <string name="txt_score">Score</string>
     <string name="txt_coin">Coin</string>
     <string name="txt_setting">Setting</string>
     <string name="txt_background_music">Background Music</string>
     <string name="txt_effect_music">Sound Effect</string>
+    <string name="txt_price">Price</string>
+    <string name="txt_notification">Notification</string>
+
+    <string name="desc_jack">Đẹp trai, hướng ngoại, hát hay và thích gạ gẫm</string>
+    <string name="desc_oii">Sờ Chim Mơ số 1, dán nhãn đè tem, sung tiền ngoại quốc</string>
+    <string name="desc_bee">Bee Bee Bee</string>
+    <string name="desc_virus">Sờ Chim Mơ kiêm nhạc sĩ lùa gà, thích ăn Kem cùng cà Pháo</string>
 
     <string name="alert_is_not_enough_coin">You don\'t have enough coin</string>
-    <string name="alear_you_are_in_first_map">You are in first map</string>
+    <string name="alert_you_are_in_first_map">You are in first map</string>
     <string name="alert_you_are_in_last_map">You are in last map</string>
     <string name="alert_map_is_not_unlock">Map is not unlock</string>
+    <string name="alert_unlock_success">Unlock success</string>
+    <string name="alert_character_is_not_unlock">Character is not unlock</string>
 </resources>

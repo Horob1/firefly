@@ -2,11 +2,16 @@ package com.acnteam.crashybird.presentation.screen.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.acnteam.crashybird.domain.usecase.GetCharacterListUseCase
 import com.acnteam.crashybird.domain.usecase.GetCoinUseCase
+import com.acnteam.crashybird.domain.usecase.GetCurrentCharacterUseCase
 import com.acnteam.crashybird.domain.usecase.GetCurrentLevelUseCase
 import com.acnteam.crashybird.domain.usecase.GetLevelStateListUseCase
 import com.acnteam.crashybird.domain.usecase.InitDataUseCase
+import com.acnteam.crashybird.domain.usecase.SetCurrentCharacterUseCase
 import com.acnteam.crashybird.domain.usecase.SetCurrentLevelUseCase
+import com.acnteam.crashybird.domain.usecase.UnlockCharacterUseCase
+import com.acnteam.crashybird.domain.usecase.WithDrawCoinUseCase
 import com.acnteam.crashybird.presentation.common.UiState
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -21,8 +26,13 @@ class HomeViewModel(
     getLevelStateListUseCase: GetLevelStateListUseCase,
     getCoinUseCase: GetCoinUseCase,
     getCurrentLevelUseCase: GetCurrentLevelUseCase,
+    getCurrentCharacterUseCase: GetCurrentCharacterUseCase,
+    getCharacterListUseCase: GetCharacterListUseCase,
+    private val setCurrentCharacterUseCase: SetCurrentCharacterUseCase,
     private val setCurrentLevelUseCase: SetCurrentLevelUseCase,
     private val initUseCase: InitDataUseCase,
+    private val unLockCharacterUseCase: UnlockCharacterUseCase,
+    private val withDrawCoinUseCase: WithDrawCoinUseCase,
 ) : ViewModel() {
 
     init {
@@ -34,12 +44,16 @@ class HomeViewModel(
     val homeUiState: StateFlow<UiState<HomeState>> = combine(
         getLevelStateListUseCase(),
         getCoinUseCase(),
-        getCurrentLevelUseCase()
-    ) { levels, coin, currentLevel ->
+        getCurrentLevelUseCase(),
+        getCurrentCharacterUseCase(),
+        getCharacterListUseCase()
+    ) { levels, coin, currentLevel, currentCharacter, characterList ->
         HomeState(
             levels = levels,
             coin = coin,
-            currentLevel = currentLevel
+            currentLevel = currentLevel,
+            characterList = characterList,
+            currentCharacter = currentCharacter
         )
     }
         .map<HomeState, UiState<HomeState>> { UiState.Success(it) }
@@ -90,5 +104,91 @@ class HomeViewModel(
         } else {
             errorCallback()
         }
+    }
+
+    fun unlockCharacter(
+        onSuccess: () -> Unit,
+        onFail: () -> Unit,
+    ) {
+        val data = (homeUiState.value as UiState.Success<HomeState>).data
+        if (data.coin < data.currentCharacter.coin) {
+            onFail()
+            return
+        }
+        viewModelScope.launch {
+            val character = (homeUiState.value as UiState.Success<HomeState>).data.currentCharacter
+            unLockCharacterUseCase(character)
+            withDrawCoinUseCase(character.coin)
+            onSuccess()
+        }
+    }
+
+    fun onLeftCharacterClick() {
+        val data = (homeUiState.value as UiState.Success<HomeState>).data
+        val currentCharacter = data.currentCharacter
+        val currentCharacterIndex =
+            data.characterList.indexOfFirst { it.character.name == currentCharacter.name }
+        viewModelScope.launch {
+            when (currentCharacterIndex) {
+                -1 -> return@launch
+                0 -> {
+
+                    setCurrentCharacterUseCase(
+                        data.characterList[data.characterList.size - 1].character
+                    )
+
+                }
+
+                else -> {
+
+                    setCurrentCharacterUseCase(
+                        data.characterList[currentCharacterIndex - 1].character
+                    )
+                }
+            }
+        }
+    }
+
+    fun onRightCharacterClick() {
+        val data = (homeUiState.value as UiState.Success<HomeState>).data
+        val currentCharacter = data.currentCharacter
+        val currentCharacterIndex = data.characterList.indexOfFirst {
+            it.character.name == currentCharacter.name
+        }
+        viewModelScope.launch {
+            when (currentCharacterIndex) {
+                -1 -> return@launch
+                data.characterList.size - 1 -> {
+                    setCurrentCharacterUseCase(data.characterList[0].character)
+                }
+
+                else -> {
+                    setCurrentCharacterUseCase(data.characterList[currentCharacterIndex + 1].character)
+                }
+            }
+        }
+    }
+
+    fun onPlayClick(
+        onSuccess: () -> Unit,
+        onFail: () -> Unit,
+    ) {
+        val data = (homeUiState.value as UiState.Success<HomeState>).data
+        val currentCharacter = data.currentCharacter
+        if (data.characterList.isEmpty()) {
+            onFail()
+            return
+        }
+        if (data.characterList.find { it.character.name == currentCharacter.name } == null) {
+            onFail()
+            return
+        }
+        if (data.characterList.find {
+                it.character.name == currentCharacter.name
+            }?.isUnlocked == false) {
+            onFail()
+            return
+        }
+        onSuccess()
     }
 }

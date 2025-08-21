@@ -16,6 +16,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -26,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.acnteam.crashybird.R
+import com.acnteam.crashybird.presentation.common.NotificationAlertDialog
 import com.acnteam.crashybird.presentation.common.TextCard
 import com.acnteam.crashybird.presentation.common.UiState
 import com.acnteam.crashybird.presentation.navigation.NavScreen
@@ -39,8 +42,18 @@ fun HomeScreen(
 ) {
     val context = LocalContext.current
     val homeUiState by viewModel.homeUiState.collectAsStateWithLifecycle()
-
-
+    val showUnlockDialog = remember {
+        mutableStateOf(false)
+    }
+    val showUnlockSuccess = remember {
+        mutableStateOf(false)
+    }
+    val showUnlockFail = remember {
+        mutableStateOf(false)
+    }
+    val showNotUnlock = remember {
+        mutableStateOf(false)
+    }
     Scaffold {
         if (homeUiState is UiState.Loading) {
             Box(
@@ -121,6 +134,8 @@ fun HomeScreen(
                     GamePanel(
                         selectedMap = homeState.currentLevel,
                         levels = homeState.levels,
+                        selectedCharacter = homeState.currentCharacter,
+                        characterList = homeState.characterList,
                         onLeftMapClick = {
                             viewModel.onLeftMapClick {
                                 Toast.makeText(
@@ -139,8 +154,29 @@ fun HomeScreen(
                                 ).show()
                             }
                         },
+                        onUnlockClick = {
+                            showUnlockDialog.value = true
+                        },
+                        onLeftCharacterClick = {
+                            viewModel.onLeftCharacterClick()
+                        },
+                        onRightCharacterClick = {
+                            viewModel.onRightCharacterClick()
+                        },
                         onPlayClick = {
-
+                            viewModel.onPlayClick(
+                                onSuccess = {
+                                    navController.navigate(
+                                        NavScreen.Play(
+                                            levelNumber = homeState.currentLevel.levelNumber,
+                                            characterName = homeState.currentCharacter.name
+                                        )
+                                    )
+                                },
+                                onFail = {
+                                    showNotUnlock.value = true
+                                }
+                            )
                         },
                         onSettingClick = {
                             navController.navigate(NavScreen.Setting)
@@ -149,6 +185,54 @@ fun HomeScreen(
 
                     Spacer(modifier = Modifier.height(100.dp))
                 }
+            }
+
+            if (showUnlockDialog.value) {
+                UnlockDialog(
+                    character = homeState.currentCharacter,
+                    onDismiss = {
+                        showUnlockDialog.value = false
+                    },
+                    onConfirm = {
+                        showUnlockDialog.value = false
+                        viewModel.unlockCharacter(
+                            onSuccess = {
+                                showUnlockSuccess.value = true
+                            },
+                            onFail = {
+                                showUnlockFail.value = true
+                            }
+                        )
+
+                    },
+                )
+            }
+
+            if (showUnlockSuccess.value) {
+                NotificationAlertDialog(
+                    onDismiss = {
+                        showUnlockSuccess.value = false
+                    },
+                    R.string.alert_unlock_success,
+                )
+            }
+
+            if (showUnlockFail.value) {
+                NotificationAlertDialog(
+                    onDismiss = {
+                        showUnlockFail.value = false
+                    },
+                    R.string.alert_is_not_enough_coin,
+                )
+
+            }
+            if (showNotUnlock.value) {
+                NotificationAlertDialog(
+                    onDismiss = {
+                        showNotUnlock.value = false
+                    },
+                    R.string.alert_character_is_not_unlock,
+                )
             }
         }
     }
