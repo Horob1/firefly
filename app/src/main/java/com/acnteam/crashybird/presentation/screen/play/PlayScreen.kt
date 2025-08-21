@@ -51,7 +51,7 @@ fun PlayScreen() {
             default = SpriteSheet(
                 frameWidth = 160,
                 frameHeight = 103,
-                imageRes = R.drawable.j96
+                imageRes = R.drawable.jack
             )
         )
     }

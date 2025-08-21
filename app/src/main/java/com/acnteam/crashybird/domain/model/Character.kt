@@ -8,6 +8,8 @@ import kotlinx.serialization.Serializable
 sealed class Character(
     val name: String,
     @DrawableRes val sprite: Int,
+    val frameWidth: Int,
+    val frameHeight: Int,
 ) {
     companion object {
         fun getByName(name: String): Character {
@@ -26,14 +28,14 @@ sealed class Character(
     }
 
     @Serializable
-    data object Jack : Character("Jack", R.drawable.lock)
+    data object Jack : Character("Jack", R.drawable.jack, frameWidth = 160, frameHeight = 103)
 
     @Serializable
-    data object Oii : Character("Oii", R.drawable.lock)
+    data object Oii : Character("Oii", R.drawable.jack, frameWidth = 160, frameHeight = 103)
 
     @Serializable
-    data object Bee : Character("Bee", R.drawable.lock)
+    data object Bee : Character("Bee", R.drawable.jack, frameWidth = 160, frameHeight = 103)
 
     @Serializable
-    data object Virus : Character("Virus", R.drawable.lock)
+    data object Virus : Character("Virus", R.drawable.jack, frameWidth = 160, frameHeight = 103)
 }

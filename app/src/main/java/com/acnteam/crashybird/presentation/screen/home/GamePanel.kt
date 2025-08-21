@@ -1,6 +1,7 @@
 package com.acnteam.crashybird.presentation.screen.home
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -21,20 +22,35 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.acnteam.crashybird.R
+import com.acnteam.crashybird.domain.model.Character
+import com.acnteam.crashybird.domain.model.CharacterState
 import com.acnteam.crashybird.domain.model.Level
 import com.acnteam.crashybird.domain.model.LevelState
 import com.acnteam.crashybird.presentation.common.CrashyBirdButton
+import com.acnteam.crashybird.presentation.common.sprite.component.drawSpriteView
+import com.acnteam.crashybird.presentation.common.sprite.domain.SpriteSheet
+import com.acnteam.crashybird.presentation.common.sprite.domain.SpriteSpec
+import com.acnteam.crashybird.presentation.common.sprite.domain.rememberSpriteState
 import com.acnteam.crashybird.presentation.ui.theme.Pink80
 import com.acnteam.crashybird.presentation.ui.theme.White
+
 
 @Preview
 @Composable
@@ -104,7 +120,33 @@ fun GameController(
     levels: List<LevelState> = emptyList(),
     onLeftMapClick: () -> Unit = {},
     onRightMapClick: () -> Unit = {},
+    selectedCharacter: Character = Character.Jack,
+    characters: List<CharacterState> = emptyList(),
 ) {
+    // định nghĩa kích thước của sprite và sheet(kích thước mỗi frame và ảnh nhân vật)
+    val spriteSpec = remember {
+        SpriteSpec(
+            screenWidth = 240f,
+            default = SpriteSheet(
+                frameWidth = selectedCharacter.frameWidth,
+                frameHeight = selectedCharacter.frameHeight,
+                imageRes = selectedCharacter.sprite
+            )
+        )
+    }
+    // khởi tạo state của sprite gồm tổng số frame và số frame mỗi hàng
+    val spriteState = rememberSpriteState(
+        totalFrames = 9,
+        framesPerRow = 3
+    )
+
+    //Theo dõi frame hiện tại
+    val currentFrame by spriteState.currentFrame.collectAsState()
+    val spriteImage: ImageBitmap = spriteSpec.imageBitmap
+
+    LaunchedEffect(selectedCharacter) {
+        spriteState.start()
+    }
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -160,7 +202,9 @@ fun GameController(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(
-                    onClick = { /*TODO*/ },
+                    onClick = {
+                        //if (characters.isNotEmpty() && characters.first().character.name != selectedCharacter.name) onLeftCharacterClick()
+                    },
                 ) {
                     Icon(
                         Icons.AutoMirrored.Filled.ArrowLeft,
@@ -172,29 +216,55 @@ fun GameController(
 
                 Box(
                     modifier = Modifier
-                        .height(120.dp)
-                        .width(120.dp),
+                        .size(140.dp) // khung nhân vật
+                        .graphicsLayer {
+                            // scale animation nhẹ để nổi bật
+                            scaleX = if (selectedCharacter == Character.Jack) 1.1f else 1f
+                            scaleY = if (selectedCharacter == Character.Jack) 1.1f else 1f
+                        }
+                        .shadow(
+                            elevation = 16.dp,
+                            shape = MaterialTheme.shapes.medium,
+                            ambientColor = Pink80.copy(alpha = 0.6f),
+                            spotColor = Pink80.copy(alpha = 0.6f)
+                        ),
                     contentAlignment = Alignment.Center
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_launcher_foreground),
-                        contentDescription = "Character",
-                    )
+                    Canvas(modifier = Modifier.size(120.dp)) {
+                        val spriteW = spriteSpec.spriteSheet.frameWidth.toFloat()
+                        val spriteH = spriteSpec.spriteSheet.frameHeight.toFloat()
+
+                        val offsetX = (size.width - spriteW) / 2
+                        val offsetY = (size.height - spriteH) / 2
+
+                        translate(offsetX, offsetY) {
+                            // Hiển thị nhân vật
+                            drawSpriteView(
+                                spriteState = spriteState,
+                                spriteSpec = spriteSpec,
+                                currentFrame = currentFrame,
+                                image = spriteImage
+                            )
+                        }
+                    }
 
                     IconButton(
-                        onClick = { /*TODO*/ },
+                        onClick = { /* TODO unlock */ },
+                        modifier = Modifier.align(Alignment.Center)
                     ) {
                         Image(
                             painter = painterResource(id = R.drawable.lock),
                             contentDescription = "Lock",
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier.size(32.dp)
                         )
                     }
-
                 }
 
+
                 IconButton(
-                    onClick = { /*TODO*/ },
+                    onClick = {
+                        //if (characters.isNotEmpty() && characters.last().character.name != selectedCharacter.name) onRightCharacterClick()
+                    },
                 ) {
                     Icon(
                         Icons.AutoMirrored.Filled.ArrowRight,
