@@ -33,9 +33,9 @@ sealed class Character(
 
     data object Oii : Character(
         "Oii",
-        R.drawable.jack,
-        frameWidth = 160,
-        frameHeight = 103,
+        R.drawable.oii,
+        frameWidth = 200,
+        frameHeight = 84,
         R.string.desc_oii,
         coin = 10000
     )
@@ -51,9 +51,9 @@ sealed class Character(
 
     data object Virus : Character(
         "Virus",
-        R.drawable.jack,
-        frameWidth = 160,
-        frameHeight = 103,
+        R.drawable.virus_sprite,
+        frameWidth = 140,
+        frameHeight = 160,
         R.string.desc_virus,
         coin = 5000
     )

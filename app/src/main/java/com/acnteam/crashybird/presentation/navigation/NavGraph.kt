@@ -14,10 +14,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
 import com.acnteam.crashybird.presentation.screen.home.HomeScreen
 import com.acnteam.crashybird.presentation.screen.home.HomeViewModel
 import com.acnteam.crashybird.presentation.screen.home.signin.SignInViewModel
 import com.acnteam.crashybird.presentation.screen.play.PlayScreen
+import com.acnteam.crashybird.presentation.screen.play.PlayViewModel
 import com.acnteam.crashybird.presentation.screen.rank.RankScreen
 import com.acnteam.crashybird.presentation.screen.rank.RankViewModel
 import com.acnteam.crashybird.presentation.screen.setting.SettingScreen
@@ -87,7 +89,14 @@ fun SetupNavGraph(
             )
         }
         composable<NavScreen.Play> {
-            PlayScreen()
+            val viewModel = koinViewModel<PlayViewModel>()
+            val arg = it.toRoute<NavScreen.Play>()
+            PlayScreen(
+                levelNumber = arg.levelNumber,
+                characterName = arg.characterName,
+                viewModel = viewModel,
+                navController = navController
+            )
         }
         composable<NavScreen.Setting> {
             val viewModel = koinViewModel<SettingViewModel>()

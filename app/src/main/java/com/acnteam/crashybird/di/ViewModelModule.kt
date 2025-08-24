@@ -2,6 +2,7 @@ package com.acnteam.crashybird.di
 
 import com.acnteam.crashybird.presentation.navigation.NavViewModel
 import com.acnteam.crashybird.presentation.screen.home.HomeViewModel
+import com.acnteam.crashybird.presentation.screen.play.PlayViewModel
 import com.acnteam.crashybird.presentation.screen.home.signin.SignInViewModel
 import com.acnteam.crashybird.presentation.screen.rank.RankViewModel
 import com.acnteam.crashybird.presentation.screen.setting.SettingViewModel
@@ -44,6 +45,11 @@ val viewModelModule = module {
             get(),
         )
     }
+    viewModel {
+        PlayViewModel(
+        )
+    }
+
 
     viewModel {
         SignInViewModel()
