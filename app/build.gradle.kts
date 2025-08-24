@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
     id("com.google.devtools.ksp")
+    alias(libs.plugins.google.gms.google.services)
 }
 
 android {
@@ -42,6 +43,21 @@ android {
 }
 
 dependencies {
+    // ShowCase
+    implementation(libs.introshowcaseview)
+
+    // Glance
+    implementation(libs.androidx.glance)
+    implementation(libs.androidx.glance.appwidget)
+
+    // Firebase
+    implementation(libs.firebase.auth)
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
+    implementation(libs.gms.play.services.auth)
+    implementation(libs.androidx.foundation)
+    implementation(libs.firebase.firestore)
 
     //audio player
     implementation(libs.exoplayer)
@@ -67,7 +83,8 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.ui.unit)
     implementation(libs.ui)
-    implementation(libs.androidx.foundation)
+
+
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
 
@@ -76,7 +93,6 @@ dependencies {
     implementation(libs.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.core.splashscreen)
-
     // Defaults
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

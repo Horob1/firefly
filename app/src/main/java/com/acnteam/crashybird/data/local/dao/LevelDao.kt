@@ -37,5 +37,9 @@ interface LevelDao {
         WHERE levelNumber = :levelNumber
     """
     )
+
     suspend fun updateHighScore(levelNumber: Int, highScore: Int)
+
+    @Query("DELETE FROM levels")
+    suspend fun deleteAllLevels()
 }

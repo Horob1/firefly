@@ -13,6 +13,8 @@ interface GameRepository {
     suspend fun setCurrentCharacter(character: Character)
 
     suspend fun setCurrentLevel(level: Level)
+
+    suspend fun setCoin(coin: Int)
     suspend fun addCoin(coin: Int)
     suspend fun withdrawCoin(coin: Int)
 }

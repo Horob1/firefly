@@ -8,5 +8,5 @@ val appModules: List<Module> = listOf(
     useCaseModule,
     databaseModule,
     localModule,
-    remoteModule
+    remoteModule,
 )

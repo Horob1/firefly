@@ -1,5 +1,7 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Firefly Jump</string>
+
+    <string name="web_client_id" tools:ignore="TypographyDashes">83675733296-7i8md99pfc4uk1q6qk7e1l3mqvfe72lp.apps.googleusercontent.com</string>
 
     <string name="story_1_title">… a happy firefly family</string>
     <string name="story_2_title">… humans robbed him of his family …</string>
@@ -12,14 +14,35 @@
     <string name="btn_confirm">Confirm</string>
     <string name="btn_cancel">Cancel</string>
     <string name="btn_back">Back</string>
+    <string name="btn_next">Next</string>
+    <string name="btn_sign_in">Sign in</string>
+    <string name="btn_logout">Log out</string>
 
     <string name="txt_score">Score</string>
     <string name="txt_coin">Coin</string>
+    <string name="txt_profile">Profile</string>
     <string name="txt_setting">Setting</string>
     <string name="txt_background_music">Background Music</string>
     <string name="txt_effect_music">Sound Effect</string>
     <string name="txt_price">Price</string>
     <string name="txt_notification">Notification</string>
+    <string name="txt_rankings">Rankings</string>
+    <string name="txt_sync">Sync</string>
+    <string name="txt_sync_up">Sync Up</string>
+    <string name="txt_sync_down">Sync Down</string>
+    <string name="txt_exit_game">Exit Game</string>
+    <string name="txt_level">Level</string>
+    <string name="txt_choose_map_button">Choose map button</string>
+    <string name="txt_choose_character_button">Choose character button</string>
+
+    <string name="desc_unlock">Click this button to unlock new character</string>
+    <string name="desc_play">Let\'s play!</string>
+    <string name="desc_coin">Earn coin by play and use to unlock new character</string>
+    <string name="desc_setting_btn">Use this button to change setting (sound, music)</string>
+    <string name="desc_unlock_btn">Use this button to unlock new character</string>
+    <string name="desc_exit_game">Are you sure you want to exit the game?</string>
+    <string name="desc_sync_up">Sync up data from server! Please remember: Data in server will be replaced by local data!</string>
+    <string name="desc_sync_down">Sync down data from server! Please remember: Data in local will be replaced by data in server!</string>
 
     <string name="desc_jack">Đẹp trai, hướng ngoại, hát hay và thích gạ gẫm</string>
     <string name="desc_oii">Sờ Chim Mơ số 1, dán nhãn đè tem, sung tiền ngoại quốc</string>
@@ -31,5 +54,8 @@
     <string name="alert_you_are_in_last_map">You are in last map</string>
     <string name="alert_map_is_not_unlock">Map is not unlock</string>
     <string name="alert_unlock_success">Unlock success</string>
+    <string name="alert_sync_success">Sync success</string>
+    <string name="alert_sync_fail">Sync fail</string>
     <string name="alert_character_is_not_unlock">Character is not unlock</string>
+    <string name="desc_signin">Sign in to save your progress!</string>
 </resources>

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "83675733296",
+    "project_id": "horob1",
+    "storage_bucket": "horob1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:83675733296:android:c27368253a8fe30e297cf5",
+        "android_client_info": {
+          "package_name": "com.acnteam.crashybird"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "83675733296-7i8md99pfc4uk1q6qk7e1l3mqvfe72lp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOpuYALmE4-rQ32hEvi-D0xQkS7yFMhyY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "83675733296-7i8md99pfc4uk1q6qk7e1l3mqvfe72lp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface CharacterLocalDataSource {
     fun getCharacterList(): Flow<List<CharacterState>>
+    suspend fun setCharacterList(characters: List<CharacterState>)
 
     suspend fun unlockCharacter(character: Character)
 }

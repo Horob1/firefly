@@ -1,10 +1,9 @@
 package com.acnteam.crashybird.data.remote.dto
 
-import kotlinx.serialization.Serializable
+import com.acnteam.crashybird.domain.model.Character
 
-@Serializable
 data class CharacterDto(
-    val name: String,
-    val isUnlocked: Boolean,
+    var name: String = Character.Oii.name,
+    var isUnlocked: Boolean = false,
 )
 

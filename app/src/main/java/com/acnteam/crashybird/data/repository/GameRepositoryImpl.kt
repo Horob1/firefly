@@ -8,12 +8,13 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.acnteam.crashybird.domain.model.Character
 import com.acnteam.crashybird.domain.model.Level
 import com.acnteam.crashybird.domain.repository.GameRepository
+import com.acnteam.crashybird.presentation.widget.mapplayer.MapPlayerWidget
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 val Context.gameDataStore by preferencesDataStore(name = GameRepositoryImpl.GAME_STORE)
 
-class GameRepositoryImpl(context: Context) : GameRepository {
+class GameRepositoryImpl(private val context: Context) : GameRepository {
     companion object {
         const val GAME_STORE = "game_data"
     }
@@ -57,6 +58,13 @@ class GameRepositoryImpl(context: Context) : GameRepository {
     override suspend fun setCurrentLevel(level: Level) {
         dataStore.edit {
             it[PreferencesKeys.CURRENT_LEVEL] = level.levelNumber
+        }
+        MapPlayerWidget.updateLevel(context, level.levelNumber)
+    }
+
+    override suspend fun setCoin(coin: Int) {
+        dataStore.edit {
+            it[PreferencesKeys.COIN] = coin
         }
     }
 

@@ -25,7 +25,8 @@ data class LevelEntity(
     fun toLevelState(): LevelState {
         return LevelState(
             level = Level.getByLevelNumber(levelNumber),
-            isUnlocked = isUnlocked
+            isUnlocked = isUnlocked,
+            highestScore = highScore
         )
     }
 }

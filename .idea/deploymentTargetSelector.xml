@@ -3,6 +3,27 @@
   <component name="deploymentTargetSelector">
     <selectionStates>
       <SelectionState runConfigName="CrashyBird.app">
+      <SelectionState runConfigName="app">
+        <option name="selectionMode" value="DROPDOWN" />
+        <DropdownSelection timestamp="2025-08-22T09:09:37.393742700Z">
+          <Target type="DEFAULT_BOOT">
+            <handle>
+              <DeviceId pluginId="PhysicalDevice" identifier="serial=354975110166613" />
+            </handle>
+          </Target>
+        </DropdownSelection>
+        <DialogSelection />
+      </SelectionState>
+      <SelectionState runConfigName="ConfirmOrCancelDialog">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="TripleOrbitLoadingAnimationPreview">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="RankCard">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="ShowcaseSample">
         <option name="selectionMode" value="DROPDOWN" />
         <DropdownSelection timestamp="2025-08-21T13:49:07.242774200Z">
           <Target type="DEFAULT_BOOT">
