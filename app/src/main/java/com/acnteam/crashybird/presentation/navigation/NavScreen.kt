@@ -18,4 +18,9 @@ sealed class NavScreen {
 
     @Serializable
     data object User : NavScreen()
+
+    @Serializable
+    data object Rank : NavScreen()
+
+    
 }

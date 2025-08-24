@@ -31,7 +31,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.drawscope.translate
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -47,13 +46,17 @@ import com.acnteam.crashybird.presentation.common.sprite.component.drawSpriteVie
 import com.acnteam.crashybird.presentation.common.sprite.domain.SpriteSheet
 import com.acnteam.crashybird.presentation.common.sprite.domain.SpriteSpec
 import com.acnteam.crashybird.presentation.common.sprite.domain.rememberSpriteState
+import com.acnteam.crashybird.presentation.ui.theme.Black
+import com.acnteam.crashybird.presentation.ui.theme.OrangeAccent
 import com.acnteam.crashybird.presentation.ui.theme.Pink80
 import com.acnteam.crashybird.presentation.ui.theme.White
+import com.canopas.lib.showcase.IntroShowcaseScope
+import com.canopas.lib.showcase.component.ShowcaseStyle
 
 
 @Preview
 @Composable
-fun GamePanel(
+fun IntroShowcaseScope.GamePanel(
     modifier: Modifier = Modifier,
     selectedMap: Level = Level.One,
     levels: List<LevelState> = emptyList(),
@@ -76,7 +79,24 @@ fun GamePanel(
             .fillMaxWidth()
     ) {
         CrashyBirdButton(
-            modifier = Modifier.width(160.dp),
+            modifier = Modifier
+                .width(160.dp)
+                .introShowCaseTarget(
+                    index = 5,
+                    style = ShowcaseStyle.Default.copy(
+                        backgroundColor = OrangeAccent, // specify color of background
+                        backgroundAlpha = 0.98f, // specify transparency of background
+                        targetCircleColor = White // specify color of target circle
+                    ),
+                    content = {
+                        Text(
+                            stringResource(R.string.desc_play),
+                            style = MaterialTheme.typography.bodyLarge.copy(
+                                color = Black
+                            )
+                        )
+                    }
+                ),
             onClick = onPlayClick,
         ) {
             Image(
@@ -100,7 +120,24 @@ fun GamePanel(
 
 
         CrashyBirdButton(
-            modifier = Modifier.width(240.dp),
+            modifier = Modifier
+                .width(240.dp)
+                .introShowCaseTarget(
+                    index = 2,
+                    style = ShowcaseStyle.Default.copy(
+                        backgroundColor = OrangeAccent, // specify color of background
+                        backgroundAlpha = 0.98f, // specify transparency of background
+                        targetCircleColor = White // specify color of target circle
+                    ),
+                    content = {
+                        Text(
+                            stringResource(R.string.desc_setting_btn),
+                            style = MaterialTheme.typography.bodyLarge.copy(
+                                color = Black
+                            )
+                        )
+                    }
+                ),
             onClick = onSettingClick,
         ) {
             Row(
@@ -121,7 +158,7 @@ fun GamePanel(
 
 @Preview
 @Composable
-fun GameController(
+fun IntroShowcaseScope.GameController(
     selectedMap: Level = Level.One,
     levels: List<LevelState> = emptyList(),
     onLeftMapClick: () -> Unit = {},
@@ -249,7 +286,8 @@ fun GameController(
                     if (characters.isNotEmpty() && characters.find { it.character == selectedCharacter }?.isUnlocked == false)
                         IconButton(
                             onClick = { onUnlockClick() },
-                            modifier = Modifier.align(Alignment.Center)
+                            modifier = Modifier
+                                .align(Alignment.Center)
                         ) {
                             Image(
                                 painter = painterResource(id = R.drawable.lock),
@@ -264,6 +302,22 @@ fun GameController(
                     onClick = {
                         onRightCharacterClick()
                     },
+                    modifier = Modifier.introShowCaseTarget(
+                        index = 0,
+                        style = ShowcaseStyle.Default.copy(
+                            backgroundColor = OrangeAccent, // specify color of background
+                            backgroundAlpha = 0.98f, // specify transparency of background
+                            targetCircleColor = White // specify color of target circle
+                        ),
+                        content = {
+                            Text(
+                                stringResource(R.string.txt_choose_character_button),
+                                style = MaterialTheme.typography.bodyLarge.copy(
+                                    color = Black
+                                )
+                            )
+                        }
+                    )
                 ) {
                     Icon(
                         Icons.AutoMirrored.Filled.ArrowRight,
@@ -280,7 +334,23 @@ fun GameController(
                 if (levels.isNotEmpty() && levels.last().level.levelNumber != selectedMap.levelNumber) onRightMapClick()
             },
             paddingVertical = 0,
-            paddingHorizontal = 0
+            paddingHorizontal = 0,
+            modifier = Modifier.introShowCaseTarget(
+                index = 1,
+                style = ShowcaseStyle.Default.copy(
+                    backgroundColor = OrangeAccent, // specify color of background
+                    backgroundAlpha = 0.98f, // specify transparency of background
+                    targetCircleColor = White // specify color of target circle
+                ),
+                content = {
+                    Text(
+                        stringResource(R.string.txt_choose_map_button),
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            color = Black
+                        )
+                    )
+                }
+            )
         ) {
             Icon(
                 Icons.AutoMirrored.Default.ArrowRight,

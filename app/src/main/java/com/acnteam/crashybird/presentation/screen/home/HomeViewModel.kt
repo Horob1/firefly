@@ -6,8 +6,10 @@ import com.acnteam.crashybird.domain.usecase.GetCharacterListUseCase
 import com.acnteam.crashybird.domain.usecase.GetCoinUseCase
 import com.acnteam.crashybird.domain.usecase.GetCurrentCharacterUseCase
 import com.acnteam.crashybird.domain.usecase.GetCurrentLevelUseCase
+import com.acnteam.crashybird.domain.usecase.GetFirstTimeInHomeState
 import com.acnteam.crashybird.domain.usecase.GetLevelStateListUseCase
 import com.acnteam.crashybird.domain.usecase.InitDataUseCase
+import com.acnteam.crashybird.domain.usecase.SaveFirstTimeInHomeState
 import com.acnteam.crashybird.domain.usecase.SetCurrentCharacterUseCase
 import com.acnteam.crashybird.domain.usecase.SetCurrentLevelUseCase
 import com.acnteam.crashybird.domain.usecase.UnlockCharacterUseCase
@@ -28,11 +30,13 @@ class HomeViewModel(
     getCurrentLevelUseCase: GetCurrentLevelUseCase,
     getCurrentCharacterUseCase: GetCurrentCharacterUseCase,
     getCharacterListUseCase: GetCharacterListUseCase,
+    getFirstTimeInHomeState: GetFirstTimeInHomeState,
     private val setCurrentCharacterUseCase: SetCurrentCharacterUseCase,
     private val setCurrentLevelUseCase: SetCurrentLevelUseCase,
     private val initUseCase: InitDataUseCase,
     private val unLockCharacterUseCase: UnlockCharacterUseCase,
     private val withDrawCoinUseCase: WithDrawCoinUseCase,
+    private val saveFirstTimeInHomeState: SaveFirstTimeInHomeState,
 ) : ViewModel() {
 
     init {
@@ -41,19 +45,28 @@ class HomeViewModel(
         }
     }
 
+
     val homeUiState: StateFlow<UiState<HomeState>> = combine(
-        getLevelStateListUseCase(),
-        getCoinUseCase(),
-        getCurrentLevelUseCase(),
-        getCurrentCharacterUseCase(),
-        getCharacterListUseCase()
-    ) { levels, coin, currentLevel, currentCharacter, characterList ->
+        combine(
+            getLevelStateListUseCase(),
+            getCoinUseCase(),
+            getCurrentLevelUseCase(),
+            getCurrentCharacterUseCase(),
+            getCharacterListUseCase()
+        ) { levels, coin, currentLevel, currentCharacter, characterList ->
+            HomePartial(levels, coin, currentLevel, currentCharacter, characterList)
+        },
+        getFirstTimeInHomeState()
+    ) { quint, showCase ->
+        val (levels, coin, currentLevel, currentCharacter, characterList) = quint
+
         HomeState(
             levels = levels,
             coin = coin,
             currentLevel = currentLevel,
+            currentCharacter = currentCharacter,
             characterList = characterList,
-            currentCharacter = currentCharacter
+            showCaseCompleted = showCase
         )
     }
         .map<HomeState, UiState<HomeState>> { UiState.Success(it) }
@@ -190,5 +203,11 @@ class HomeViewModel(
             return
         }
         onSuccess()
+    }
+
+    fun completeShowCase() {
+        viewModelScope.launch {
+            saveFirstTimeInHomeState(true)
+        }
     }
 }

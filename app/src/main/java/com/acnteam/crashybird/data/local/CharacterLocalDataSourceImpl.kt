@@ -1,6 +1,7 @@
 package com.acnteam.crashybird.data.local
 
 import com.acnteam.crashybird.data.local.dao.CharacterDao
+import com.acnteam.crashybird.data.local.entity.CharacterEntity
 import com.acnteam.crashybird.domain.local.CharacterLocalDataSource
 import com.acnteam.crashybird.domain.model.Character
 import com.acnteam.crashybird.domain.model.CharacterState
@@ -16,6 +17,16 @@ class CharacterLocalDataSourceImpl(
                 characterEntity.toCharacterState()
             }
         }
+    }
+
+    override suspend fun setCharacterList(characters: List<CharacterState>) {
+        characterDao.deleteAllCharacters()
+        characterDao.insertCharacters(characters.map {
+            CharacterEntity(
+                name = it.character.name,
+                isUnlocked = it.isUnlocked
+            )
+        })
     }
 
     override suspend fun unlockCharacter(character: Character) {

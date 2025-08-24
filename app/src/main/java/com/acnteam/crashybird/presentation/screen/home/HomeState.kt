@@ -11,4 +11,13 @@ data class HomeState(
     val currentLevel: Level,
     val characterList: List<CharacterState>,
     val currentCharacter: Character,
+    val showCaseCompleted: Boolean,
+)
+
+data class HomePartial(
+    val levels: List<LevelState>,
+    val coin: Int,
+    val currentLevel: Level,
+    val currentCharacter: Character,
+    val characterList: List<CharacterState>,
 )

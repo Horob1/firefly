@@ -6,14 +6,19 @@ import com.acnteam.crashybird.domain.usecase.GetCharacterListUseCase
 import com.acnteam.crashybird.domain.usecase.GetCoinUseCase
 import com.acnteam.crashybird.domain.usecase.GetCurrentCharacterUseCase
 import com.acnteam.crashybird.domain.usecase.GetCurrentLevelUseCase
+import com.acnteam.crashybird.domain.usecase.GetFirstTimeInHomeState
 import com.acnteam.crashybird.domain.usecase.GetLevelStateListUseCase
 import com.acnteam.crashybird.domain.usecase.GetOnBoardingStateUseCase
+import com.acnteam.crashybird.domain.usecase.GetRanksUseCase
 import com.acnteam.crashybird.domain.usecase.GetSoundEffectSettingsUseCase
 import com.acnteam.crashybird.domain.usecase.InitDataUseCase
+import com.acnteam.crashybird.domain.usecase.SaveFirstTimeInHomeState
 import com.acnteam.crashybird.domain.usecase.SetBackgroundMusicSettingsUseCase
 import com.acnteam.crashybird.domain.usecase.SetCurrentCharacterUseCase
 import com.acnteam.crashybird.domain.usecase.SetCurrentLevelUseCase
 import com.acnteam.crashybird.domain.usecase.SetSoundEffectSettingsUseCase
+import com.acnteam.crashybird.domain.usecase.SyncDownUseCase
+import com.acnteam.crashybird.domain.usecase.SyncToServerUseCase
 import com.acnteam.crashybird.domain.usecase.UnlockCharacterUseCase
 import com.acnteam.crashybird.domain.usecase.WithDrawCoinUseCase
 import org.koin.dsl.module
@@ -84,5 +89,25 @@ val useCaseModule = module {
 
     single {
         WithDrawCoinUseCase(get())
+    }
+
+    single {
+        SyncToServerUseCase(get(), get(), get(), get())
+    }
+
+    single {
+        SyncDownUseCase(get(), get(), get(), get())
+    }
+
+    single {
+        GetRanksUseCase(get())
+    }
+
+    single {
+        GetFirstTimeInHomeState(get())
+    }
+
+    single {
+        SaveFirstTimeInHomeState(get())
     }
 }
