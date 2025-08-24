@@ -2,6 +2,7 @@ package com.acnteam.crashybird.presentation.screen.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.acnteam.crashybird.domain.model.Character
 import com.acnteam.crashybird.domain.usecase.GetCharacterListUseCase
 import com.acnteam.crashybird.domain.usecase.GetCoinUseCase
 import com.acnteam.crashybird.domain.usecase.GetCurrentCharacterUseCase
@@ -209,5 +210,12 @@ class HomeViewModel(
         viewModelScope.launch {
             saveFirstTimeInHomeState(true)
         }
+    }
+
+    fun unlockJack() {
+        viewModelScope.launch {
+            unLockCharacterUseCase(Character.Jack)
+        }
+
     }
 }

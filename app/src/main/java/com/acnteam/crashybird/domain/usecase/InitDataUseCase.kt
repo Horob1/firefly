@@ -29,7 +29,7 @@ class InitDataUseCase(
                 Character.getAll().map {
                     CharacterEntity(
                         name = it.name,
-                        isUnlocked = it.name == Character.Jack.name,
+                        isUnlocked = false,
                     )
                 }
             )

@@ -35,8 +35,9 @@
     <string name="txt_choose_map_button">Choose map button</string>
     <string name="txt_choose_character_button">Choose character button</string>
 
+    <string name="desc_unlock">Click this button to unlock new character</string>
     <string name="desc_play">Let\'s play!</string>
-    <string name="desc_coin">Use to unlock new character</string>
+    <string name="desc_coin">Earn coin by play and use to unlock new character</string>
     <string name="desc_setting_btn">Use this button to change setting (sound, music)</string>
     <string name="desc_unlock_btn">Use this button to unlock new character</string>
     <string name="desc_exit_game">Are you sure you want to exit the game?</string>

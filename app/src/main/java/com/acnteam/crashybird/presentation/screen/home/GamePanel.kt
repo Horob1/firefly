@@ -82,7 +82,7 @@ fun IntroShowcaseScope.GamePanel(
             modifier = Modifier
                 .width(160.dp)
                 .introShowCaseTarget(
-                    index = 5,
+                    index = 6,
                     style = ShowcaseStyle.Default.copy(
                         backgroundColor = OrangeAccent, // specify color of background
                         backgroundAlpha = 0.98f, // specify transparency of background
@@ -123,7 +123,7 @@ fun IntroShowcaseScope.GamePanel(
             modifier = Modifier
                 .width(240.dp)
                 .introShowCaseTarget(
-                    index = 2,
+                    index = 3,
                     style = ShowcaseStyle.Default.copy(
                         backgroundColor = OrangeAccent, // specify color of background
                         backgroundAlpha = 0.98f, // specify transparency of background
@@ -288,6 +288,22 @@ fun IntroShowcaseScope.GameController(
                             onClick = { onUnlockClick() },
                             modifier = Modifier
                                 .align(Alignment.Center)
+                                .introShowCaseTarget(
+                                    index = 2,
+                                    style = ShowcaseStyle.Default.copy(
+                                        backgroundColor = OrangeAccent, // specify color of background
+                                        backgroundAlpha = 0.98f, // specify transparency of background
+                                        targetCircleColor = White // specify color of target circle
+                                    ),
+                                    content = {
+                                        Text(
+                                            stringResource(R.string.desc_unlock),
+                                            style = MaterialTheme.typography.bodyLarge.copy(
+                                                color = Black
+                                            )
+                                        )
+                                    }
+                                )
                         ) {
                             Image(
                                 painter = painterResource(id = R.drawable.lock),

@@ -101,6 +101,7 @@ fun HomeScreen(
                 showIntroShowCase = !homeState.showCaseCompleted,
                 dismissOnClickOutside = false,
                 onShowCaseCompleted = {
+                    viewModel.unlockJack()
                     viewModel.completeShowCase()
                 },
                 state = introShowcaseState,
@@ -163,7 +164,7 @@ fun HomeScreen(
 
                             Box(
                                 modifier = Modifier.introShowCaseTarget(
-                                    index = 4,
+                                    index = 5,
                                     style = ShowcaseStyle.Default.copy(
                                         backgroundColor = OrangeAccent,
                                         backgroundAlpha = 0.98f,
@@ -218,7 +219,7 @@ fun HomeScreen(
 
                             Box(
                                 modifier = Modifier.introShowCaseTarget(
-                                    index = 3,
+                                    index = 4,
                                     style = ShowcaseStyle.Default.copy(
                                         backgroundColor = OrangeAccent,
                                         backgroundAlpha = 0.98f,
