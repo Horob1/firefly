@@ -20,7 +20,6 @@ val Context.musicDataStore: DataStore<Preferences> by preferencesDataStore(name 
 class MusicRepositoryImpl(context: Context) : MusicRepository {
     companion object {
         const val MUSIC_STORE = "MUSIC_STORE"
-
     }
 
     private val dataStore = context.musicDataStore

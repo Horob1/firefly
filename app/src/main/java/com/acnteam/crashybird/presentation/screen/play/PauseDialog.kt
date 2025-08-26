@@ -9,30 +9,27 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.MusicOff
 import androidx.compose.material.icons.filled.Replay
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.acnteam.crashybird.R
 import com.acnteam.crashybird.presentation.common.CrashyBirdButton
+import com.acnteam.crashybird.presentation.screen.play.PlayViewModel
 import com.acnteam.crashybird.presentation.ui.theme.BrownPrimary
 import com.acnteam.crashybird.presentation.ui.theme.GrayDark
 import com.acnteam.crashybird.presentation.ui.theme.OrangeAccent
 import com.acnteam.crashybird.presentation.ui.theme.White
-
 @Composable
 fun PauseDialog(
+    viewModel: PlayViewModel,
     onDismiss: () -> Unit,
     onHomeClick: () -> Unit,
     onResumeClick: () -> Unit
 ) {
-    var isMusicOn by remember { mutableStateOf(true) }
-    var isSoundOn by remember { mutableStateOf(true) }
+    val musicSettings by viewModel.backgroundMusicSettings.collectAsState()
+    val soundSettings by viewModel.soundEffectSettings.collectAsState()
 
     AlertDialog(
         containerColor = GrayDark,
@@ -58,19 +55,16 @@ fun PauseDialog(
                         .padding(vertical = 4.dp),
                     thickness = 1.dp,
                     brush = Brush.horizontalGradient(
-                        colors = listOf(
-                            OrangeAccent,
-                            BrownPrimary
-                        )
+                        colors = listOf(OrangeAccent, BrownPrimary)
                     )
                 )
-
 
                 // Hàng nút
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(32.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    // Home
                     CrashyBirdButton(
                         onClick = { onHomeClick() },
                         paddingVertical = 12,
@@ -84,32 +78,48 @@ fun PauseDialog(
                         )
                     }
 
+                    // Sound
                     CrashyBirdButton(
-                        onClick = { isSoundOn = !isSoundOn },
+                        onClick = {
+                            viewModel.setSoundEffectSettings(
+                                soundSettings.copy(isEnabled = !soundSettings.isEnabled)
+                            )
+                        },
                         paddingVertical = 12,
                         paddingHorizontal = 12
                     ) {
                         Icon(
-                            imageVector = if (isSoundOn) Icons.AutoMirrored.Filled.VolumeUp else Icons.AutoMirrored.Filled.VolumeOff,
+                            imageVector = if (soundSettings.isEnabled)
+                                Icons.AutoMirrored.Filled.VolumeUp
+                            else Icons.AutoMirrored.Filled.VolumeOff,
                             contentDescription = "Sound button",
                             modifier = Modifier.size(36.dp),
                             tint = White
                         )
                     }
 
+                    // Music
                     CrashyBirdButton(
-                        onClick = { isMusicOn = !isMusicOn },
+                        onClick = {
+                            viewModel.setBackgroundMusicSettings(
+                                musicSettings.copy(isEnabled = !musicSettings.isEnabled)
+                            )
+                        },
                         paddingVertical = 12,
                         paddingHorizontal = 12
                     ) {
                         Icon(
-                            imageVector = if (isMusicOn) Icons.Default.MusicNote else Icons.Default.MusicOff,
+                            imageVector = if (musicSettings.isEnabled)
+                                Icons.Default.MusicNote
+                            else Icons.Default.MusicOff,
                             contentDescription = "Music button",
                             modifier = Modifier.size(36.dp),
                             tint = White
                         )
                     }
                 }
+
+                // Resume
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center,
@@ -128,7 +138,7 @@ fun PauseDialog(
                                 style = MaterialTheme.typography.titleLarge,
                                 color = White
                             )
-                            Icon(Icons.Default.Replay, contentDescription = "Setting button", tint = White)
+                            Icon(Icons.Default.Replay, contentDescription = "Resume button", tint = White)
                         }
                     }
                 }
@@ -136,6 +146,7 @@ fun PauseDialog(
         }
     )
 }
+
 @Composable
 fun DividerGradient(
     modifier: Modifier = Modifier,

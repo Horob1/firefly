@@ -119,23 +119,6 @@ fun ConfirmOrCancelDialog(
                     modifier = Modifier.fillMaxWidth()
 
                 ) {
-                    CrashyBirdButton(
-                        modifier = Modifier.width(100.dp),
-                        onClick = onConfirm,
-                        paddingVertical = 8,
-                        paddingHorizontal = 8
-                    ) {
-                        Text(
-                            text = stringResource(R.string.btn_confirm),
-                            style = MaterialTheme.typography.bodyLarge.copy(
-                                fontFamily = MyFontFamily,
-                                fontWeight = FontWeight.Bold
-                            ),
-                            color = White
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.width(8.dp))
 
                     CrashyBirdButton(
                         modifier = Modifier.width(100.dp),
@@ -145,6 +128,23 @@ fun ConfirmOrCancelDialog(
                     ) {
                         Text(
                             text = stringResource(R.string.btn_cancel),
+                            style = MaterialTheme.typography.bodyLarge.copy(
+                                fontFamily = MyFontFamily,
+                                fontWeight = FontWeight.Bold
+                            ),
+                            color = White
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    CrashyBirdButton(
+                        modifier = Modifier.width(100.dp),
+                        onClick = onConfirm,
+                        paddingVertical = 8,
+                        paddingHorizontal = 8
+                    ) {
+                        Text(
+                            text = stringResource(R.string.btn_confirm),
                             style = MaterialTheme.typography.bodyLarge.copy(
                                 fontFamily = MyFontFamily,
                                 fontWeight = FontWeight.Bold

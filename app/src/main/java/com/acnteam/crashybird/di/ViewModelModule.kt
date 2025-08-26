@@ -47,6 +47,13 @@ val viewModelModule = module {
     }
     viewModel {
         PlayViewModel(
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
         )
     }
 

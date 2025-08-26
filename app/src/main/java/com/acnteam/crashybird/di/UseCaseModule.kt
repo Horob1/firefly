@@ -1,5 +1,6 @@
 package com.acnteam.crashybird.di
 
+import com.acnteam.crashybird.domain.usecase.AddCoinUseCase
 import com.acnteam.crashybird.domain.usecase.CompleteOnBoardingUseCase
 import com.acnteam.crashybird.domain.usecase.GetBackgroundMusicSettingsUseCase
 import com.acnteam.crashybird.domain.usecase.GetCharacterListUseCase
@@ -20,7 +21,9 @@ import com.acnteam.crashybird.domain.usecase.SetSoundEffectSettingsUseCase
 import com.acnteam.crashybird.domain.usecase.SyncDownUseCase
 import com.acnteam.crashybird.domain.usecase.SyncToServerUseCase
 import com.acnteam.crashybird.domain.usecase.UnlockCharacterUseCase
+import com.acnteam.crashybird.domain.usecase.UpdateLevelUseCase
 import com.acnteam.crashybird.domain.usecase.WithDrawCoinUseCase
+import com.acnteam.crashybird.presentation.screen.play.SoundEffectPlayer
 import org.koin.dsl.module
 
 val useCaseModule = module {
@@ -109,5 +112,14 @@ val useCaseModule = module {
 
     single {
         SaveFirstTimeInHomeState(get())
+    }
+    single { SoundEffectPlayer(get()) }
+
+    single {
+        AddCoinUseCase(get())
+    }
+
+    single {
+        UpdateLevelUseCase(get())
     }
 }
