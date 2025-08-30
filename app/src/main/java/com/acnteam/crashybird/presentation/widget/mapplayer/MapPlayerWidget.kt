@@ -75,8 +75,6 @@ fun MapPlayer(
                 .clickable(actionStartActivity<MainActivity>())
         )
     }
-
-
 }
 
 class MapPlayerWidgetReceiver : GlanceAppWidgetReceiver() {
