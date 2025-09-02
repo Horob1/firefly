@@ -19,7 +19,6 @@ import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -65,18 +64,19 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavController
 import com.acnteam.crashybird.R
-import com.acnteam.crashybird.presentation.common.sprite.component.drawSpriteView
-import com.acnteam.crashybird.presentation.common.sprite.domain.SpriteSheet
-import com.acnteam.crashybird.presentation.common.sprite.domain.SpriteSpec
-import com.acnteam.crashybird.presentation.common.sprite.domain.rememberSpriteState
 import com.acnteam.crashybird.domain.model.Character
 import com.acnteam.crashybird.domain.model.Level
 import com.acnteam.crashybird.domain.model.game.GameStatus
 import com.acnteam.crashybird.domain.model.game.Skill
 import com.acnteam.crashybird.presentation.common.CrashyBirdButton
 import com.acnteam.crashybird.presentation.common.SkillBadge
+import com.acnteam.crashybird.presentation.common.sprite.component.drawSpriteView
+import com.acnteam.crashybird.presentation.common.sprite.domain.SpriteSheet
+import com.acnteam.crashybird.presentation.common.sprite.domain.SpriteSpec
+import com.acnteam.crashybird.presentation.common.sprite.domain.rememberSpriteState
 import com.acnteam.crashybird.presentation.navigation.NavScreen
 import com.acnteam.crashybird.presentation.screen.home.Banner
+import com.acnteam.crashybird.presentation.screen.play.component.BubbleEffect
 import com.acnteam.crashybird.presentation.screen.play.component.FirefliesUI
 import com.acnteam.crashybird.presentation.screen.play.component.GameStatusOverlay
 import com.acnteam.crashybird.presentation.screen.play.component.RainEffect
@@ -138,13 +138,13 @@ fun PlayScreen(
     }
 
     levelState?.windX?.let {
-        if(it !=0f){
+        if (it != 0f) {
             wind = true
 
         }
     }
     levelState?.windY?.let {
-        if(it !=0f){
+        if (it != 0f) {
             rain = true
         }
     }
@@ -295,6 +295,9 @@ fun PlayScreen(
         )
     }
 
+    if (levelState?.level?.levelNumber == 6 && gameStatus == GameStatus.Started) {
+        BubbleEffect()
+    }
     if (rain) {
         RainEffect()
     }
@@ -345,7 +348,7 @@ fun PlayScreen(
                                 abs(totalDrag.x) > abs(totalDrag.y) && totalDrag.x > 0 &&
                                         character.skills.contains(Skill.DASH) -> {
                                     viewModel.useDashSkill()
-                                    if(!viewModel.isDashOnCooldown()){
+                                    if (!viewModel.isDashOnCooldown()) {
                                         showSkillEffect = "DASH!"
                                     }
                                 }
@@ -353,7 +356,7 @@ fun PlayScreen(
                                 abs(totalDrag.y) > abs(totalDrag.x) && totalDrag.y < 0 &&
                                         character.skills.contains(Skill.HIGH_JUMP) -> {
                                     viewModel.useHighJumpSkill()
-                                    if(!viewModel.isHighJumpOnCooldown()){
+                                    if (!viewModel.isHighJumpOnCooldown()) {
                                         showSkillEffect = "HIGH JUMP!"
                                     }
                                 }
@@ -361,7 +364,7 @@ fun PlayScreen(
                                 abs(totalDrag.x) > abs(totalDrag.y) && totalDrag.x < 0 &&
                                         character.skills.contains(Skill.SLOW) -> {
                                     viewModel.useSlowSkill()
-                                    if(!viewModel.isSlowOnCooldown()){
+                                    if (!viewModel.isSlowOnCooldown()) {
                                         showSkillEffect = "SLOW!"
                                     }
                                 }

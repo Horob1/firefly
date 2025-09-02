@@ -216,8 +216,8 @@ fun IntroShowcaseScope.GameController(
 
         Box(
             modifier = Modifier
-                .height(160.dp)
-                .width(240.dp),
+                .height(140.dp)
+                .width(220.dp),
             contentAlignment = Alignment.Center
         ) {
 
@@ -236,7 +236,6 @@ fun IntroShowcaseScope.GameController(
                             color = Pink80,
                             shape = MaterialTheme.shapes.medium
                         )
-
                 )
             }
 
@@ -262,11 +261,11 @@ fun IntroShowcaseScope.GameController(
 
                 Box(
                     modifier = Modifier
-                        .size(140.dp) // khung nhân vật
+                        .size(120.dp) // khung nhân vật
                     ,
                     contentAlignment = Alignment.Center
                 ) {
-                    Canvas(modifier = Modifier.size(120.dp)) {
+                    Canvas(modifier = Modifier.size(100.dp)) {
                         val spriteW = spriteSpec.spriteSheet.frameWidth.toFloat()
                         val spriteH = spriteSpec.spriteSheet.frameHeight.toFloat()
 

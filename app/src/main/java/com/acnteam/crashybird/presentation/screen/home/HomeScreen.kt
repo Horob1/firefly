@@ -305,6 +305,12 @@ fun HomeScreen(
 
                         Spacer(modifier = Modifier.height(100.dp))
                     }
+                    BannerAdView(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(120.dp)
+                            .align(Alignment.BottomCenter)
+                    )
                 }
 
                 if (showUnlockDialog.value) {

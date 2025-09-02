@@ -99,8 +99,6 @@ class PlayViewModel(
     private val windEffectX = 0.5f
     private val windEffectY = 0.3f
 
-
-
     fun initializeGame(characterName: String, levelNumber: Int) {
         val character = Character.getByName(characterName)
         val level = Level.getByLevelNumber(levelNumber)
@@ -267,9 +265,9 @@ class PlayViewModel(
         highJumpCooldownUntil = System.currentTimeMillis() + HIGH_JUMP_COOLDOWN
         val level = levelState
         velocityY = if (level?.level?.levelNumber == 6)
-            -(gameConfig.birdJumpImpulse * 2.0f) - (level.windY * windEffectY)
+            -(gameConfig.birdJumpImpulse * 4.0f) - (level.windY * windEffectY)
         else
-            (gameConfig.birdJumpImpulse * 2.0f) - (level?.windY ?: 0f) * windEffectY
+            (gameConfig.birdJumpImpulse * 4.0f) - (level?.windY ?: 0f) * windEffectY
         soundEffectPlayer.playJump()
     }
 
@@ -562,13 +560,6 @@ class PlayViewModel(
     }
 
     private fun completeLevel() {
-//        loopJob?.cancel()
-//        windJob?.cancel()
-//        invincibilityJob?.cancel()
-//        slowEffectJob?.cancel()
-//        isInvincible = false
-//        isSlowEffectActive = false
-//        soundEffectPlayer.playGameOver()
         val currentLevel = levelState?.level ?: return
         val nextLevelNumber = currentLevel.levelNumber + 1
         viewModelScope.launch {
@@ -593,7 +584,7 @@ class PlayViewModel(
             bestScore = currentScore
         }
         viewModelScope.launch {
-            addCoinUseCase(currentScore)
+            addCoinUseCase(currentScore * 1000)
         }
     }
 
