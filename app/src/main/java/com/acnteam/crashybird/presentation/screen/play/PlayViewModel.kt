@@ -48,6 +48,7 @@ class PlayViewModel(
 ) : ViewModel() {
 
     private var gameConfig = Game()
+    val gameFps = 16L
 
     //game job
     val currentGameConfig: Game get() = gameConfig
@@ -55,6 +56,7 @@ class PlayViewModel(
     private var loopJob: Job? = null
     private var windJob: Job? = null
     private var invincibilityJob: Job? = null
+    private var slowEffectJob: Job? = null
 
     var characterState by mutableStateOf<CharacterPlayState?>(null)
         private set
@@ -72,17 +74,30 @@ class PlayViewModel(
         private set
     var bestScore by mutableStateOf(0)
         private set
-
     var hasWatchedAd by mutableStateOf(false)
         private set
     var isInvincible by mutableStateOf(false)
         private set
+
+    //recovery time
+    private var dashCooldownUntil = 0L
+    private var highJumpCooldownUntil = 0L
+    private var slowCooldownUntil = 0L
+    private var isSlowEffectActive = false
+
+    //cooldowns
+    private val DASH_COOLDOWN = 5000L // 5 seconds
+    private val HIGH_JUMP_COOLDOWN = 3000L // 3 seconds
+    private val SLOW_COOLDOWN = 8000L // 8 seconds
+    private val SLOW_EFFECT_DURATION = 3000L // 3 seconds
 
     private var velocityY = 0f
     private var screenWidth = 0
     private var screenHeight = 0
     private val windEffectX = 0.5f
     private val windEffectY = 0.3f
+
+
 
     fun initializeGame(characterName: String, levelNumber: Int) {
         val character = Character.getByName(characterName)
@@ -141,6 +156,7 @@ class PlayViewModel(
             gameStatus = GameStatus.Paused
             loopJob?.cancel()
             windJob?.cancel()
+            slowEffectJob?.cancel()
         }
     }
 
@@ -162,6 +178,12 @@ class PlayViewModel(
         hasWatchedAd = false
         isInvincible = false
         invincibilityJob?.cancel()
+
+        dashCooldownUntil = 0L
+        highJumpCooldownUntil = 0L
+        slowCooldownUntil = 0L
+        isSlowEffectActive = false
+        slowEffectJob?.cancel()
 
         val character = characterState?.character ?: return
         characterState = CharacterPlayState(
@@ -190,7 +212,7 @@ class PlayViewModel(
         velocityY = 0f
 
         viewModelScope.launch {
-            delay(3000L) // Hiệu ứng hồi sinh
+            delay(3000L)
             gameStatus = GameStatus.Started
             activateInvincibility()
             startGameLoop()
@@ -207,12 +229,76 @@ class PlayViewModel(
         }
     }
 
+    //skill
+    fun useDashSkill() {
+        if (isDashOnCooldown() || gameStatus != GameStatus.Started) return
+
+        dashCooldownUntil = System.currentTimeMillis() + DASH_COOLDOWN
+
+        val character = characterState ?: return
+        val sortedPipes = pipePairs.sortedBy { it.x }.filter { it.x > character.x }
+
+        val dashDistance = if (sortedPipes.size >= 2) {
+            val secondPipe = sortedPipes[1]
+            secondPipe.x + gameConfig.pipeWidth + 50f - character.x
+        } else if (sortedPipes.size == 1) {
+            val firstPipe = sortedPipes[0]
+            firstPipe.x + gameConfig.pipeWidth + 50f - character.x
+        } else {
+            400f
+        }
+
+        pipePairs = pipePairs.map { pipe ->
+            pipe.copy(x = pipe.x - dashDistance)
+        }
+
+        fireflies.replaceAll { firefly ->
+            firefly.copy(x = firefly.x - dashDistance)
+        }
+
+        soundEffectPlayer.playJump()
+    }
+
+
+    fun useHighJumpSkill() {
+        if (isHighJumpOnCooldown() || gameStatus != GameStatus.Started) return
+        highJumpCooldownUntil = System.currentTimeMillis() + HIGH_JUMP_COOLDOWN
+        val level = levelState
+        velocityY = (gameConfig.birdJumpImpulse * 2.0f - (level?.windY ?: 0f) * windEffectY)
+        soundEffectPlayer.playJump()
+    }
+
+    fun useSlowSkill() {
+        if (isSlowOnCooldown() || gameStatus != GameStatus.Started) return
+        slowCooldownUntil = System.currentTimeMillis() + SLOW_COOLDOWN
+        isSlowEffectActive = true
+        slowEffectJob?.cancel()
+        slowEffectJob = viewModelScope.launch {
+            delay(SLOW_EFFECT_DURATION)
+            isSlowEffectActive = false
+        }
+        soundEffectPlayer.playJump()
+    }
+
+    fun isDashOnCooldown(): Boolean {
+        return System.currentTimeMillis() < dashCooldownUntil
+    }
+
+    fun isHighJumpOnCooldown(): Boolean {
+        return System.currentTimeMillis() < highJumpCooldownUntil
+    }
+
+    fun isSlowOnCooldown(): Boolean {
+        return System.currentTimeMillis() < slowCooldownUntil
+    }
+
     private fun startGameLoop() {
         loopJob?.cancel()
         loopJob = viewModelScope.launch {
             while (isActive && gameStatus == GameStatus.Started) {
                 updateFrame()
-                delay(16L) // ~60 FPS
+                val frameDelay = if (isSlowEffectActive) gameFps*2 else gameFps
+                delay(frameDelay)
             }
         }
     }
@@ -266,7 +352,13 @@ class PlayViewModel(
     //pipe
     private fun updatePipes() {
         val levelWindX = levelState?.windX ?: 0f
-        val pipeVelocity = gameConfig.pipeVelocity + levelWindX * windEffectX
+        val baseVelocity = gameConfig.pipeVelocity
+
+        val pipeVelocity = if (isSlowEffectActive) {
+            (baseVelocity * 0.3f) + levelWindX * windEffectX * 0.3f
+        } else {
+            baseVelocity + levelWindX * windEffectX
+        }
 
         val updatedPipes = pipePairs.map { pipe ->
             var newBottomHeight = pipe.bottomHeight
@@ -456,7 +548,9 @@ class PlayViewModel(
         loopJob?.cancel()
         windJob?.cancel()
         invincibilityJob?.cancel()
+        slowEffectJob?.cancel()
         isInvincible = false
+        isSlowEffectActive = false
         soundEffectPlayer.playGameOver()
 
         val currentLevel = levelState?.level ?: return
@@ -472,7 +566,9 @@ class PlayViewModel(
         loopJob?.cancel()
         windJob?.cancel()
         invincibilityJob?.cancel()
+        slowEffectJob?.cancel()
         isInvincible = false
+        isSlowEffectActive = false
         soundEffectPlayer.playGameOver()
 
         val currentLevel = levelState?.level ?: return
@@ -496,6 +592,7 @@ class PlayViewModel(
         super.onCleared()
         loopJob?.cancel()
         invincibilityJob?.cancel()
+        slowEffectJob?.cancel()
     }
 
     fun startWindLoop() {
@@ -504,9 +601,11 @@ class PlayViewModel(
             while (isActive) {
                 windDirectionToggle = !windDirectionToggle
                 updateWind()
-                delay(5_000L)
+                val windDelay = if (isSlowEffectActive) 10_000L else 5_000L // Slower wind changes during slow effect
+                delay(windDelay)
                 levelState = levelState?.copy(windX = 0f, windY = 0f)
-                delay(2_000L)
+                val calmDelay = if (isSlowEffectActive) 4_000L else 2_000L
+                delay(calmDelay)
             }
         }
     }

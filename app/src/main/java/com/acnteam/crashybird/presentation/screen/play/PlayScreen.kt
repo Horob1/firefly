@@ -14,6 +14,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -48,6 +49,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
@@ -79,6 +81,9 @@ import com.acnteam.crashybird.presentation.screen.play.component.GameStatusOverl
 import com.acnteam.crashybird.presentation.screen.play.component.RainEffect
 import com.acnteam.crashybird.presentation.screen.play.component.WindEffect
 import com.acnteam.crashybird.presentation.ui.theme.White
+import kotlinx.coroutines.delay
+import kotlin.math.abs
+import kotlin.math.sqrt
 
 const val PIPE_CAP_HEIGHT = 50f
 
@@ -101,6 +106,8 @@ fun PlayScreen(
     var screenHeight by remember { mutableIntStateOf(0) }
     var screenWidth by remember { mutableIntStateOf(0) }
     var showPauseDialog by remember { mutableStateOf(false) }
+    var showSkillEffect by remember { mutableStateOf<String?>(null) }
+
     val invincibleAlpha by animateFloatAsState(
         targetValue = if (viewModel.isInvincible) 0.5f else 1f,
         animationSpec = infiniteRepeatable(
@@ -121,6 +128,7 @@ fun PlayScreen(
         viewModel.pauseGame()
         showPauseDialog = true
     }
+
     levelState?.windX?.let {
         if(it !=0f){
             wind = true
@@ -202,6 +210,14 @@ fun PlayScreen(
         onDispose {
             spriteState.stop()
             spriteState.cleanup()
+        }
+    }
+
+    // Hide skill effect after delay
+    LaunchedEffect(showSkillEffect) {
+        if (showSkillEffect != null) {
+            delay(1500)
+            showSkillEffect = null
         }
     }
 
@@ -293,7 +309,6 @@ fun PlayScreen(
         }
     }
 
-    // Game Canvas
     Canvas(
         modifier = Modifier
             .fillMaxSize()
@@ -303,6 +318,48 @@ fun PlayScreen(
                     screenHeight = size.height
                     screenWidth = size.width
                     viewModel.updateScreenSize(screenWidth, screenHeight)
+                }
+            }
+            .pointerInput(gameStatus) {
+                detectDragGestures(
+                    onDragEnd = {
+                        if (gameStatus == GameStatus.Started) {
+                            viewModel.jump()
+                        }
+                    }
+                ) { change, dragAmount ->
+                    if (gameStatus == GameStatus.Started && character.skills.isNotEmpty()) {
+                        val totalDrag = change.position - change.previousPosition
+                        val distance = sqrt(totalDrag.x * totalDrag.x + totalDrag.y * totalDrag.y)
+
+                        if (distance > 50f) {
+                            when {
+                                abs(totalDrag.x) > abs(totalDrag.y) && totalDrag.x > 0 &&
+                                        character.skills.contains(Skill.DASH) -> {
+                                    viewModel.useDashSkill()
+                                    if(!viewModel.isDashOnCooldown()){
+                                        showSkillEffect = "DASH!"
+                                    }
+                                }
+
+                                abs(totalDrag.y) > abs(totalDrag.x) && totalDrag.y < 0 &&
+                                        character.skills.contains(Skill.HIGH_JUMP) -> {
+                                    viewModel.useHighJumpSkill()
+                                    if(!viewModel.isHighJumpOnCooldown()){
+                                        showSkillEffect = "HIGH JUMP!"
+                                    }
+                                }
+
+                                abs(totalDrag.x) > abs(totalDrag.y) && totalDrag.x < 0 &&
+                                        character.skills.contains(Skill.SLOW) -> {
+                                    viewModel.useSlowSkill()
+                                    if(!viewModel.isSlowOnCooldown()){
+                                        showSkillEffect = "SLOW!"
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
             .clickable(
@@ -407,6 +464,7 @@ fun PlayScreen(
             )
         }
     }
+
     if (viewModel.isInvincible) {
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -419,6 +477,20 @@ fun PlayScreen(
                 modifier = Modifier
                     .padding(top = 100.dp)
                     .alpha(invincibleAlpha)
+            )
+        }
+    }
+
+    showSkillEffect?.let { skillText ->
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = skillText,
+                color = Color.Cyan,
+                fontSize = MaterialTheme.typography.headlineLarge.fontSize,
+                modifier = Modifier.alpha(0.8f)
             )
         }
     }
@@ -483,10 +555,15 @@ fun PlayScreen(
                     Skill.HIGH_JUMP -> R.drawable.skill_high_jump
                     Skill.SLOW -> R.drawable.skill_slow
                 }
+                val isOnCooldown = when (skill) {
+                    Skill.DASH -> viewModel.isDashOnCooldown()
+                    Skill.HIGH_JUMP -> viewModel.isHighJumpOnCooldown()
+                    Skill.SLOW -> viewModel.isSlowOnCooldown()
+                }
                 SkillBadge(
                     icon = iconRes,
                     size = 64,
-                    enabled = true
+                    enabled = !isOnCooldown
                 )
             }
         }
