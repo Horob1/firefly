@@ -138,27 +138,6 @@ fun GameStatusOverlay(
             }
         }
 
-        GameStatus.Complete -> {
-            val context = LocalContext.current
-            LaunchedEffect(Unit) {
-                Toast.makeText(context, "Next map is open", Toast.LENGTH_SHORT).show()
-            }
-
-            GameOverlay(
-                title = "Congratulations!",
-                score = currentScore,
-                buttons = listOf(
-                    GameButton("Restart") {
-                        viewModel.restart()
-                        scope.launch { backgroundOffsetX.snapTo(0f) }
-                    },
-                    GameButton("Home") {
-                        navController.navigate(NavScreen.Home)
-                    },
-                )
-            )
-        }
-
         GameStatus.Reviving -> {
                 CountdownOverlay()
         }

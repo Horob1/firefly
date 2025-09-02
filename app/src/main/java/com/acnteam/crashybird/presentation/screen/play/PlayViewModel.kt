@@ -28,6 +28,7 @@ import com.acnteam.crashybird.domain.usecase.UpdatePlaySectionUseCase
 import com.acnteam.crashybird.presentation.screen.play.component.SoundEffectPlayer
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -78,7 +79,8 @@ class PlayViewModel(
         private set
     var isInvincible by mutableStateOf(false)
         private set
-
+    private val _toastMessage = MutableStateFlow<String?>(null)
+    val toastMessage: StateFlow<String?> = _toastMessage
     //recovery time
     private var dashCooldownUntil = 0L
     private var highJumpCooldownUntil = 0L
@@ -264,7 +266,10 @@ class PlayViewModel(
         if (isHighJumpOnCooldown() || gameStatus != GameStatus.Started) return
         highJumpCooldownUntil = System.currentTimeMillis() + HIGH_JUMP_COOLDOWN
         val level = levelState
-        velocityY = (gameConfig.birdJumpImpulse * 2.0f - (level?.windY ?: 0f) * windEffectY)
+        velocityY = if (level?.level?.levelNumber == 6)
+            -(gameConfig.birdJumpImpulse * 2.0f) - (level.windY * windEffectY)
+        else
+            (gameConfig.birdJumpImpulse * 2.0f) - (level?.windY ?: 0f) * windEffectY
         soundEffectPlayer.playJump()
     }
 
@@ -307,16 +312,26 @@ class PlayViewModel(
         val character = characterState ?: return
         val level = levelState ?: return
 
-        velocityY = (velocityY + gameConfig.gravity + level.windY * windEffectY)
+        val gravityEffect = if (level.level.levelNumber == 6) -gameConfig.gravity else gameConfig.gravity
+        val windEffect = if (level.level.levelNumber == 6) -level.windY * windEffectY else level.windY * windEffectY
+
+        velocityY = velocityY + gravityEffect + windEffect
 
         val newX = character.x
         val newY = (character.y + velocityY).coerceIn(0f, screenHeight - character.radius)
 
         characterState = character.copy(x = newX, y = newY)
 
-        if (newY >= screenHeight - character.radius) {
-            gameOver()
-            return
+        if (level.level.levelNumber == 6) {
+            if (newY <= character.radius) {
+                gameOver()
+                return
+            }
+        } else {
+            if (newY >= screenHeight - character.radius) {
+                gameOver()
+                return
+            }
         }
 
         updatePipes()
@@ -341,7 +356,10 @@ class PlayViewModel(
     fun jump() {
         if (gameStatus != GameStatus.Started) return
         val level = levelState
-        velocityY = (gameConfig.birdJumpImpulse - (level?.windY ?: 0f) * windEffectY)
+        velocityY = if (level?.level?.levelNumber == 6)
+            -gameConfig.birdJumpImpulse - level.windY * windEffectY
+        else
+            gameConfig.birdJumpImpulse - (level?.windY ?: 0f) * windEffectY
         soundEffectPlayer.playJump()
     }
 
@@ -544,20 +562,18 @@ class PlayViewModel(
     }
 
     private fun completeLevel() {
-        gameStatus = GameStatus.Complete
-        loopJob?.cancel()
-        windJob?.cancel()
-        invincibilityJob?.cancel()
-        slowEffectJob?.cancel()
-        isInvincible = false
-        isSlowEffectActive = false
-        soundEffectPlayer.playGameOver()
-
+//        loopJob?.cancel()
+//        windJob?.cancel()
+//        invincibilityJob?.cancel()
+//        slowEffectJob?.cancel()
+//        isInvincible = false
+//        isSlowEffectActive = false
+//        soundEffectPlayer.playGameOver()
         val currentLevel = levelState?.level ?: return
         val nextLevelNumber = currentLevel.levelNumber + 1
-
         viewModelScope.launch {
             updateLevelUseCase(Level.getByLevelNumber(nextLevelNumber))
+            _toastMessage.value = "Next map is open"
         }
     }
 
@@ -671,7 +687,12 @@ class PlayViewModel(
             3 -> Pair(2f, 0f)
             4 -> Pair(2f, 2f)
             5 -> Pair(2f, 2f)
+            6 -> Pair(2f, 0f)
             else -> Pair(0f, 0f)
         }
     }
+    fun resetToastMessage() {
+        _toastMessage.value = null
+    }
+
 }

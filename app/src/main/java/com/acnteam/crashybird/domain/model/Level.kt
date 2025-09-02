@@ -12,12 +12,13 @@ sealed class Level(val levelNumber: Int, @DrawableRes val image: Int,@DrawableRe
                 Three.levelNumber -> Three
                 Four.levelNumber -> Four
                 Five.levelNumber -> Five
+                Six.levelNumber -> Six
                 else -> One
             }
         }
 
         fun getAll(): List<Level> {
-            return listOf(One, Two, Three, Four, Five)
+            return listOf(One, Two, Three, Four, Five, Six)
         }
     }
 
@@ -36,7 +37,7 @@ sealed class Level(val levelNumber: Int, @DrawableRes val image: Int,@DrawableRe
         R.drawable.lava_moving_background,
         R.drawable.lava_pipe,
         R.drawable.lava_pipe_cap,
-        fireFlyRequire = 14
+        fireFlyRequire = 3
     )
 
     data object Three : Level(
@@ -45,7 +46,7 @@ sealed class Level(val levelNumber: Int, @DrawableRes val image: Int,@DrawableRe
         R.drawable.ice_moving_background,
         R.drawable.ice_pipe,
         R.drawable.ice_pipe_cap,
-        fireFlyRequire = 18
+        fireFlyRequire = 3
     )
 
     data object Four : Level(4,
@@ -53,7 +54,7 @@ sealed class Level(val levelNumber: Int, @DrawableRes val image: Int,@DrawableRe
         R.drawable.desert_moving_background,
         R.drawable.forest_pipe,
         R.drawable.forest_pipe_cap,
-        fireFlyRequire = 24
+        fireFlyRequire = 3
     )
 
     data object Five : Level(5,
@@ -61,6 +62,14 @@ sealed class Level(val levelNumber: Int, @DrawableRes val image: Int,@DrawableRe
         R.drawable.city_moving_background,
         R.drawable.forest_pipe,
         R.drawable.forest_pipe_cap,
-        fireFlyRequire = 36
+        fireFlyRequire = 3
+    )
+
+    data object Six : Level(6,
+        R.drawable.dragon_palace_background,
+        R.drawable.dragon_palace_moving_background,
+        R.drawable.forest_pipe,
+        R.drawable.forest_pipe_cap,
+        fireFlyRequire = 3
     )
 }

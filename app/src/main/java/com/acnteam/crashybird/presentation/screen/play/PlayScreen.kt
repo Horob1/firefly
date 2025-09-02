@@ -4,6 +4,7 @@ import PauseDialog
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
@@ -107,7 +108,15 @@ fun PlayScreen(
     var screenWidth by remember { mutableIntStateOf(0) }
     var showPauseDialog by remember { mutableStateOf(false) }
     var showSkillEffect by remember { mutableStateOf<String?>(null) }
+    val toastMessage by viewModel.toastMessage.collectAsState()
+    val context = LocalContext.current
 
+    LaunchedEffect(toastMessage) {
+        toastMessage?.let { message ->
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            viewModel.resetToastMessage()
+        }
+    }
     val invincibleAlpha by animateFloatAsState(
         targetValue = if (viewModel.isInvincible) 0.5f else 1f,
         animationSpec = infiniteRepeatable(
@@ -116,7 +125,6 @@ fun PlayScreen(
         )
     )
 
-    val context = LocalContext.current
     val character = Character.getByName(characterName)
     val level = Level.getByLevelNumber(levelNumber)
     val levelState = viewModel.levelState
