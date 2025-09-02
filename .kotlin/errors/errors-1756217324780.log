@@ -1,0 +1,476 @@
+kotlin version: 2.0.21
+error message: org.jetbrains.kotlin.backend.common.BackendException: Backend Internal error: Exception during IR lowering
+File being compiled: D:/firefly/app/src/main/java/com/acnteam/crashybird/presentation/screen/play/WheatherEffect.kt
+The root cause java.lang.RuntimeException was thrown at: org.jetbrains.kotlin.backend.jvm.codegen.FunctionCodegen.generate(FunctionCodegen.kt:47)
+	at org.jetbrains.kotlin.backend.common.CodegenUtil.reportBackendException(CodegenUtil.kt:253)
+	at org.jetbrains.kotlin.backend.common.CodegenUtil.reportBackendException$default(CodegenUtil.kt:236)
+	at org.jetbrains.kotlin.backend.common.phaser.PerformByIrFilePhase.invokeSequential(performByIrFile.kt:65)
+	at org.jetbrains.kotlin.backend.common.phaser.PerformByIrFilePhase.invoke(performByIrFile.kt:52)
+	at org.jetbrains.kotlin.backend.common.phaser.PerformByIrFilePhase.invoke(performByIrFile.kt:38)
+	at org.jetbrains.kotlin.backend.common.phaser.NamedCompilerPhase.phaseBody(CompilerPhase.kt:166)
+	at org.jetbrains.kotlin.backend.common.phaser.AbstractNamedCompilerPhase.invoke(CompilerPhase.kt:113)
+	at org.jetbrains.kotlin.backend.common.phaser.CompositePhase.invoke(PhaseBuilders.kt:27)
+	at org.jetbrains.kotlin.backend.common.phaser.CompositePhase.invoke(PhaseBuilders.kt:14)
+	at org.jetbrains.kotlin.backend.common.phaser.NamedCompilerPhase.phaseBody(CompilerPhase.kt:166)
+	at org.jetbrains.kotlin.backend.common.phaser.AbstractNamedCompilerPhase.invoke(CompilerPhase.kt:113)
+	at org.jetbrains.kotlin.backend.common.phaser.CompilerPhaseKt.invokeToplevel(CompilerPhase.kt:62)
+	at org.jetbrains.kotlin.backend.jvm.JvmIrCodegenFactory.invokeCodegen(JvmIrCodegenFactory.kt:371)
+	at org.jetbrains.kotlin.codegen.CodegenFactory.generateModule(CodegenFactory.kt:47)
+	at org.jetbrains.kotlin.backend.jvm.JvmIrCodegenFactory.generateModuleInFrontendIRMode(JvmIrCodegenFactory.kt:433)
+	at org.jetbrains.kotlin.cli.jvm.compiler.pipeline.JvmCompilerPipelineKt.generateCodeFromIr(jvmCompilerPipeline.kt:246)
+	at org.jetbrains.kotlin.cli.jvm.compiler.pipeline.JvmCompilerPipelineKt.compileModulesUsingFrontendIrAndLightTree(jvmCompilerPipeline.kt:142)
+	at org.jetbrains.kotlin.cli.jvm.K2JVMCompiler.doExecute(K2JVMCompiler.kt:148)
+	at org.jetbrains.kotlin.cli.jvm.K2JVMCompiler.doExecute(K2JVMCompiler.kt:43)
+	at org.jetbrains.kotlin.cli.common.CLICompiler.execImpl(CLICompiler.kt:103)
+	at org.jetbrains.kotlin.cli.common.CLICompiler.execImpl(CLICompiler.kt:49)
+	at org.jetbrains.kotlin.cli.common.CLITool.exec(CLITool.kt:101)
+	at org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunner.runCompiler(IncrementalJvmCompilerRunner.kt:464)
+	at org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunner.runCompiler(IncrementalJvmCompilerRunner.kt:73)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.doCompile(IncrementalCompilerRunner.kt:506)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.compileImpl(IncrementalCompilerRunner.kt:423)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.tryCompileIncrementally$lambda$9$compile(IncrementalCompilerRunner.kt:249)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.tryCompileIncrementally(IncrementalCompilerRunner.kt:267)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.compile(IncrementalCompilerRunner.kt:120)
+	at org.jetbrains.kotlin.daemon.CompileServiceImplBase.execIncrementalCompiler(CompileServiceImpl.kt:675)
+	at org.jetbrains.kotlin.daemon.CompileServiceImplBase.access$execIncrementalCompiler(CompileServiceImpl.kt:92)
+	at org.jetbrains.kotlin.daemon.CompileServiceImpl.compile(CompileServiceImpl.kt:1660)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+	at java.rmi/sun.rmi.server.UnicastServerRef.dispatch(Unknown Source)
+	at java.rmi/sun.rmi.transport.Transport$1.run(Unknown Source)
+	at java.rmi/sun.rmi.transport.Transport$1.run(Unknown Source)
+	at java.base/java.security.AccessController.doPrivileged(Unknown Source)
+	at java.rmi/sun.rmi.transport.Transport.serviceCall(Unknown Source)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport.handleMessages(Unknown Source)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run0(Unknown Source)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.lambda$run$0(Unknown Source)
+	at java.base/java.security.AccessController.doPrivileged(Unknown Source)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.lang.RuntimeException: Exception while generating code for:
+FUN name:WindStreakEffect visibility:public modality:FINAL <> (modifier:androidx.compose.ui.Modifier?, isWindForward:kotlin.Boolean, $composer:androidx.compose.runtime.Composer?, $changed:kotlin.Int, $default:kotlin.Int) returnType:kotlin.Unit
+  annotations:
+    Composable
+    ComposableTarget(applier = "androidx.compose.ui.UiComposable")
+  VALUE_PARAMETER name:modifier index:0 type:androidx.compose.ui.Modifier? [assignable]
+  VALUE_PARAMETER name:isWindForward index:1 type:kotlin.Boolean [assignable]
+  VALUE_PARAMETER name:$composer index:2 type:androidx.compose.runtime.Composer? [assignable]
+  VALUE_PARAMETER name:$changed index:3 type:kotlin.Int
+  VALUE_PARAMETER MASK_FOR_DEFAULT_FUNCTION name:$default index:4 type:kotlin.Int
+  BLOCK_BODY
+    BLOCK type=kotlin.Unit origin=null
+      SET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=kotlin.Unit origin=null
+        CALL 'public abstract fun startRestartGroup (key: kotlin.Int): androidx.compose.runtime.Composer declared in androidx.compose.runtime.Composer' type=androidx.compose.runtime.Composer origin=null
+          $this: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=androidx.compose.runtime.Composer? origin=null
+          key: CONST Int type=kotlin.Int value=1330261372
+      CALL 'public final fun sourceInformation (composer: androidx.compose.runtime.Composer, sourceInformation: kotlin.String): kotlin.Unit declared in androidx.compose.runtime.ComposerKt' type=kotlin.Unit origin=null
+        composer: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=androidx.compose.runtime.Composer? origin=null
+        sourceInformation: CONST String type=kotlin.String value="C(WindStreakEffect)P(1)28@1063L7,29@1091L175,37@1286L259,48@1572L117,48@1551L138,55@1737L322,55@1695L364:WheatherEffect.kt#kmp74j"
+    VAR name:$dirty type:kotlin.Int [val]
+      GET_VAR '$changed: kotlin.Int declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=kotlin.Int origin=null
+    WHEN type=kotlin.Unit origin=IF
+      BRANCH
+        if: CALL 'public final fun not (): kotlin.Boolean [operator] declared in kotlin.Boolean' type=kotlin.Boolean origin=null
+          $this: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=null
+            arg0: CALL 'public final fun and (other: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+              $this: GET_VAR '$default: kotlin.Int declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=kotlin.Int origin=null
+              other: CONST Int type=kotlin.Int value=1
+            arg1: CONST Int type=kotlin.Int value=0
+        then: SET_VAR 'val $dirty: kotlin.Int [val] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=kotlin.Unit origin=null
+          CALL 'public final fun or (other: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+            $this: GET_VAR 'val $dirty: kotlin.Int [val] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=kotlin.Int origin=null
+            other: CONST Int type=kotlin.Int value=6
+      BRANCH
+        if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=null
+          arg0: CALL 'public final fun and (other: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+            $this: GET_VAR '$changed: kotlin.Int declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=kotlin.Int origin=null
+            other: CONST Int type=kotlin.Int value=6
+          arg1: CONST Int type=kotlin.Int value=0
+        then: SET_VAR 'val $dirty: kotlin.Int [val] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=kotlin.Unit origin=null
+          CALL 'public final fun or (other: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+            $this: GET_VAR 'val $dirty: kotlin.Int [val] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=kotlin.Int origin=null
+            other: WHEN type=kotlin.Int origin=IF
+              BRANCH
+                if: CALL 'public abstract fun changed (value: kotlin.Any?): kotlin.Boolean declared in androidx.compose.runtime.Composer' type=kotlin.Boolean origin=null
+                  $this: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=androidx.compose.runtime.Composer? origin=null
+                  value: GET_VAR 'modifier: androidx.compose.ui.Modifier? [assignable] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=androidx.compose.ui.Modifier? origin=null
+                then: CONST Int type=kotlin.Int value=4
+              BRANCH
+                if: CONST Boolean type=kotlin.Boolean value=true
+                then: CONST Int type=kotlin.Int value=2
+    WHEN type=kotlin.Unit origin=IF
+      BRANCH
+        if: CALL 'public final fun not (): kotlin.Boolean [operator] declared in kotlin.Boolean' type=kotlin.Boolean origin=null
+          $this: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=null
+            arg0: CALL 'public final fun and (other: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+              $this: GET_VAR '$default: kotlin.Int declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=kotlin.Int origin=null
+              other: CONST Int type=kotlin.Int value=2
+            arg1: CONST Int type=kotlin.Int value=0
+        then: SET_VAR 'val $dirty: kotlin.Int [val] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=kotlin.Unit origin=null
+          CALL 'public final fun or (other: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+            $this: GET_VAR 'val $dirty: kotlin.Int [val] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=kotlin.Int origin=null
+            other: CONST Int type=kotlin.Int value=48
+      BRANCH
+        if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=null
+          arg0: CALL 'public final fun and (other: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+            $this: GET_VAR '$changed: kotlin.Int declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=kotlin.Int origin=null
+            other: CONST Int type=kotlin.Int value=48
+          arg1: CONST Int type=kotlin.Int value=0
+        then: SET_VAR 'val $dirty: kotlin.Int [val] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=kotlin.Unit origin=null
+          CALL 'public final fun or (other: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+            $this: GET_VAR 'val $dirty: kotlin.Int [val] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=kotlin.Int origin=null
+            other: WHEN type=kotlin.Int origin=IF
+              BRANCH
+                if: CALL 'public open fun changed (value: kotlin.Boolean): kotlin.Boolean declared in androidx.compose.runtime.Composer' type=kotlin.Boolean origin=null
+                  $this: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=androidx.compose.runtime.Composer? origin=null
+                  value: GET_VAR 'isWindForward: kotlin.Boolean [assignable] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=kotlin.Boolean origin=null
+                then: CONST Int type=kotlin.Int value=32
+              BRANCH
+                if: CONST Boolean type=kotlin.Boolean value=true
+                then: CONST Int type=kotlin.Int value=16
+    WHEN type=kotlin.Unit origin=IF
+      BRANCH
+        if: CALL 'public final fun OROR (arg0: kotlin.Boolean, arg1: kotlin.Boolean): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=null
+          arg0: CALL 'public final fun not (): kotlin.Boolean [operator] declared in kotlin.Boolean' type=kotlin.Boolean origin=null
+            $this: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=null
+              arg0: CALL 'public final fun and (other: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+                $this: GET_VAR 'val $dirty: kotlin.Int [val] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=kotlin.Int origin=null
+                other: CONST Int type=kotlin.Int value=19
+              arg1: CONST Int type=kotlin.Int value=18
+          arg1: CALL 'public final fun not (): kotlin.Boolean [operator] declared in kotlin.Boolean' type=kotlin.Boolean origin=null
+            $this: CALL 'public abstract fun <get-skipping> (): kotlin.Boolean declared in androidx.compose.runtime.Composer' type=kotlin.Boolean origin=null
+              $this: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=androidx.compose.runtime.Composer? origin=null
+        then: BLOCK type=kotlin.Unit origin=null
+          WHEN type=kotlin.Unit origin=IF
+            BRANCH
+              if: CALL 'public final fun not (): kotlin.Boolean [operator] declared in kotlin.Boolean' type=kotlin.Boolean origin=null
+                $this: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=null
+                  arg0: CALL 'public final fun and (other: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+                    $this: GET_VAR '$default: kotlin.Int declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=kotlin.Int origin=null
+                    other: CONST Int type=kotlin.Int value=1
+                  arg1: CONST Int type=kotlin.Int value=0
+              then: SET_VAR 'modifier: androidx.compose.ui.Modifier? [assignable] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=kotlin.Unit origin=null
+                GET_FIELD 'FIELD FIELD_FOR_OBJECT_INSTANCE name:Companion type:androidx.compose.ui.Modifier.Companion visibility:public [final,static] declared in androidx.compose.ui.Modifier' type=androidx.compose.ui.Modifier.Companion origin=null
+          WHEN type=kotlin.Unit origin=IF
+            BRANCH
+              if: CALL 'public final fun not (): kotlin.Boolean [operator] declared in kotlin.Boolean' type=kotlin.Boolean origin=null
+                $this: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=null
+                  arg0: CALL 'public final fun and (other: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+                    $this: GET_VAR '$default: kotlin.Int declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=kotlin.Int origin=null
+                    other: CONST Int type=kotlin.Int value=2
+                  arg1: CONST Int type=kotlin.Int value=0
+              then: SET_VAR 'isWindForward: kotlin.Boolean [assignable] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=kotlin.Unit origin=null
+                CONST Boolean type=kotlin.Boolean value=true
+          WHEN type=kotlin.Unit origin=IF
+            BRANCH
+              if: CALL 'public final fun isTraceInProgress (): kotlin.Boolean declared in androidx.compose.runtime.ComposerKt' type=kotlin.Boolean origin=null
+              then: CALL 'public final fun traceEventStart (key: kotlin.Int, dirty1: kotlin.Int, dirty2: kotlin.Int, info: kotlin.String): kotlin.Unit declared in androidx.compose.runtime.ComposerKt' type=kotlin.Unit origin=null
+                key: CONST Int type=kotlin.Int value=1330261372
+                dirty1: GET_VAR 'val $dirty: kotlin.Int [val] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=kotlin.Int origin=null
+                dirty2: CONST Int type=kotlin.Int value=-1
+                info: CONST String type=kotlin.String value="com.acnteam.crashybird.presentation.screen.play.WindStreakEffect (WheatherEffect.kt:26)"
+          VAR name:windChar type:kotlin.String [val]
+            WHEN type=kotlin.String origin=IF
+              BRANCH
+                if: GET_VAR 'isWindForward: kotlin.Boolean [assignable] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=kotlin.Boolean origin=null
+                then: CONST String type=kotlin.String value="("
+              BRANCH
+                if: CONST Boolean type=kotlin.Boolean value=true
+                then: CONST String type=kotlin.String value=")"
+          VAR name:density type:androidx.compose.ui.unit.Density [val]
+            CALL 'public final fun <get-current> ($composer: androidx.compose.runtime.Composer?, $changed: kotlin.Int): T of androidx.compose.runtime.CompositionLocal [inline] declared in androidx.compose.runtime.CompositionLocal' type=androidx.compose.ui.unit.Density origin=GET_PROPERTY
+              $this: TYPE_OP type=androidx.compose.runtime.CompositionLocal<T of androidx.compose.runtime.CompositionLocal> origin=IMPLICIT_CAST typeOperand=androidx.compose.runtime.CompositionLocal<T of androidx.compose.runtime.CompositionLocal>
+                CALL 'public final fun <get-LocalDensity> (): androidx.compose.runtime.ProvidableCompositionLocal<androidx.compose.ui.unit.Density> declared in androidx.compose.ui.platform.CompositionLocalsKt' type=androidx.compose.runtime.ProvidableCompositionLocal<androidx.compose.ui.unit.Density> origin=GET_PROPERTY
+              $composer: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=androidx.compose.runtime.Composer? origin=null
+              $changed: CONST Int type=kotlin.Int value=0
+          VAR name:textPaint type:androidx.compose.ui.graphics.Paint [val]
+            BLOCK type=androidx.compose.ui.graphics.Paint origin=null
+              BLOCK type=kotlin.Unit origin=null
+                CALL 'public abstract fun startReplaceGroup (key: kotlin.Int): kotlin.Unit declared in androidx.compose.runtime.Composer' type=kotlin.Unit origin=null
+                  $this: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=androidx.compose.runtime.Composer? origin=null
+                  key: CONST Int type=kotlin.Int value=1744813505
+                CALL 'public final fun sourceInformation (composer: androidx.compose.runtime.Composer, sourceInformation: kotlin.String): kotlin.Unit declared in androidx.compose.runtime.ComposerKt' type=kotlin.Unit origin=null
+                  composer: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=androidx.compose.runtime.Composer? origin=null
+                  sourceInformation: CONST String type=kotlin.String value="CC(remember):WheatherEffect.kt#9igjgp"
+              VAR IR_TEMPORARY_VARIABLE name:tmp0_group type:androidx.compose.ui.graphics.Paint [val]
+                CALL 'public final fun cache <T> (invalid: kotlin.Boolean, block: @[DisallowComposableCalls] kotlin.Function0<T of androidx.compose.runtime.ComposerKt.cache>): T of androidx.compose.runtime.ComposerKt.cache [inline] declared in androidx.compose.runtime.ComposerKt' type=androidx.compose.ui.graphics.Paint origin=null
+                  <T>: androidx.compose.ui.graphics.Paint
+                  $receiver: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=androidx.compose.runtime.Composer? origin=null
+                  invalid: CONST Boolean type=kotlin.Boolean value=false
+                  block: BLOCK type=kotlin.Function0<androidx.compose.ui.graphics.Paint> origin=LAMBDA
+                    COMPOSITE type=kotlin.Unit origin=null
+                    FUNCTION_REFERENCE 'private final fun WindStreakEffect$lambda$2 ($density: androidx.compose.ui.unit.Density): androidx.compose.ui.graphics.Paint declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt' type=kotlin.Function0<androidx.compose.ui.graphics.Paint> origin=INLINE_LAMBDA reflectionTarget=null
+                      $density: GET_VAR 'val density: androidx.compose.ui.unit.Density [val] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=androidx.compose.ui.unit.Density origin=null
+              CALL 'public abstract fun endReplaceGroup (): kotlin.Unit declared in androidx.compose.runtime.Composer' type=kotlin.Unit origin=null
+                $this: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=androidx.compose.runtime.Composer? origin=null
+              GET_VAR 'val tmp0_group: androidx.compose.ui.graphics.Paint [val] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=androidx.compose.ui.graphics.Paint origin=null
+          VAR name:streaks type:kotlin.collections.List<com.acnteam.crashybird.presentation.screen.play.WindStreak> [val]
+            BLOCK type=kotlin.collections.List<com.acnteam.crashybird.presentation.screen.play.WindStreak> origin=null
+              BLOCK type=kotlin.Unit origin=null
+                CALL 'public abstract fun startReplaceGroup (key: kotlin.Int): kotlin.Unit declared in androidx.compose.runtime.Composer' type=kotlin.Unit origin=null
+                  $this: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=androidx.compose.runtime.Composer? origin=null
+                  key: CONST Int type=kotlin.Int value=1744819829
+                CALL 'public final fun sourceInformation (composer: androidx.compose.runtime.Composer, sourceInformation: kotlin.String): kotlin.Unit declared in androidx.compose.runtime.ComposerKt' type=kotlin.Unit origin=null
+                  composer: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=androidx.compose.runtime.Composer? origin=null
+                  sourceInformation: CONST String type=kotlin.String value="CC(remember):WheatherEffect.kt#9igjgp"
+              VAR IR_TEMPORARY_VARIABLE name:tmp1_group type:kotlin.collections.List<com.acnteam.crashybird.presentation.screen.play.WindStreak> [val]
+                CALL 'public final fun cache <T> (invalid: kotlin.Boolean, block: @[DisallowComposableCalls] kotlin.Function0<T of androidx.compose.runtime.ComposerKt.cache>): T of androidx.compose.runtime.ComposerKt.cache [inline] declared in androidx.compose.runtime.ComposerKt' type=kotlin.collections.List<com.acnteam.crashybird.presentation.screen.play.WindStreak> origin=null
+                  <T>: kotlin.collections.List<com.acnteam.crashybird.presentation.screen.play.WindStreak>
+                  $receiver: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=androidx.compose.runtime.Composer? origin=null
+                  invalid: CONST Boolean type=kotlin.Boolean value=false
+                  block: BLOCK type=kotlin.Function0<kotlin.collections.List<com.acnteam.crashybird.presentation.screen.play.WindStreak>> origin=LAMBDA
+                    COMPOSITE type=kotlin.Unit origin=null
+                    FUNCTION_REFERENCE 'private final fun WindStreakEffect$lambda$4 ($isWindForward: kotlin.Boolean): kotlin.collections.List<com.acnteam.crashybird.presentation.screen.play.WindStreak> declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt' type=kotlin.Function0<kotlin.collections.List<com.acnteam.crashybird.presentation.screen.play.WindStreak>> origin=INLINE_LAMBDA reflectionTarget=null
+                      $isWindForward: GET_VAR 'isWindForward: kotlin.Boolean [assignable] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=kotlin.Boolean origin=null
+              CALL 'public abstract fun endReplaceGroup (): kotlin.Unit declared in androidx.compose.runtime.Composer' type=kotlin.Unit origin=null
+                $this: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=androidx.compose.runtime.Composer? origin=null
+              GET_VAR 'val tmp1_group: kotlin.collections.List<com.acnteam.crashybird.presentation.screen.play.WindStreak> [val] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=kotlin.collections.List<com.acnteam.crashybird.presentation.screen.play.WindStreak> origin=null
+          CALL 'public final fun LaunchedEffect (key1: kotlin.Any?, block: @[ExtensionFunctionType] kotlin.coroutines.SuspendFunction1<kotlinx.coroutines.CoroutineScope, kotlin.Unit>, $composer: androidx.compose.runtime.Composer?, $changed: kotlin.Int): kotlin.Unit declared in androidx.compose.runtime.EffectsKt' type=kotlin.Unit origin=null
+            key1: GET_FIELD 'FIELD FIELD_FOR_OBJECT_INSTANCE name:INSTANCE type:kotlin.Unit visibility:public [final,static] declared in kotlin.Unit' type=kotlin.Unit origin=null
+            block: BLOCK type=@[ExtensionFunctionType] kotlin.coroutines.SuspendFunction1<kotlinx.coroutines.CoroutineScope, kotlin.Unit> origin=null
+              BLOCK type=kotlin.Unit origin=null
+                CALL 'public abstract fun startReplaceGroup (key: kotlin.Int): kotlin.Unit declared in androidx.compose.runtime.Composer' type=kotlin.Unit origin=null
+                  $this: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=androidx.compose.runtime.Composer? origin=null
+                  key: CONST Int type=kotlin.Int value=1744828839
+                CALL 'public final fun sourceInformation (composer: androidx.compose.runtime.Composer, sourceInformation: kotlin.String): kotlin.Unit declared in androidx.compose.runtime.ComposerKt' type=kotlin.Unit origin=null
+                  composer: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=androidx.compose.runtime.Composer? origin=null
+                  sourceInformation: CONST String type=kotlin.String value="CC(remember):WheatherEffect.kt#9igjgp"
+              VAR IR_TEMPORARY_VARIABLE name:tmp2_group type:@[ExtensionFunctionType] kotlin.coroutines.SuspendFunction1<kotlinx.coroutines.CoroutineScope, kotlin.Unit> [val]
+                CALL 'public final fun cache <T> (invalid: kotlin.Boolean, block: @[DisallowComposableCalls] kotlin.Function0<T of androidx.compose.runtime.ComposerKt.cache>): T of androidx.compose.runtime.ComposerKt.cache [inline] declared in androidx.compose.runtime.ComposerKt' type=@[ExtensionFunctionType] kotlin.coroutines.SuspendFunction1<kotlinx.coroutines.CoroutineScope, kotlin.Unit> origin=null
+                  <T>: @[ExtensionFunctionType] kotlin.coroutines.SuspendFunction1<kotlinx.coroutines.CoroutineScope, kotlin.Unit>
+                  $receiver: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=androidx.compose.runtime.Composer? origin=null
+                  invalid: CALL 'public open fun changedInstance (value: kotlin.Any?): kotlin.Boolean declared in androidx.compose.runtime.Composer' type=kotlin.Boolean origin=null
+                    $this: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=androidx.compose.runtime.Composer? origin=null
+                    value: GET_VAR 'val streaks: kotlin.collections.List<com.acnteam.crashybird.presentation.screen.play.WindStreak> [val] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=kotlin.collections.List<com.acnteam.crashybird.presentation.screen.play.WindStreak> origin=null
+                  block: BLOCK type=kotlin.Function0<@[ExtensionFunctionType] kotlin.coroutines.SuspendFunction1<kotlinx.coroutines.CoroutineScope, kotlin.Unit>> origin=LAMBDA
+                    COMPOSITE type=kotlin.Unit origin=null
+                    FUNCTION_REFERENCE 'private final fun WindStreakEffect$lambda$5 ($streaks: kotlin.collections.List<com.acnteam.crashybird.presentation.screen.play.WindStreak>): @[ExtensionFunctionType] kotlin.coroutines.SuspendFunction1<kotlinx.coroutines.CoroutineScope, kotlin.Unit> declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt' type=kotlin.Function0<@[ExtensionFunctionType] kotlin.coroutines.SuspendFunction1<kotlinx.coroutines.CoroutineScope, kotlin.Unit>> origin=INLINE_LAMBDA reflectionTarget=null
+                      $streaks: GET_VAR 'val streaks: kotlin.collections.List<com.acnteam.crashybird.presentation.screen.play.WindStreak> [val] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=kotlin.collections.List<com.acnteam.crashybird.presentation.screen.play.WindStreak> origin=null
+              CALL 'public abstract fun endReplaceGroup (): kotlin.Unit declared in androidx.compose.runtime.Composer' type=kotlin.Unit origin=null
+                $this: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=androidx.compose.runtime.Composer? origin=null
+              GET_VAR 'val tmp2_group: @[ExtensionFunctionType] kotlin.coroutines.SuspendFunction1<kotlinx.coroutines.CoroutineScope, kotlin.Unit> [val] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=@[ExtensionFunctionType] kotlin.coroutines.SuspendFunction1<kotlinx.coroutines.CoroutineScope, kotlin.Unit> origin=null
+            $composer: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=androidx.compose.runtime.Composer? origin=null
+            $changed: CONST Int type=kotlin.Int value=6
+          CALL 'public final fun Canvas (modifier: androidx.compose.ui.Modifier, onDraw: @[ExtensionFunctionType] kotlin.Function1<androidx.compose.ui.graphics.drawscope.DrawScope, kotlin.Unit>, $composer: androidx.compose.runtime.Composer?, $changed: kotlin.Int): kotlin.Unit declared in androidx.compose.foundation.CanvasKt' type=kotlin.Unit origin=null
+            modifier: CALL 'public final fun fillMaxSize$default (fraction: kotlin.Float, $mask0: kotlin.Int, $handler: kotlin.Any?): androidx.compose.ui.Modifier declared in androidx.compose.foundation.layout.SizeKt' type=androidx.compose.ui.Modifier origin=DEFAULT_DISPATCH_CALL
+              $receiver: GET_VAR 'modifier: androidx.compose.ui.Modifier? [assignable] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=androidx.compose.ui.Modifier origin=null
+              fraction: COMPOSITE type=kotlin.Float origin=DEFAULT_VALUE
+                CONST Float type=kotlin.Float value=0.0
+              $mask0: CONST Int type=kotlin.Int value=1
+              $handler: CONST Null type=kotlin.Any? value=null
+            onDraw: BLOCK type=@[ExtensionFunctionType] kotlin.Function1<androidx.compose.ui.graphics.drawscope.DrawScope, kotlin.Unit> origin=null
+              BLOCK type=kotlin.Unit origin=null
+                CALL 'public abstract fun startReplaceGroup (key: kotlin.Int): kotlin.Unit declared in androidx.compose.runtime.Composer' type=kotlin.Unit origin=null
+                  $this: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=androidx.compose.runtime.Composer? origin=null
+                  key: CONST Int type=kotlin.Int value=1744834324
+                CALL 'public final fun sourceInformation (composer: androidx.compose.runtime.Composer, sourceInformation: kotlin.String): kotlin.Unit declared in androidx.compose.runtime.ComposerKt' type=kotlin.Unit origin=null
+                  composer: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=androidx.compose.runtime.Composer? origin=null
+                  sourceInformation: CONST String type=kotlin.String value="CC(remember):WheatherEffect.kt#9igjgp"
+              VAR IR_TEMPORARY_VARIABLE name:tmp3_group type:@[ExtensionFunctionType] kotlin.Function1<androidx.compose.ui.graphics.drawscope.DrawScope, kotlin.Unit> [val]
+                CALL 'public final fun cache <T> (invalid: kotlin.Boolean, block: @[DisallowComposableCalls] kotlin.Function0<T of androidx.compose.runtime.ComposerKt.cache>): T of androidx.compose.runtime.ComposerKt.cache [inline] declared in androidx.compose.runtime.ComposerKt' type=@[ExtensionFunctionType] kotlin.Function1<androidx.compose.ui.graphics.drawscope.DrawScope, kotlin.Unit> origin=null
+                  <T>: @[ExtensionFunctionType] kotlin.Function1<androidx.compose.ui.graphics.drawscope.DrawScope, kotlin.Unit>
+                  $receiver: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=androidx.compose.runtime.Composer? origin=null
+                  invalid: CALL 'public final fun or (other: kotlin.Boolean): kotlin.Boolean [infix] declared in kotlin.Boolean' type=kotlin.Boolean origin=null
+                    $this: CALL 'public final fun or (other: kotlin.Boolean): kotlin.Boolean [infix] declared in kotlin.Boolean' type=kotlin.Boolean origin=null
+                      $this: CALL 'public open fun changedInstance (value: kotlin.Any?): kotlin.Boolean declared in androidx.compose.runtime.Composer' type=kotlin.Boolean origin=null
+                        $this: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=androidx.compose.runtime.Composer? origin=null
+                        value: GET_VAR 'val streaks: kotlin.collections.List<com.acnteam.crashybird.presentation.screen.play.WindStreak> [val] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=kotlin.collections.List<com.acnteam.crashybird.presentation.screen.play.WindStreak> origin=null
+                      other: CALL 'public abstract fun changed (value: kotlin.Any?): kotlin.Boolean declared in androidx.compose.runtime.Composer' type=kotlin.Boolean origin=null
+                        $this: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=androidx.compose.runtime.Composer? origin=null
+                        value: GET_VAR 'val windChar: kotlin.String [val] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=kotlin.String origin=null
+                    other: CALL 'public open fun changedInstance (value: kotlin.Any?): kotlin.Boolean declared in androidx.compose.runtime.Composer' type=kotlin.Boolean origin=null
+                      $this: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=androidx.compose.runtime.Composer? origin=null
+                      value: GET_VAR 'val textPaint: androidx.compose.ui.graphics.Paint [val] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=androidx.compose.ui.graphics.Paint origin=null
+                  block: BLOCK type=kotlin.Function0<@[ExtensionFunctionType] kotlin.Function1<androidx.compose.ui.graphics.drawscope.DrawScope, kotlin.Unit>> origin=LAMBDA
+                    COMPOSITE type=kotlin.Unit origin=null
+                    FUNCTION_REFERENCE 'private final fun WindStreakEffect$lambda$9 ($streaks: kotlin.collections.List<com.acnteam.crashybird.presentation.screen.play.WindStreak>, $windChar: kotlin.String, $textPaint: androidx.compose.ui.graphics.Paint): @[ExtensionFunctionType] kotlin.Function1<androidx.compose.ui.graphics.drawscope.DrawScope, kotlin.Unit> declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt' type=kotlin.Function0<@[ExtensionFunctionType] kotlin.Function1<androidx.compose.ui.graphics.drawscope.DrawScope, kotlin.Unit>> origin=INLINE_LAMBDA reflectionTarget=null
+                      $streaks: GET_VAR 'val streaks: kotlin.collections.List<com.acnteam.crashybird.presentation.screen.play.WindStreak> [val] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=kotlin.collections.List<com.acnteam.crashybird.presentation.screen.play.WindStreak> origin=null
+                      $windChar: GET_VAR 'val windChar: kotlin.String [val] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=kotlin.String origin=null
+                      $textPaint: GET_VAR 'val textPaint: androidx.compose.ui.graphics.Paint [val] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=androidx.compose.ui.graphics.Paint origin=null
+              CALL 'public abstract fun endReplaceGroup (): kotlin.Unit declared in androidx.compose.runtime.Composer' type=kotlin.Unit origin=null
+                $this: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=androidx.compose.runtime.Composer? origin=null
+              GET_VAR 'val tmp3_group: @[ExtensionFunctionType] kotlin.Function1<androidx.compose.ui.graphics.drawscope.DrawScope, kotlin.Unit> [val] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=@[ExtensionFunctionType] kotlin.Function1<androidx.compose.ui.graphics.drawscope.DrawScope, kotlin.Unit> origin=null
+            $composer: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=androidx.compose.runtime.Composer? origin=null
+            $changed: CONST Int type=kotlin.Int value=0
+          WHEN type=kotlin.Unit origin=IF
+            BRANCH
+              if: CALL 'public final fun isTraceInProgress (): kotlin.Boolean declared in androidx.compose.runtime.ComposerKt' type=kotlin.Boolean origin=null
+              then: CALL 'public final fun traceEventEnd (): kotlin.Unit declared in androidx.compose.runtime.ComposerKt' type=kotlin.Unit origin=null
+      BRANCH
+        if: CONST Boolean type=kotlin.Boolean value=true
+        then: CALL 'public abstract fun skipToGroupEnd (): kotlin.Unit declared in androidx.compose.runtime.Composer' type=kotlin.Unit origin=null
+          $this: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=androidx.compose.runtime.Composer? origin=null
+    BLOCK type=kotlin.Unit origin=null
+      BLOCK type=kotlin.Unit origin=FOLDED_SAFE_CALL
+        WHEN type=kotlin.Unit origin=FOLDED_SAFE_CALL
+          BRANCH
+            if: COMPOSITE type=kotlin.Boolean origin=null
+              VAR IR_TEMPORARY_VARIABLE name:tmp4_safe_receiver type:androidx.compose.runtime.ScopeUpdateScope? [val]
+                CALL 'public abstract fun endRestartGroup (): androidx.compose.runtime.ScopeUpdateScope? declared in androidx.compose.runtime.Composer' type=androidx.compose.runtime.ScopeUpdateScope? origin=null
+                  $this: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=androidx.compose.runtime.Composer? origin=null
+              CALL 'public final fun not (): kotlin.Boolean [operator] declared in kotlin.Boolean' type=kotlin.Boolean origin=null
+                $this: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=null
+                  arg0: GET_VAR 'val tmp4_safe_receiver: androidx.compose.runtime.ScopeUpdateScope? [val] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=androidx.compose.runtime.ScopeUpdateScope? origin=null
+                  arg1: CONST Null type=kotlin.Nothing? value=null
+            then: CALL 'public abstract fun updateScope (block: kotlin.Function2<androidx.compose.runtime.Composer, kotlin.Int, kotlin.Unit>): kotlin.Unit declared in androidx.compose.runtime.ScopeUpdateScope' type=kotlin.Unit origin=null
+              $this: GET_VAR 'val tmp4_safe_receiver: androidx.compose.runtime.ScopeUpdateScope? [val] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=androidx.compose.runtime.ScopeUpdateScope? origin=null
+              block: BLOCK type=kotlin.Function2<androidx.compose.runtime.Composer?, kotlin.Int, kotlin.Unit> origin=LAMBDA
+                COMPOSITE type=kotlin.Unit origin=null
+                CALL 'public final fun <jvm-indy> <T> (dynamicCall: T of kotlin.jvm.internal.<jvm-indy>, bootstrapMethodHandle: kotlin.Any, vararg bootstrapMethodArguments: kotlin.Any): T of kotlin.jvm.internal.<jvm-indy> declared in kotlin.jvm.internal' type=kotlin.Function2<androidx.compose.runtime.Composer?, kotlin.Int, kotlin.Unit> origin=null
+                  <T>: kotlin.Function2<androidx.compose.runtime.Composer?, kotlin.Int, kotlin.Unit>
+                  dynamicCall: CALL 'public final fun invoke (p0: androidx.compose.ui.Modifier?, p1: kotlin.Boolean, p2: kotlin.Int, p3: kotlin.Int): kotlin.Function2<androidx.compose.runtime.Composer?, kotlin.Int, kotlin.Unit> declared in kotlin.jvm.internal.invokeDynamic' type=kotlin.Function2<androidx.compose.runtime.Composer?, kotlin.Int, kotlin.Unit> origin=null
+                    p0: GET_VAR 'modifier: androidx.compose.ui.Modifier? [assignable] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=androidx.compose.ui.Modifier? origin=null
+                    p1: GET_VAR 'isWindForward: kotlin.Boolean [assignable] declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=kotlin.Boolean origin=null
+                    p2: GET_VAR '$changed: kotlin.Int declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=kotlin.Int origin=null
+                    p3: GET_VAR '$default: kotlin.Int declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect' type=kotlin.Int origin=null
+                  bootstrapMethodHandle: CALL 'public final fun <jvm-method-handle> (tag: kotlin.Int, owner: kotlin.String, name: kotlin.String, descriptor: kotlin.String, isInterface: kotlin.Boolean): kotlin.Any declared in kotlin.jvm.internal' type=kotlin.Any origin=null
+                    tag: CONST Int type=kotlin.Int value=6
+                    owner: CONST String type=kotlin.String value="java/lang/invoke/LambdaMetafactory"
+                    name: CONST String type=kotlin.String value="metafactory"
+                    descriptor: CONST String type=kotlin.String value="(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;"
+                    isInterface: CONST Boolean type=kotlin.Boolean value=false
+                  bootstrapMethodArguments: VARARG type=kotlin.Array<kotlin.Any> varargElementType=kotlin.Any
+                    CALL 'public final fun <jvm-original-method-type> (method: kotlin.Any): kotlin.Any declared in kotlin.jvm.internal' type=kotlin.Any origin=null
+                      method: RAW_FUNCTION_REFERENCE 'public abstract fun invoke (p1: P1 of kotlin.Function2, p2: P2 of kotlin.Function2): R of kotlin.Function2 [operator] declared in kotlin.Function2' type=kotlin.Any
+                    RAW_FUNCTION_REFERENCE 'private final fun WindStreakEffect$lambda$10 ($modifier: androidx.compose.ui.Modifier?, $isWindForward: kotlin.Boolean, $$changed: kotlin.Int, $$default: kotlin.Int, $composer: androidx.compose.runtime.Composer?, $force: kotlin.Int): kotlin.Unit? declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt' type=kotlin.Any
+                    CALL 'public final fun <jvm-original-method-type> (method: kotlin.Any): kotlin.Any declared in kotlin.jvm.internal' type=kotlin.Any origin=null
+                      method: RAW_FUNCTION_REFERENCE 'public abstract fun invoke (p1: androidx.compose.runtime.Composer?, p2: kotlin.Int?): kotlin.Unit? [fake_override,operator] declared in kotlin.jvm.internal.invokeDynamic.<fake>' type=kotlin.Any
+          BRANCH
+            if: CONST Boolean type=kotlin.Boolean value=true
+            then: CONST Null type=kotlin.Any? value=null
+
+	at org.jetbrains.kotlin.backend.jvm.codegen.FunctionCodegen.generate(FunctionCodegen.kt:47)
+	at org.jetbrains.kotlin.backend.jvm.codegen.FunctionCodegen.generate$default(FunctionCodegen.kt:40)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ClassCodegen.generateMethodNode(ClassCodegen.kt:406)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ClassCodegen.generateMethod(ClassCodegen.kt:423)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ClassCodegen.generate(ClassCodegen.kt:168)
+	at org.jetbrains.kotlin.backend.jvm.FileCodegen.lower(JvmPhases.kt:39)
+	at org.jetbrains.kotlin.backend.common.phaser.PhaseFactoriesKt.createFilePhase$lambda$4(PhaseFactories.kt:71)
+	at org.jetbrains.kotlin.backend.common.phaser.PhaseBuildersKt$createSimpleNamedCompilerPhase$1.phaseBody(PhaseBuilders.kt:69)
+	at org.jetbrains.kotlin.backend.common.phaser.SimpleNamedCompilerPhase.phaseBody(CompilerPhase.kt:226)
+	at org.jetbrains.kotlin.backend.common.phaser.AbstractNamedCompilerPhase.invoke(CompilerPhase.kt:113)
+	at org.jetbrains.kotlin.backend.common.phaser.PerformByIrFilePhase.invokeSequential(performByIrFile.kt:62)
+	... 44 more
+Caused by: java.lang.RuntimeException: Exception while generating code for:
+FUN INLINE_LAMBDA name:WindStreakEffect$lambda$2 visibility:private modality:FINAL <> ($density:androidx.compose.ui.unit.Density) returnType:androidx.compose.ui.graphics.Paint
+  VALUE_PARAMETER BOUND_VALUE_PARAMETER name:$density index:0 type:androidx.compose.ui.unit.Density
+  BLOCK_BODY
+    VAR name:$i$a$-cache-WheatherEffectKt$WindStreakEffect$textPaint$1 type:kotlin.Int [val]
+      CONST Int type=kotlin.Int value=0
+    RETURN type=kotlin.Nothing from='private final fun WindStreakEffect$lambda$2 ($density: androidx.compose.ui.unit.Density): androidx.compose.ui.graphics.Paint declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt'
+      CALL 'public final fun apply <T> (block: @[ExtensionFunctionType] kotlin.Function1<T of kotlin.StandardKt.apply, kotlin.Unit>): T of kotlin.StandardKt.apply [inline] declared in kotlin.StandardKt' type=androidx.compose.ui.graphics.Paint origin=null
+        <T>: androidx.compose.ui.graphics.Paint
+        $receiver: CALL 'public final fun Paint (): androidx.compose.ui.graphics.Paint declared in androidx.compose.ui.graphics.AndroidPaint_androidKt' type=androidx.compose.ui.graphics.Paint origin=null
+        block: BLOCK type=@[ExtensionFunctionType] kotlin.Function1<androidx.compose.ui.graphics.Paint, kotlin.Unit> origin=LAMBDA
+          COMPOSITE type=kotlin.Unit origin=null
+          FUNCTION_REFERENCE 'private final fun WindStreakEffect$lambda$2$lambda$1 ($density: androidx.compose.ui.unit.Density): kotlin.Unit declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt' type=@[ExtensionFunctionType] kotlin.Function1<androidx.compose.ui.graphics.Paint, kotlin.Unit> origin=INLINE_LAMBDA reflectionTarget=null
+            $density: GET_VAR '$density: androidx.compose.ui.unit.Density declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect$lambda$2' type=androidx.compose.ui.unit.Density origin=null
+
+	at org.jetbrains.kotlin.backend.jvm.codegen.FunctionCodegen.generate(FunctionCodegen.kt:47)
+	at org.jetbrains.kotlin.backend.jvm.codegen.IrSourceCompilerForInline.generateLambdaBody(IrSourceCompilerForInline.kt:67)
+	at org.jetbrains.kotlin.codegen.inline.ExpressionLambda.generateLambdaBody(LambdaInfo.kt:72)
+	at org.jetbrains.kotlin.backend.jvm.codegen.IrInlineCodegen.genValueAndPut(IrInlineCodegen.kt:100)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitCall$handleParameter(ExpressionCodegen.kt:616)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitCall(ExpressionCodegen.kt:644)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitCall(ExpressionCodegen.kt:138)
+	at org.jetbrains.kotlin.ir.expressions.IrCall.accept(IrCall.kt:24)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitVariable(ExpressionCodegen.kt:790)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitVariable(ExpressionCodegen.kt:138)
+	at org.jetbrains.kotlin.ir.declarations.IrVariable.accept(IrVariable.kt:36)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitStatementContainer(ExpressionCodegen.kt:579)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitContainerExpression(ExpressionCodegen.kt:593)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitContainerExpression(ExpressionCodegen.kt:138)
+	at org.jetbrains.kotlin.ir.visitors.IrElementVisitor$DefaultImpls.visitBlock(IrElementVisitor.kt:122)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitBlock(ExpressionCodegen.kt:413)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitBlock(ExpressionCodegen.kt:138)
+	at org.jetbrains.kotlin.ir.expressions.IrBlock.accept(IrBlock.kt:18)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitVariable(ExpressionCodegen.kt:790)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitVariable(ExpressionCodegen.kt:138)
+	at org.jetbrains.kotlin.ir.declarations.IrVariable.accept(IrVariable.kt:36)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitStatementContainer(ExpressionCodegen.kt:579)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitContainerExpression(ExpressionCodegen.kt:593)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitContainerExpression(ExpressionCodegen.kt:138)
+	at org.jetbrains.kotlin.ir.visitors.IrElementVisitor$DefaultImpls.visitBlock(IrElementVisitor.kt:122)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitBlock(ExpressionCodegen.kt:413)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitBlock(ExpressionCodegen.kt:138)
+	at org.jetbrains.kotlin.ir.expressions.IrBlock.accept(IrBlock.kt:18)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitWhen(ExpressionCodegen.kt:1101)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitWhen(ExpressionCodegen.kt:138)
+	at org.jetbrains.kotlin.ir.expressions.IrWhen.accept(IrWhen.kt:24)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitStatementContainer(ExpressionCodegen.kt:579)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitBlockBody(ExpressionCodegen.kt:584)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitBlockBody(ExpressionCodegen.kt:138)
+	at org.jetbrains.kotlin.ir.expressions.IrBlockBody.accept(IrBlockBody.kt:20)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.generate(ExpressionCodegen.kt:240)
+	at org.jetbrains.kotlin.backend.jvm.codegen.FunctionCodegen.doGenerate(FunctionCodegen.kt:123)
+	at org.jetbrains.kotlin.backend.jvm.codegen.FunctionCodegen.generate(FunctionCodegen.kt:44)
+	... 54 more
+Caused by: java.lang.RuntimeException: Exception while generating code for:
+FUN INLINE_LAMBDA name:WindStreakEffect$lambda$2$lambda$1 visibility:private modality:FINAL <> ($receiver:androidx.compose.ui.graphics.Paint, $density:androidx.compose.ui.unit.Density) returnType:kotlin.Unit
+  $receiver: VALUE_PARAMETER name:$this$apply type:androidx.compose.ui.graphics.Paint
+  VALUE_PARAMETER BOUND_VALUE_PARAMETER name:$density index:0 type:androidx.compose.ui.unit.Density
+  BLOCK_BODY
+    VAR name:$i$a$-apply-WheatherEffectKt$WindStreakEffect$textPaint$1$1 type:kotlin.Int [val]
+      CONST Int type=kotlin.Int value=0
+    CALL 'public abstract fun setColor-8_81llA (value: androidx.compose.ui.graphics.Color): kotlin.Unit declared in androidx.compose.ui.graphics.Paint' type=kotlin.Unit origin=EQ
+      $this: GET_VAR '$this$apply: androidx.compose.ui.graphics.Paint declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect$lambda$2$lambda$1' type=androidx.compose.ui.graphics.Paint origin=null
+      value: CALL 'public final fun getWhite-0d7_KjU (): androidx.compose.ui.graphics.Color declared in androidx.compose.ui.graphics.Color.Companion' type=androidx.compose.ui.graphics.Color origin=GET_PROPERTY
+        $this: GET_FIELD 'FIELD FIELD_FOR_OBJECT_INSTANCE name:Companion type:androidx.compose.ui.graphics.Color.Companion visibility:public [final,static] declared in androidx.compose.ui.graphics.Color' type=androidx.compose.ui.graphics.Color.Companion origin=null
+    SET_FIELD 'FIELD IR_EXTERNAL_JAVA_DECLARATION_STUB name:textSize type:kotlin.Int visibility:public [final,static] declared in android.R.attr' type=kotlin.Unit superQualifierSymbol=android.R.attr origin=EQ
+      value: CALL 'public final fun with <T, R> (receiver: T of kotlin.StandardKt.with, block: @[ExtensionFunctionType] kotlin.Function1<T of kotlin.StandardKt.with, R of kotlin.StandardKt.with>): R of kotlin.StandardKt.with [inline] declared in kotlin.StandardKt' type=kotlin.Int origin=null
+        <T>: androidx.compose.ui.unit.Density
+        <R>: kotlin.Int
+        receiver: GET_VAR '$density: androidx.compose.ui.unit.Density declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect$lambda$2$lambda$1' type=androidx.compose.ui.unit.Density origin=null
+        block: BLOCK type=@[ExtensionFunctionType] kotlin.Function1<androidx.compose.ui.unit.Density, kotlin.Int> origin=LAMBDA
+          COMPOSITE type=kotlin.Unit origin=null
+          FUNCTION_REFERENCE 'private final fun WindStreakEffect$lambda$2$lambda$1$lambda$0 (): kotlin.Int declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt' type=@[ExtensionFunctionType] kotlin.Function1<androidx.compose.ui.unit.Density, kotlin.Int> origin=INLINE_LAMBDA reflectionTarget=null
+    CALL 'public abstract fun <set-isAntiAlias> (value: kotlin.Boolean): kotlin.Unit declared in androidx.compose.ui.graphics.Paint' type=kotlin.Unit origin=EQ
+      $this: GET_VAR '$this$apply: androidx.compose.ui.graphics.Paint declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect$lambda$2$lambda$1' type=androidx.compose.ui.graphics.Paint origin=null
+      value: CONST Boolean type=kotlin.Boolean value=true
+
+	at org.jetbrains.kotlin.backend.jvm.codegen.FunctionCodegen.generate(FunctionCodegen.kt:47)
+	at org.jetbrains.kotlin.backend.jvm.codegen.IrSourceCompilerForInline.generateLambdaBody(IrSourceCompilerForInline.kt:67)
+	at org.jetbrains.kotlin.codegen.inline.ExpressionLambda.generateLambdaBody(LambdaInfo.kt:72)
+	at org.jetbrains.kotlin.backend.jvm.codegen.IrInlineCodegen.genValueAndPut(IrInlineCodegen.kt:100)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitCall$handleParameter(ExpressionCodegen.kt:616)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitCall(ExpressionCodegen.kt:644)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitCall(ExpressionCodegen.kt:138)
+	at org.jetbrains.kotlin.ir.expressions.IrCall.accept(IrCall.kt:24)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitReturn(ExpressionCodegen.kt:1051)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitReturn(ExpressionCodegen.kt:138)
+	at org.jetbrains.kotlin.ir.expressions.IrReturn.accept(IrReturn.kt:24)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitStatementContainer(ExpressionCodegen.kt:579)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitBlockBody(ExpressionCodegen.kt:584)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitBlockBody(ExpressionCodegen.kt:138)
+	at org.jetbrains.kotlin.ir.expressions.IrBlockBody.accept(IrBlockBody.kt:20)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.generate(ExpressionCodegen.kt:240)
+	at org.jetbrains.kotlin.backend.jvm.codegen.FunctionCodegen.doGenerate(FunctionCodegen.kt:123)
+	at org.jetbrains.kotlin.backend.jvm.codegen.FunctionCodegen.generate(FunctionCodegen.kt:44)
+	... 91 more
+Caused by: java.lang.AssertionError: access of const val: SET_FIELD 'FIELD IR_EXTERNAL_JAVA_DECLARATION_STUB name:textSize type:kotlin.Int visibility:public [final,static] declared in android.R.attr' type=kotlin.Unit superQualifierSymbol=android.R.attr origin=EQ
+  value: CALL 'public final fun with <T, R> (receiver: T of kotlin.StandardKt.with, block: @[ExtensionFunctionType] kotlin.Function1<T of kotlin.StandardKt.with, R of kotlin.StandardKt.with>): R of kotlin.StandardKt.with [inline] declared in kotlin.StandardKt' type=kotlin.Int origin=null
+    <T>: androidx.compose.ui.unit.Density
+    <R>: kotlin.Int
+    receiver: GET_VAR '$density: androidx.compose.ui.unit.Density declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt.WindStreakEffect$lambda$2$lambda$1' type=androidx.compose.ui.unit.Density origin=null
+    block: BLOCK type=@[ExtensionFunctionType] kotlin.Function1<androidx.compose.ui.unit.Density, kotlin.Int> origin=LAMBDA
+      COMPOSITE type=kotlin.Unit origin=null
+      FUNCTION_REFERENCE 'private final fun WindStreakEffect$lambda$2$lambda$1$lambda$0 (): kotlin.Int declared in com.acnteam.crashybird.presentation.screen.play.WheatherEffectKt' type=@[ExtensionFunctionType] kotlin.Function1<androidx.compose.ui.unit.Density, kotlin.Int> origin=INLINE_LAMBDA reflectionTarget=null
+
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitFieldAccess(ExpressionCodegen.kt:861)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitFieldAccess(ExpressionCodegen.kt:138)
+	at org.jetbrains.kotlin.ir.visitors.IrElementVisitor$DefaultImpls.visitSetField(IrElementVisitor.kt:206)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitSetField(ExpressionCodegen.kt:908)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitSetField(ExpressionCodegen.kt:138)
+	at org.jetbrains.kotlin.ir.expressions.IrSetField.accept(IrSetField.kt:21)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitStatementContainer(ExpressionCodegen.kt:579)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitBlockBody(ExpressionCodegen.kt:584)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitBlockBody(ExpressionCodegen.kt:138)
+	at org.jetbrains.kotlin.ir.expressions.IrBlockBody.accept(IrBlockBody.kt:20)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.generate(ExpressionCodegen.kt:240)
+	at org.jetbrains.kotlin.backend.jvm.codegen.FunctionCodegen.doGenerate(FunctionCodegen.kt:123)
+	at org.jetbrains.kotlin.backend.jvm.codegen.FunctionCodegen.generate(FunctionCodegen.kt:44)
+	... 108 more
+
+

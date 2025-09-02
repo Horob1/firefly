@@ -4,5 +4,7 @@ enum class GameStatus {
     Idle,
     Started,
     Paused,
-    Over
+    Over,
+    Complete,
+    Reviving
 }

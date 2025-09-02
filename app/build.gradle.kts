@@ -43,6 +43,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.play.services.ads)
     // ShowCase
     implementation(libs.introshowcaseview)
 

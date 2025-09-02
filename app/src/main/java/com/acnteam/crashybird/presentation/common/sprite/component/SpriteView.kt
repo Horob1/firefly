@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
+import coil.size.Scale
 import com.acnteam.crashybird.presentation.common.sprite.domain.SpriteFlip
 import com.acnteam.crashybird.presentation.common.sprite.domain.SpriteSpec
 import com.acnteam.crashybird.presentation.common.sprite.domain.SpriteState
@@ -56,6 +57,7 @@ fun SpriteView(
 
     Canvas(
         modifier = modifier
+
             .width(with(LocalDensity.current) { frameSize.width.toDp() })
             .height(with(LocalDensity.current) { frameSize.height.toDp() })
     ) {
@@ -115,6 +117,7 @@ fun SpriteView(
 }
 
 fun DrawScope.drawSpriteView(
+    scale: Float = 1f,
     spriteState: SpriteState,
     spriteSpec: SpriteSpec,
     currentFrame: Int,

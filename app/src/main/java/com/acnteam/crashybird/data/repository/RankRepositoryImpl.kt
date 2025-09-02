@@ -20,6 +20,26 @@ class RankRepositoryImpl : RankRepository {
     val auth = FirebaseAuth.getInstance()
     val store = Firebase.firestore
 
+    override suspend fun getBestScore(level: Level): Int {
+        return try {
+            val snapshot = store.collection(COLLECTION_NAME)
+                .whereEqualTo(LEVEL, level.levelNumber)
+                .orderBy(SCORE, Query.Direction.DESCENDING)
+                .limit(1)
+                .get()
+                .await()
+
+            if (snapshot.isEmpty) {
+                0
+            } else {
+                val rankDto = snapshot.documents[0].toObject(RankDto::class.java)
+                rankDto?.score ?: 0
+            }
+        } catch (e: Exception) {
+            0
+        }
+    }
+
 
     override suspend fun upDateGameScore(
         score: Int,

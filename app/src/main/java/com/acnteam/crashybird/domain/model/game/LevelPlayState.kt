@@ -10,4 +10,6 @@ data class LevelPlayState(
     val pipeCapImage: Int = level.pipeCapImage,
     val windX: Float,
     val windY: Float,
+    val firefliesCollected: Int = 0,
+    val firefliesRequired: Int = level.fireFlyRequire,
 )

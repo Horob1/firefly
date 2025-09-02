@@ -1,9 +1,8 @@
-package com.acnteam.crashybird.presentation.screen.play
+package com.acnteam.crashybird.presentation.screen.play.component
 
 import android.content.Context
 import android.media.SoundPool
 import com.acnteam.crashybird.R
-
 
 class SoundEffectPlayer(context: Context) {
     private val soundPool = SoundPool.Builder()
