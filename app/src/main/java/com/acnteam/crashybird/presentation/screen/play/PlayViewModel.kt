@@ -99,8 +99,8 @@ class PlayViewModel(
     private var isSlowEffectActive = false
 
     //cooldowns
-    private val DASH_COOLDOWN = 5000L // 5 seconds
-    private val HIGH_JUMP_COOLDOWN = 3000L // 3 seconds
+    private val DASH_COOLDOWN = 15000L // 5 seconds
+    private val HIGH_JUMP_COOLDOWN = 13000L // 3 seconds
     private val SLOW_COOLDOWN = 8000L // 8 seconds
     private val SLOW_EFFECT_DURATION = 3000L // 3 seconds
 
@@ -118,7 +118,8 @@ class PlayViewModel(
             character = character,
             x = (screenWidth / 4).toFloat(),
             y = (screenHeight / 2).toFloat(),
-            radius = gameConfig.birdRadius
+            width = character.frameWidth.toFloat(),
+            height = character.frameHeight.toFloat(),
         )
 
         val (windX, windY) = getWindForLevel(level.levelNumber)
@@ -142,7 +143,8 @@ class PlayViewModel(
                 character = character,
                 x = (screenWidth / 4).toFloat(),
                 y = (screenHeight / 2).toFloat(),
-                radius = gameConfig.birdRadius
+                width = character.frameWidth.toFloat(),
+                height = character.frameHeight.toFloat(),
             )
         }
     }
@@ -201,7 +203,8 @@ class PlayViewModel(
             character = character,
             x = (screenWidth / 4).toFloat(),
             y = (screenHeight / 2).toFloat(),
-            radius = gameConfig.birdRadius
+            width = character.frameWidth.toFloat(),
+            height = character.frameHeight.toFloat(),
         )
         val level = levelState?.level ?: return
         loadBestScore(level)
@@ -217,7 +220,8 @@ class PlayViewModel(
             character = character,
             x = (screenWidth / 4).toFloat(),
             y = (screenHeight / 2).toFloat(),
-            radius = gameConfig.birdRadius
+            width = character.frameWidth.toFloat(),
+            height = character.frameHeight.toFloat(),
         )
 
         velocityY = 0f
@@ -276,9 +280,9 @@ class PlayViewModel(
         highJumpCooldownUntil = System.currentTimeMillis() + HIGH_JUMP_COOLDOWN
         val level = levelState
         velocityY = if (level?.level?.levelNumber == 6)
-            -(gameConfig.birdJumpImpulse * 4.0f) - (level.windY * windEffectY)
+            -(gameConfig.birdJumpImpulse * 10.0f) - (level.windY * windEffectY)
         else
-            (gameConfig.birdJumpImpulse * 4.0f) - (level?.windY ?: 0f) * windEffectY
+            (gameConfig.birdJumpImpulse * 10.0f) - (level?.windY ?: 0f) * windEffectY
         soundEffectPlayer.playJump()
     }
 
@@ -331,17 +335,18 @@ class PlayViewModel(
         velocityY = velocityY + gravityEffect + windEffect
 
         val newX = character.x
-        val newY = (character.y + velocityY).coerceIn(0f, screenHeight - character.radius)
+        val halfHeight = character.height / 2f
+        val newY = (character.y + velocityY).coerceIn(halfHeight, screenHeight - halfHeight)
 
         characterState = character.copy(x = newX, y = newY)
 
         if (level.level.levelNumber == 6) {
-            if (newY <= character.radius) {
+            if (newY <= halfHeight || newY >= screenHeight - halfHeight) {
                 gameOver()
                 return
             }
         } else {
-            if (newY >= screenHeight - character.radius) {
+            if (newY <= halfHeight || newY >= screenHeight - halfHeight) {
                 gameOver()
                 return
             }
@@ -494,13 +499,21 @@ class PlayViewModel(
 
     private fun checkFireflyCollision(character: CharacterPlayState) {
         val collected = mutableListOf<Firefly>()
+        val halfWidth = (character.width * 0.6) / 2f
+        val halfHeight = (character.height * 0.75) / 2f
+
 
         fireflies.forEach { firefly ->
             val dx = character.x - firefly.x
             val dy = character.y - firefly.y
-            val distance = kotlin.math.sqrt((dx * dx + dy * dy).toDouble()).toFloat()
+            val closestX = dx.coerceIn((-halfWidth).toFloat(), halfWidth.toFloat())
+            val closestY = dy.coerceIn(-halfHeight.toFloat(), halfHeight.toFloat())
 
-            if (distance < character.radius + firefly.radius) {
+            val distX = dx - closestX
+            val distY = dy - closestY
+            val distanceSquared = distX * distX + distY * distY
+
+            if (distanceSquared < firefly.radius * firefly.radius) {
                 collected.add(firefly)
                 levelState = levelState?.copy(
                     firefliesCollected = (levelState?.firefliesCollected ?: 0) + 1
@@ -530,22 +543,39 @@ class PlayViewModel(
     }
 
     private fun isCollisionWithPipe(character: CharacterPlayState, pipe: PipePair): Boolean {
-        val birdRight = character.x + character.radius
-        val birdLeft = character.x - character.radius
+        val halfWidth = (character.width * 0.6) / 2f
+        val halfHeight = (character.height * 0.75) / 2f
+
+        val birdLeft = character.x - halfWidth
+        val birdRight = character.x + halfWidth
+        val birdTop = character.y - halfHeight
+        val birdBottom = character.y + halfHeight
+
         val pipeLeft = pipe.x - gameConfig.pipeWidth / 2
         val pipeRight = pipe.x + gameConfig.pipeWidth / 2
 
         val horizontalCollision = birdRight > pipeLeft && birdLeft < pipeRight
 
         if (horizontalCollision) {
-            val birdTop = character.y - character.radius
-            val birdBottom = character.y + character.radius
-            val gapTop = pipe.y - gameConfig.pipeGapSize / 2
-            val gapBottom = pipe.y + gameConfig.pipeGapSize / 2
 
-            val birdInGap = birdTop > gapTop && birdBottom < gapBottom
-            return !birdInGap
+            val currentTopPipeHeight = pipe.topHeight
+            val currentBottomPipeHeight = pipe.bottomHeight
+
+            if (currentTopPipeHeight > 0 && birdTop < currentTopPipeHeight) {
+                return true
+            }
+
+            val bottomPipeTop = screenHeight - currentBottomPipeHeight
+            if (currentBottomPipeHeight > 0 && birdBottom > bottomPipeTop) {
+                return true
+            }
+            if (levelState?.level?.levelNumber == 6) {
+                if (birdTop <= 0 || birdBottom >= screenHeight) {
+                    return true
+                }
+            }
         }
+
         return false
     }
 
@@ -585,14 +615,18 @@ class PlayViewModel(
 
     private fun gameOver() {
         gameStatus = GameStatus.Over
+        val character = characterState?.character ?: return
         loopJob?.cancel()
         windJob?.cancel()
         invincibilityJob?.cancel()
         slowEffectJob?.cancel()
         isInvincible = false
         isSlowEffectActive = false
-        soundEffectPlayer.playGameOver()
-
+        if (character.name == "Oii") {
+            soundEffectPlayer.playOiiOver()
+        } else {
+            soundEffectPlayer.playGameOver()
+        }
         val currentLevel = levelState?.level ?: return
         if (currentScore > bestScore) {
             saveBestScore(currentLevel, currentScore)

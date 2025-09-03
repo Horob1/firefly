@@ -385,12 +385,12 @@ fun PlayScreen(
             }
     ) {
         characterState?.let { character ->
+            val halfWidth = character.width / 2
+            val halfHeight = character.height / 2
+
             rotate(
                 degrees = animateAngle,
-                pivot = Offset(
-                    x = character.x - character.radius,
-                    y = character.y - character.radius
-                )
+                pivot = Offset(character.x, character.y)
             ) {
                 drawSpriteView(
                     spriteState = spriteState,
@@ -398,8 +398,8 @@ fun PlayScreen(
                     currentFrame = currentFrame,
                     image = spriteImage,
                     offset = IntOffset(
-                        x = (character.x - character.radius).toInt(),
-                        y = (character.y - character.radius).toInt()
+                        x = (character.x - halfWidth).toInt(),
+                        y = (character.y - halfHeight).toInt()
                     ),
                 )
             }

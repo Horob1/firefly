@@ -4,8 +4,7 @@ data class Game(
     val screenWidth: Int = 0,
     val screenHeight: Int = 0,
     val gravity: Float = 0.8f, //trong luc
-    val birdRadius: Float = 30f,
-    val birdJumpImpulse: Float = -15f, //luc nhay
+    val birdJumpImpulse: Float = -20f, //luc nhay
     val birdMaxVelocity: Float = 25f, //van toc max
     val pipeWidth: Float = 150f,
     val pipeVelocity: Float = 5f,

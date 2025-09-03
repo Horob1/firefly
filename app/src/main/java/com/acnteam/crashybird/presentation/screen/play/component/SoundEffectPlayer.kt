@@ -12,6 +12,7 @@ class SoundEffectPlayer(context: Context) {
     private var jumpSound: Int = soundPool.load(context, R.raw.jump, 1)
     private var fallSound: Int = soundPool.load(context, R.raw.falling, 1)
     private var gameOverSound: Int = soundPool.load(context, R.raw.game_over, 1)
+    private var oiiOverSound: Int = soundPool.load(context, R.raw.oii_over, 1)
 
     var sfxEnabled = true
     var sfxVolume = 1.0f
@@ -26,6 +27,10 @@ class SoundEffectPlayer(context: Context) {
 
     fun playGameOver() {
         if (sfxEnabled) soundPool.play(gameOverSound, sfxVolume, sfxVolume, 1, 0, 1f)
+    }
+
+    fun playOiiOver() {
+        if (sfxEnabled) soundPool.play(oiiOverSound, sfxVolume, sfxVolume, 1, 0, 1f)
     }
 
     fun release() {

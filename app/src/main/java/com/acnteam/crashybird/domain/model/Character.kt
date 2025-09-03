@@ -12,6 +12,7 @@ sealed class Character(
     val frameHeight: Int,
     @StringRes val desc: Int,
     val coin: Int = 0,
+    val radius: Float = 20f,
     val skills: List<Skill> = emptyList()
 ) {
     companion object {
@@ -37,16 +38,18 @@ sealed class Character(
             frameWidth = 160,
             frameHeight = 103,
             R.string.desc_jack,
+            radius = 40f,
             skills = listOf()
         )
 
     data object Oii : Character(
         "Oii",
-        R.drawable.oii,
+        R.drawable.domixi,
         frameWidth = 200,
         frameHeight = 84,
         R.string.desc_oii,
         coin = 10000,
+        radius = 36f,
         skills = listOf(Skill.DASH)
     )
 
@@ -57,6 +60,7 @@ sealed class Character(
         frameHeight = 80,
         R.string.desc_bee,
         coin = 1000,
+        radius = 20f,
         skills = listOf(Skill.HIGH_JUMP, Skill.DASH)
     )
 
@@ -67,6 +71,7 @@ sealed class Character(
         frameHeight = 160,
         R.string.desc_virus,
         coin = 5000,
+        radius = 20f,
         skills = listOf(Skill.HIGH_JUMP, Skill.DASH, Skill.SLOW)
     )
 }
