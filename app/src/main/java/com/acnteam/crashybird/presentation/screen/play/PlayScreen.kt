@@ -56,6 +56,7 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
@@ -485,7 +486,7 @@ fun PlayScreen(
             contentAlignment = Alignment.TopCenter
         ) {
             Text(
-                text = "BẤT TỬ!",
+                text = stringResource(R.string.text_immortal),
                 color = Color.Yellow,
                 fontSize = MaterialTheme.typography.headlineMedium.fontSize,
                 modifier = Modifier

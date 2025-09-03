@@ -7,6 +7,6 @@ data class Game(
     val birdJumpImpulse: Float = -20f, //luc nhay
     val birdMaxVelocity: Float = 25f, //van toc max
     val pipeWidth: Float = 150f,
-    val pipeVelocity: Float = 5f,
+    val pipeVelocity: Float = 8f,
     val pipeGapSize: Float = 400f,
 )

@@ -18,7 +18,7 @@ class InitDataUseCase(
                 Level.getAll().map {
                     LevelEntity(
                         levelNumber = it.levelNumber,
-                        isUnlocked = true,
+                        isUnlocked = it.levelNumber == 1,
                         highScore = 0
                     )
                 }

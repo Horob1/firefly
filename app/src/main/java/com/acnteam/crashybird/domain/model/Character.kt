@@ -12,7 +12,6 @@ sealed class Character(
     val frameHeight: Int,
     @StringRes val desc: Int,
     val coin: Int = 0,
-    val radius: Float = 20f,
     val skills: List<Skill> = emptyList()
 ) {
     companion object {
@@ -20,14 +19,15 @@ sealed class Character(
             return when (name) {
                 Jack.name -> Jack
                 Oii.name -> Oii
-                Bee.name -> Bee
                 Virus.name -> Virus
+                Bee.name -> Bee
+                GrandFather.name -> GrandFather
                 else -> Jack
             }
         }
 
         fun getAll(): List<Character> {
-            return listOf(Jack, Oii, Bee, Virus)
+            return listOf(Jack, Oii, Virus, Bee, GrandFather)
         }
     }
 
@@ -38,7 +38,6 @@ sealed class Character(
             frameWidth = 160,
             frameHeight = 103,
             R.string.desc_jack,
-            radius = 40f,
             skills = listOf()
         )
 
@@ -48,20 +47,8 @@ sealed class Character(
         frameWidth = 200,
         frameHeight = 84,
         R.string.desc_oii,
-        coin = 10000,
-        radius = 36f,
-        skills = listOf(Skill.DASH)
-    )
-
-    data object Bee : Character(
-        "Bee",
-        R.drawable.bee_sprite,
-        frameWidth = 80,
-        frameHeight = 80,
-        R.string.desc_bee,
         coin = 1000,
-        radius = 20f,
-        skills = listOf(Skill.HIGH_JUMP, Skill.DASH)
+        skills = listOf(Skill.DASH)
     )
 
     data object Virus : Character(
@@ -71,7 +58,27 @@ sealed class Character(
         frameHeight = 160,
         R.string.desc_virus,
         coin = 5000,
-        radius = 20f,
+        skills = listOf(Skill.HIGH_JUMP, Skill.DASH)
+    )
+
+    data object Bee : Character(
+        "Bee",
+        R.drawable.bee_sprite,
+        frameWidth = 80,
+        frameHeight = 80,
+        R.string.desc_bee,
+        coin = 10000,
+        skills = listOf(Skill.HIGH_JUMP, Skill.DASH, Skill.SLOW)
+    )
+
+
+    data object GrandFather : Character(
+        "GrandFather Teacher",
+        R.drawable.quylao,
+        frameWidth = 150,
+        frameHeight = 165,
+        R.string.desc_grand_father,
+        coin = 10000,
         skills = listOf(Skill.HIGH_JUMP, Skill.DASH, Skill.SLOW)
     )
 }

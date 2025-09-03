@@ -65,24 +65,27 @@ class RankRepositoryImpl : RankRepository {
 
     override suspend fun fetchRank(): List<RankState> {
         val ranks = mutableListOf<RankState>()
-        for (level in 1..5) {
+        for (level in Level.getAll()) {
             try {
                 val snapshot = store.collection(COLLECTION_NAME)
-                    .whereEqualTo(LEVEL, level)
+                    .whereEqualTo(LEVEL, level.levelNumber)
                     .orderBy(SCORE, Query.Direction.DESCENDING)
                     .limit(1)
                     .get()
                     .await()
 
                 val default = RankState(
-                    Level.getByLevelNumber(level),
+                    level,
                     "NO USER",
                     0
                 )
 
-                if (snapshot.isEmpty) ranks.add(
-                    default
-                )
+                if (snapshot.isEmpty) {
+                    ranks.add(
+                        default
+                    )
+                    continue
+                }
                 val rankDto = snapshot.documents[0].toObject(RankDto::class.java)
 
                 if (rankDto != null) {
@@ -93,7 +96,7 @@ class RankRepositoryImpl : RankRepository {
 
                 ranks.add(
                     RankState(
-                        Level.getByLevelNumber(level),
+                        level,
                         rankDto!!.username,
                         rankDto.score
                     )
@@ -101,7 +104,7 @@ class RankRepositoryImpl : RankRepository {
             } catch (e: Exception) {
                 ranks.add(
                     RankState(
-                        Level.getByLevelNumber(level),
+                        level,
                         "NO USER",
                         0
                     )

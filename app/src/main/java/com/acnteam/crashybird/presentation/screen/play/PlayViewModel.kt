@@ -99,9 +99,9 @@ class PlayViewModel(
     private var isSlowEffectActive = false
 
     //cooldowns
-    private val DASH_COOLDOWN = 15000L // 5 seconds
-    private val HIGH_JUMP_COOLDOWN = 13000L // 3 seconds
-    private val SLOW_COOLDOWN = 8000L // 8 seconds
+    private val DASH_COOLDOWN = 20000L // 20 seconds
+    private val HIGH_JUMP_COOLDOWN = 13000L // 13 seconds
+    private val SLOW_COOLDOWN = 15000L // 15 seconds
     private val SLOW_EFFECT_DURATION = 3000L // 3 seconds
 
     private var velocityY = 0f
@@ -447,33 +447,39 @@ class PlayViewModel(
         val maxTopHeight = screenHeight - gameConfig.pipeGapSize - 100f
         val finalTopHeight = Random.nextFloat() * (maxTopHeight - minTopHeight) + minTopHeight
         val finalBottomHeight = screenHeight - finalTopHeight - gameConfig.pipeGapSize
-        return if (levelState?.level?.levelNumber == 5) {
-            PipePair(
-                x = initialPipeX,
-                y = finalTopHeight + gameConfig.pipeGapSize / 2,
-                topHeight = 0f,
-                bottomHeight = 0f,
-                scored = false,
-                targetTopHeight = finalTopHeight,
-                targetBottomHeight = finalBottomHeight
-            )
-        } else if (levelState?.level?.levelNumber in listOf(3, 4)) {
-            PipePair(
-                x = initialPipeX,
-                y = finalTopHeight + gameConfig.pipeGapSize / 2,
-                topHeight = finalTopHeight,
-                bottomHeight = 0f,
-                scored = false,
-                targetBottomHeight = finalBottomHeight
-            )
-        } else {
-            PipePair(
-                x = initialPipeX,
-                y = finalTopHeight + gameConfig.pipeGapSize / 2,
-                topHeight = finalTopHeight,
-                bottomHeight = finalBottomHeight,
-                scored = false
-            )
+        return when (levelState?.level?.levelNumber) {
+            in listOf(5, 6) -> {
+                PipePair(
+                    x = initialPipeX,
+                    y = finalTopHeight + gameConfig.pipeGapSize / 2,
+                    topHeight = 0f,
+                    bottomHeight = 0f,
+                    scored = false,
+                    targetTopHeight = finalTopHeight,
+                    targetBottomHeight = finalBottomHeight
+                )
+            }
+
+            in listOf(3, 4) -> {
+                PipePair(
+                    x = initialPipeX,
+                    y = finalTopHeight + gameConfig.pipeGapSize / 2,
+                    topHeight = finalTopHeight,
+                    bottomHeight = 0f,
+                    scored = false,
+                    targetBottomHeight = finalBottomHeight
+                )
+            }
+
+            else -> {
+                PipePair(
+                    x = initialPipeX,
+                    y = finalTopHeight + gameConfig.pipeGapSize / 2,
+                    topHeight = finalTopHeight,
+                    bottomHeight = finalBottomHeight,
+                    scored = false
+                )
+            }
         }
     }
 
@@ -633,7 +639,7 @@ class PlayViewModel(
             bestScore = currentScore
         }
         viewModelScope.launch {
-            addCoinUseCase(currentScore * 1000)
+            addCoinUseCase(currentScore * 10)
         }
     }
 
