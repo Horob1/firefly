@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.acnteam.crashybird.domain.model.Character
+import com.acnteam.crashybird.domain.model.GraphicMode
 import com.acnteam.crashybird.domain.model.Level
 import com.acnteam.crashybird.domain.repository.GameRepository
 import com.acnteam.crashybird.presentation.widget.mapplayer.MapPlayerWidget
@@ -26,6 +27,7 @@ class GameRepositoryImpl(private val context: Context) : GameRepository {
         val COIN = intPreferencesKey("coin")
 
         val CURRENT_CHARACTER = stringPreferencesKey("current_character")
+        val CURRENT_GRAPHIC_MODE = intPreferencesKey("current_graphic_mode")
     }
 
     override fun getCoin(): Flow<Int> {
@@ -77,6 +79,19 @@ class GameRepositoryImpl(private val context: Context) : GameRepository {
     override suspend fun withdrawCoin(coin: Int) {
         dataStore.edit {
             it[PreferencesKeys.COIN] = (it[PreferencesKeys.COIN] ?: 0) - coin
+        }
+    }
+
+    override fun getGraphicMode(): Flow<GraphicMode> {
+        return dataStore.data.map {
+            val mode = it[PreferencesKeys.CURRENT_GRAPHIC_MODE] ?: 30
+            GraphicMode.getByFps(mode)
+        }
+    }
+
+    override suspend fun setGraphicMode(mode: GraphicMode) {
+        dataStore.edit {
+            it[PreferencesKeys.CURRENT_GRAPHIC_MODE] = mode.fps
         }
     }
 }

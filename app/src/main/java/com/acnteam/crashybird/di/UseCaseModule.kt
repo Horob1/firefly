@@ -9,6 +9,7 @@ import com.acnteam.crashybird.domain.usecase.GetCoinUseCase
 import com.acnteam.crashybird.domain.usecase.GetCurrentCharacterUseCase
 import com.acnteam.crashybird.domain.usecase.GetCurrentLevelUseCase
 import com.acnteam.crashybird.domain.usecase.GetFirstTimeInHomeState
+import com.acnteam.crashybird.domain.usecase.GetGraphicModeUseCase
 import com.acnteam.crashybird.domain.usecase.GetLevelStateListUseCase
 import com.acnteam.crashybird.domain.usecase.GetOnBoardingStateUseCase
 import com.acnteam.crashybird.domain.usecase.GetRanksUseCase
@@ -18,6 +19,7 @@ import com.acnteam.crashybird.domain.usecase.SaveFirstTimeInHomeState
 import com.acnteam.crashybird.domain.usecase.SetBackgroundMusicSettingsUseCase
 import com.acnteam.crashybird.domain.usecase.SetCurrentCharacterUseCase
 import com.acnteam.crashybird.domain.usecase.SetCurrentLevelUseCase
+import com.acnteam.crashybird.domain.usecase.SetGraphicModeUseCase
 import com.acnteam.crashybird.domain.usecase.SetSoundEffectSettingsUseCase
 import com.acnteam.crashybird.domain.usecase.SyncDownUseCase
 import com.acnteam.crashybird.domain.usecase.SyncToServerUseCase
@@ -129,5 +131,13 @@ val useCaseModule = module {
     }
     single {
         UpdatePlaySectionUseCase(get())
+    }
+
+    single {
+        GetGraphicModeUseCase(get())
+    }
+
+    single {
+        SetGraphicModeUseCase(get())
     }
 }

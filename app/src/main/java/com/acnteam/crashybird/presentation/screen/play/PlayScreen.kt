@@ -56,6 +56,7 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -94,7 +95,7 @@ fun PlayScreen(
     levelNumber: Int,
     characterName: String,
     viewModel: PlayViewModel,
-    navController: NavController
+    navController: NavController,
 ) {
 
     val downWindImage: ImageBitmap = ImageBitmap.imageResource(id = R.drawable.down_wind)
@@ -131,6 +132,7 @@ fun PlayScreen(
     val lifecycleOwner = LocalLifecycleOwner.current
     val totalFirefly = levelState?.firefliesRequired
     val firefliesCollected = viewModel.levelState?.firefliesCollected ?: 0
+    val graphicMode by viewModel.graphicMode.collectAsState()
 
     BackHandler {
         viewModel.pauseGame()
@@ -474,6 +476,7 @@ fun PlayScreen(
                 )
             )
         }
+
     }
 
     if (viewModel.isInvincible) {
@@ -549,7 +552,7 @@ fun PlayScreen(
         }
     }
 
-    //Skill
+    //Skill and fps
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -578,6 +581,15 @@ fun PlayScreen(
                 )
             }
         }
+
+        Text(
+            text = graphicMode.fps.toString(),
+            style = MaterialTheme.typography.headlineMedium.copy(
+                color = Color.White,
+                fontWeight = FontWeight.SemiBold
+            ),
+            modifier = Modifier.align(Alignment.BottomEnd)
+        )
     }
 
     GameStatusOverlay(

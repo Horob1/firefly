@@ -36,6 +36,7 @@ fun SettingScreen(
 ) {
     val backgroundMusicSettings by viewModel.backgroundMusicSettings.collectAsStateWithLifecycle()
     val soundEffectSettings by viewModel.soundEffectSettings.collectAsStateWithLifecycle()
+    val graphicMode by viewModel.graphicMode.collectAsStateWithLifecycle()
     val musicList = remember {
         BackgroundMusic.getAlls()
     }
@@ -101,6 +102,13 @@ fun SettingScreen(
                     viewModel.setSoundEffectSettings(
                         soundEffectSettings.copy(isEnabled = !soundEffectSettings.isEnabled)
                     )
+                }
+            )
+
+            GraphicPicker(
+                currentGraphicMode = graphicMode,
+                onGraphicModeChange = { graphicM ->
+                    viewModel.setGraphicMode(graphicM)
                 }
             )
 

@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.acnteam.crashybird.domain.model.BackgroundMusic
 import com.acnteam.crashybird.domain.model.BackgroundMusicSettings
 import com.acnteam.crashybird.domain.model.Character
+import com.acnteam.crashybird.domain.model.GraphicMode
 import com.acnteam.crashybird.domain.model.Level
 import com.acnteam.crashybird.domain.model.SoundEffectSettings
 import com.acnteam.crashybird.domain.model.game.CharacterPlayState
@@ -20,6 +21,7 @@ import com.acnteam.crashybird.domain.model.game.PipePair
 import com.acnteam.crashybird.domain.usecase.AddCoinUseCase
 import com.acnteam.crashybird.domain.usecase.GetBackgroundMusicSettingsUseCase
 import com.acnteam.crashybird.domain.usecase.GetBestScoreUseCase
+import com.acnteam.crashybird.domain.usecase.GetGraphicModeUseCase
 import com.acnteam.crashybird.domain.usecase.GetSoundEffectSettingsUseCase
 import com.acnteam.crashybird.domain.usecase.SetBackgroundMusicSettingsUseCase
 import com.acnteam.crashybird.domain.usecase.SetSoundEffectSettingsUseCase
@@ -39,6 +41,7 @@ import kotlin.random.Random
 class PlayViewModel(
     getBackgroundMusicSettingsUseCase: GetBackgroundMusicSettingsUseCase,
     getSoundEffectSettingsUseCase: GetSoundEffectSettingsUseCase,
+    getGraphicModeUseCase: GetGraphicModeUseCase,
     private val setBackgroundMusicSettingsUseCase: SetBackgroundMusicSettingsUseCase,
     private val setSoundEffectSettingsUseCase: SetSoundEffectSettingsUseCase,
     private val soundEffectPlayer: SoundEffectPlayer,
@@ -49,7 +52,6 @@ class PlayViewModel(
 ) : ViewModel() {
 
     private var gameConfig = Game()
-    val gameFps = 16L
 
     //game job
     val currentGameConfig: Game get() = gameConfig
@@ -58,6 +60,14 @@ class PlayViewModel(
     private var windJob: Job? = null
     private var invincibilityJob: Job? = null
     private var slowEffectJob: Job? = null
+
+    private val _graphicMode = getGraphicModeUseCase().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = GraphicMode.LOW
+    )
+
+    val graphicMode: StateFlow<GraphicMode> = _graphicMode
 
     var characterState by mutableStateOf<CharacterPlayState?>(null)
         private set
@@ -81,6 +91,7 @@ class PlayViewModel(
         private set
     private val _toastMessage = MutableStateFlow<String?>(null)
     val toastMessage: StateFlow<String?> = _toastMessage
+
     //recovery time
     private var dashCooldownUntil = 0L
     private var highJumpCooldownUntil = 0L
@@ -300,7 +311,9 @@ class PlayViewModel(
         loopJob = viewModelScope.launch {
             while (isActive && gameStatus == GameStatus.Started) {
                 updateFrame()
-                val frameDelay = if (isSlowEffectActive) gameFps*2 else gameFps
+                val gameFps = _graphicMode.value.fps
+                val frameDelay =
+                    if (isSlowEffectActive) (1000L / gameFps) * 2 else (1000L / gameFps)
                 delay(frameDelay)
             }
         }
@@ -310,8 +323,10 @@ class PlayViewModel(
         val character = characterState ?: return
         val level = levelState ?: return
 
-        val gravityEffect = if (level.level.levelNumber == 6) -gameConfig.gravity else gameConfig.gravity
-        val windEffect = if (level.level.levelNumber == 6) -level.windY * windEffectY else level.windY * windEffectY
+        val gravityEffect =
+            if (level.level.levelNumber == 6) -gameConfig.gravity else gameConfig.gravity
+        val windEffect =
+            if (level.level.levelNumber == 6) -level.windY * windEffectY else level.windY * windEffectY
 
         velocityY = velocityY + gravityEffect + windEffect
 
@@ -608,7 +623,8 @@ class PlayViewModel(
             while (isActive) {
                 windDirectionToggle = !windDirectionToggle
                 updateWind()
-                val windDelay = if (isSlowEffectActive) 10_000L else 5_000L // Slower wind changes during slow effect
+                val windDelay =
+                    if (isSlowEffectActive) 10_000L else 5_000L // Slower wind changes during slow effect
                 delay(windDelay)
                 levelState = levelState?.copy(windX = 0f, windY = 0f)
                 val calmDelay = if (isSlowEffectActive) 4_000L else 2_000L
@@ -672,7 +688,7 @@ class PlayViewModel(
     }
 
     fun getWindForLevel(levelNumber: Int): Pair<Float, Float> {
-        return when(levelNumber) {
+        return when (levelNumber) {
             1 -> Pair(0f, 0f)
             2 -> Pair(2f, 0f)
             3 -> Pair(2f, 0f)
@@ -682,6 +698,7 @@ class PlayViewModel(
             else -> Pair(0f, 0f)
         }
     }
+
     fun resetToastMessage() {
         _toastMessage.value = null
     }
