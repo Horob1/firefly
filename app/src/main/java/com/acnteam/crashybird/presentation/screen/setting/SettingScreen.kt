@@ -1,5 +1,7 @@
 package com.acnteam.crashybird.presentation.screen.setting
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -28,6 +30,7 @@ import com.acnteam.crashybird.presentation.ui.theme.Black
 import com.acnteam.crashybird.presentation.ui.theme.BrownPrimary
 import com.acnteam.crashybird.presentation.ui.theme.White
 
+@RequiresApi(Build.VERSION_CODES.R)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingScreen(

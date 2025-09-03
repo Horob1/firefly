@@ -1,9 +1,11 @@
 package com.acnteam.crashybird.presentation
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.getValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -20,6 +22,7 @@ import org.koin.core.component.inject
 class MainActivity : ComponentActivity(), KoinComponent {
     private val viewModel: SplashViewModel by inject()
 
+    @RequiresApi(Build.VERSION_CODES.R)
     @OptIn(ExperimentalAnimationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

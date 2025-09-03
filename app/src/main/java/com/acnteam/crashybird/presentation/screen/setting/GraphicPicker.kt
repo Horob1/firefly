@@ -110,13 +110,14 @@ fun GraphicPicker(
                 Box(
                     modifier = childModifier
                         .clickable {
-                            val display = context.display
-                            val refreshRate = display.refreshRate
-                            if (refreshRate >= mode.fps.toFloat()) {
-                                onGraphicModeChange(mode)
-                            } else {
-                                Toast.makeText(context, context.getText(R.string.alert_your_device_not_support_this_fps), Toast.LENGTH_SHORT).show()
-                            }
+//                            val display = context.display
+//                            val refreshRate = display.refreshRate
+//                            if (refreshRate >= mode.fps.toFloat()) {
+//                                onGraphicModeChange(mode)
+//                            } else {
+//                                Toast.makeText(context, context.getText(R.string.alert_your_device_not_support_this_fps), Toast.LENGTH_SHORT).show()
+//                            }
+                            onGraphicModeChange(mode)
                         }
                         .padding(vertical = 12.dp),
                     contentAlignment = Alignment.Center

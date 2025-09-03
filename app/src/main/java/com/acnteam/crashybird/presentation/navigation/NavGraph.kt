@@ -1,5 +1,7 @@
 package com.acnteam.crashybird.presentation.navigation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -30,6 +32,7 @@ import com.acnteam.crashybird.presentation.screen.welcome.WelcomeScreen
 import com.acnteam.crashybird.presentation.screen.welcome.WelcomeViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
+@RequiresApi(Build.VERSION_CODES.R)
 @ExperimentalAnimationApi
 @Composable
 fun SetupNavGraph(
