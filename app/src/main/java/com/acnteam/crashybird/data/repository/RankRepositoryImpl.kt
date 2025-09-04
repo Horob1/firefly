@@ -88,10 +88,11 @@ class RankRepositoryImpl : RankRepository {
                 }
                 val rankDto = snapshot.documents[0].toObject(RankDto::class.java)
 
-                if (rankDto != null) {
+                if (rankDto == null) {
                     ranks.add(
                         default
                     )
+                    continue
                 }
 
                 ranks.add(

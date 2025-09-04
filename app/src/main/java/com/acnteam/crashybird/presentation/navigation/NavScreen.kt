@@ -22,5 +22,6 @@ sealed class NavScreen {
     @Serializable
     data object Rank : NavScreen()
 
-    
+    @Serializable
+    data object Shop: NavScreen()
 }
