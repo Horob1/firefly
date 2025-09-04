@@ -43,12 +43,16 @@ fun RankCard(
         score = 100,
         level = Level.One,
     ),
+    onClick: (Int) -> Unit = {}
 ) {
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(
             containerColor = OrangeAccent,
-        )
+        ),
+        onClick = {
+            onClick(rankState.level.levelNumber)
+        }
     ) {
         Row(
             modifier = Modifier

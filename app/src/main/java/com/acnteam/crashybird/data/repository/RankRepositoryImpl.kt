@@ -98,7 +98,7 @@ class RankRepositoryImpl : RankRepository {
                 ranks.add(
                     RankState(
                         level,
-                        rankDto!!.username,
+                        rankDto.username,
                         rankDto.score
                     )
                 )
@@ -143,5 +143,37 @@ class RankRepositoryImpl : RankRepository {
         }
 
         return ranks
+    }
+
+    override suspend fun fetchMyRankOfLevel(levelNumber: Int): RankState {
+        try {
+            val snapshot = store.collection(COLLECTION_NAME)
+                .document(
+                    "${auth.currentUser!!.uid}_$levelNumber"
+                )
+                .get()
+                .await()
+
+            val rankDto = snapshot.toObject(RankDto::class.java)
+            if (rankDto != null) {
+                return RankState(
+                    Level.getByLevelNumber(levelNumber),
+                    rankDto.username,
+                    rankDto.score
+                )
+            }
+            return RankState(
+                Level.getByLevelNumber(levelNumber),
+                auth.currentUser?.displayName ?: "No Info",
+                0
+            )
+
+        } catch (e: Exception) {
+            return RankState(
+                Level.getByLevelNumber(levelNumber),
+                auth.currentUser?.displayName ?: "No Info",
+                0
+            )
+        }
     }
 }

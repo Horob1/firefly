@@ -23,5 +23,11 @@ sealed class NavScreen {
     data object Rank : NavScreen()
 
     @Serializable
-    data object Shop: NavScreen()
+    data object Shop : NavScreen()
+
+    @Serializable
+    data class RankDetail(
+        val levelNumber: Int,
+    ) : NavScreen()
+
 }

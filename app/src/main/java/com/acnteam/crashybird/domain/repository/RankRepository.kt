@@ -11,4 +11,6 @@ interface RankRepository {
     suspend fun fetchRank(): List<RankState>
 
     suspend fun fetchRankOfLevel(levelNumber: Int): List<RankState>
+
+    suspend fun fetchMyRankOfLevel(levelNumber: Int): RankState
 }

@@ -38,6 +38,7 @@ import com.acnteam.crashybird.presentation.ui.theme.White
 fun RankScreen(
     onBackClick: () -> Unit,
     viewModel: RankViewModel,
+    onClick: (Int) -> Unit,
 ) {
 
     LaunchedEffect(Unit) {
@@ -104,7 +105,8 @@ fun RankScreen(
                     items(rankState.size, key = { rank -> rank }) { rank ->
                         val rankState = rankState[rank]
                         RankCard(
-                            rankState = rankState
+                            rankState = rankState,
+                            onClick = onClick
                         )
                     }
                 }

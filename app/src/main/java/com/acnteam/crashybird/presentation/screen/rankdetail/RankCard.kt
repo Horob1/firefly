@@ -35,7 +35,7 @@ fun RankCard(
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .background(
-                color = Color.White.copy(
+                color = Color.Gray.copy(
                     0.5f
                 )
             ).border(
@@ -63,7 +63,9 @@ fun RankCard(
                 Image(
                     painter = painterResource(id = rankResource),
                     contentDescription = "rank of $name",
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(
+                        1f - 0.1f * rank
+                    )
                 )
             }
             else {

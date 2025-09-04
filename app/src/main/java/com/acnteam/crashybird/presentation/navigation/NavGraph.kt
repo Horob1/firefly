@@ -24,6 +24,8 @@ import com.acnteam.crashybird.presentation.screen.play.PlayScreen
 import com.acnteam.crashybird.presentation.screen.play.PlayViewModel
 import com.acnteam.crashybird.presentation.screen.rank.RankScreen
 import com.acnteam.crashybird.presentation.screen.rank.RankViewModel
+import com.acnteam.crashybird.presentation.screen.rankdetail.RankDetailScreen
+import com.acnteam.crashybird.presentation.screen.rankdetail.RankDetailViewModel
 import com.acnteam.crashybird.presentation.screen.setting.SettingScreen
 import com.acnteam.crashybird.presentation.screen.setting.SettingViewModel
 import com.acnteam.crashybird.presentation.screen.user.UserScreen
@@ -126,7 +128,19 @@ fun SetupNavGraph(
                 onBackClick = {
                     navController.popBackStack()
                 },
-                viewModel = viewModel
+                viewModel = viewModel,
+                onClick = { levelNumber ->
+                    navController.navigate(NavScreen.RankDetail(levelNumber))
+                }
+            )
+        }
+
+        composable<NavScreen.RankDetail> {
+            val viewModel = koinViewModel<RankDetailViewModel>()
+            val arg = it.toRoute<NavScreen.RankDetail>()
+            RankDetailScreen(
+                viewModel = viewModel,
+                levelNumber = arg.levelNumber
             )
         }
     }
