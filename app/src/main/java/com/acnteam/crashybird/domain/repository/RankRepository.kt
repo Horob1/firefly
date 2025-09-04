@@ -9,4 +9,6 @@ interface RankRepository {
     suspend fun upDateGameScore(score: Int, level: Level): Result<Unit>
 
     suspend fun fetchRank(): List<RankState>
+
+    suspend fun fetchRankOfLevel(levelNumber: Int): List<RankState>
 }

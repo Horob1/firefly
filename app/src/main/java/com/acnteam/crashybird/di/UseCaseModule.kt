@@ -2,6 +2,7 @@ package com.acnteam.crashybird.di
 
 import com.acnteam.crashybird.domain.usecase.AddCoinUseCase
 import com.acnteam.crashybird.domain.usecase.CompleteOnBoardingUseCase
+import com.acnteam.crashybird.domain.usecase.FetchRankOfLevelUseCase
 import com.acnteam.crashybird.domain.usecase.GetBackgroundMusicSettingsUseCase
 import com.acnteam.crashybird.domain.usecase.GetBestScoreUseCase
 import com.acnteam.crashybird.domain.usecase.GetCharacterListUseCase
@@ -139,5 +140,9 @@ val useCaseModule = module {
 
     single {
         SetGraphicModeUseCase(get())
+    }
+
+    single {
+        FetchRankOfLevelUseCase(get())
     }
 }

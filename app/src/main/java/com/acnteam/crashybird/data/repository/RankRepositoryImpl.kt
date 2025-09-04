@@ -113,4 +113,34 @@ class RankRepositoryImpl : RankRepository {
         }
         return ranks
     }
+
+    override suspend fun fetchRankOfLevel(levelNumber: Int): List<RankState> {
+        val ranks = mutableListOf<RankState>()
+        try {
+            val snapshot = store.collection(COLLECTION_NAME)
+                .whereEqualTo(LEVEL, levelNumber)
+                .orderBy(SCORE, Query.Direction.DESCENDING)
+                .limit(5)
+                .get()
+                .await()
+
+            for (document in snapshot.documents) {
+                val rankDto = document.toObject(RankDto::class.java)
+                if (rankDto != null) {
+                    ranks.add(
+                        RankState(
+                            Level.getByLevelNumber(levelNumber),
+                            rankDto.username,
+                            rankDto.score
+                        )
+                    )
+                }
+            }
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        return ranks
+    }
 }
