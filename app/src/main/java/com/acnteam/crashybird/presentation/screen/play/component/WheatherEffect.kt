@@ -1,6 +1,7 @@
 package com.acnteam.crashybird.presentation.screen.play.component
 
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,30 +21,31 @@ import kotlinx.coroutines.delay
 fun WindEffect(
     image: ImageBitmap,
     modifier: Modifier = Modifier,
-    durationMs: Int = 1200,
-    disappearMs: Int = 600,
-    repeat: Boolean = false,
-    fromRight: Boolean = false,
-    onFinish: (() -> Unit)? = null
+    onFinish: (() -> Unit)? = null,
+    fromRight: Boolean = false
 ) {
     val progress = remember { Animatable(0f) }
 
-    LaunchedEffect(image, repeat) {
-        do {
-            progress.snapTo(0f)
-            progress.animateTo(
-                1f,
-                animationSpec = tween(durationMillis = durationMs)
-            )
+    LaunchedEffect(image, fromRight) {
+        while (true) {
+            // Bắt đầu thổi mạnh (10s full gió)
+            progress.snapTo(1f)
+            delay(10_000L)
+
+            // Giảm dần trong 5s (từ 1f → 0f)
             progress.animateTo(
                 0f,
-                animationSpec = tween(durationMillis = disappearMs)
+                animationSpec = tween(durationMillis = 5_000, easing = LinearEasing)
             )
 
+            // Nghỉ 10s (gió = 0)
+            progress.snapTo(0f)
+            delay(10_000L)
+
             onFinish?.invoke()
-            if (repeat) delay(200)
-        } while (repeat)
+        }
     }
+
     Canvas(modifier = modifier) {
         val w = size.width
         val h = size.height

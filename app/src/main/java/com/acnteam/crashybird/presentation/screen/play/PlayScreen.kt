@@ -83,8 +83,10 @@ import com.acnteam.crashybird.presentation.screen.play.component.FirefliesUI
 import com.acnteam.crashybird.presentation.screen.play.component.GameStatusOverlay
 import com.acnteam.crashybird.presentation.screen.play.component.RainEffect
 import com.acnteam.crashybird.presentation.screen.play.component.WindEffect
+import com.acnteam.crashybird.presentation.screen.play.component.vibrateFor5s
 import com.acnteam.crashybird.presentation.ui.theme.White
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlin.math.abs
 import kotlin.math.sqrt
 
@@ -113,6 +115,47 @@ fun PlayScreen(
     val toastMessage by viewModel.toastMessage.collectAsState()
     val context = LocalContext.current
 
+    val character = Character.getByName(characterName)
+    val level = Level.getByLevelNumber(levelNumber)
+    val levelState = viewModel.levelState
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val totalFirefly = levelState?.firefliesRequired
+    val firefliesCollected = viewModel.levelState?.firefliesCollected ?: 0
+    val graphicMode by viewModel.graphicMode.collectAsState()
+    val shakeAnim = remember { Animatable(0f) }
+    val animateAngle by animateFloatAsState(
+        targetValue = viewModel.getBirdRotation()
+    )
+
+    val spriteState = rememberSpriteState(
+        totalFrames = 9,
+        framesPerRow = 3
+    )
+
+    val spriteSpec = remember {
+        SpriteSpec(
+            screenWidth = screenWidth.toFloat(),
+            default = SpriteSheet(
+                frameWidth = character.frameWidth,
+                frameHeight = character.frameHeight,
+                imageRes = character.sprite
+            )
+        )
+    }
+    val spriteImage: ImageBitmap = spriteSpec.imageBitmap
+    val currentFrame by spriteState.currentFrame.collectAsState()
+    val pipePairs = viewModel.pipePairs
+    val pipeImage: ImageBitmap =
+        BitmapFactory.decodeResource(context.resources, level.pipeImage).asImageBitmap()
+
+    val pipeCapImage: ImageBitmap =
+        BitmapFactory.decodeResource(context.resources, level.pipeCapImage).asImageBitmap()
+
+    val pipeFlippedImage: ImageBitmap = flipBitmapVertically(pipeCapImage)
+
+    val fireflyYoungImage: ImageBitmap =
+        BitmapFactory.decodeResource(context.resources, R.drawable.dom_con).asImageBitmap()
+
     LaunchedEffect(toastMessage) {
         toastMessage?.let { message ->
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
@@ -126,15 +169,6 @@ fun PlayScreen(
             repeatMode = RepeatMode.Reverse
         )
     )
-
-    val character = Character.getByName(characterName)
-    val level = Level.getByLevelNumber(levelNumber)
-    val levelState = viewModel.levelState
-    val lifecycleOwner = LocalLifecycleOwner.current
-    val totalFirefly = levelState?.firefliesRequired
-    val firefliesCollected = viewModel.levelState?.firefliesCollected ?: 0
-    val graphicMode by viewModel.graphicMode.collectAsState()
-
     BackHandler {
         viewModel.pauseGame()
         showPauseDialog = true
@@ -171,40 +205,6 @@ fun PlayScreen(
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
-
-    val spriteState = rememberSpriteState(
-        totalFrames = 9,
-        framesPerRow = 3
-    )
-
-    val spriteSpec = remember {
-        SpriteSpec(
-            screenWidth = screenWidth.toFloat(),
-            default = SpriteSheet(
-                frameWidth = character.frameWidth,
-                frameHeight = character.frameHeight,
-                imageRes = character.sprite
-            )
-        )
-    }
-
-    val spriteImage: ImageBitmap = spriteSpec.imageBitmap
-    val currentFrame by spriteState.currentFrame.collectAsState()
-    val pipePairs = viewModel.pipePairs
-    val pipeImage: ImageBitmap =
-        BitmapFactory.decodeResource(context.resources, level.pipeImage).asImageBitmap()
-
-    val pipeCapImage: ImageBitmap =
-        BitmapFactory.decodeResource(context.resources, level.pipeCapImage).asImageBitmap()
-
-    val pipeFlippedImage: ImageBitmap = flipBitmapVertically(pipeCapImage)
-    val animateAngle by animateFloatAsState(
-        targetValue = viewModel.getBirdRotation()
-    )
-
-    val fireflyYoungImage: ImageBitmap =
-        BitmapFactory.decodeResource(context.resources, R.drawable.dom_con).asImageBitmap()
-
     LaunchedEffect(Unit) {
         viewModel.initializeGame(characterName, levelNumber)
     }
@@ -233,7 +233,7 @@ fun PlayScreen(
     }
 
     val backgroundOffsetX = remember { Animatable(0f) }
-    var imageWidth by remember { mutableStateOf(0) }
+    var imageWidth by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(gameStatus) {
         if (gameStatus == GameStatus.Started) {
@@ -254,9 +254,37 @@ fun PlayScreen(
         }
     }
 
+
+    LaunchedEffect(levelNumber, gameStatus) {
+        if (levelNumber == 2 && gameStatus == GameStatus.Started) {
+            while (isActive) {
+                val startTime = System.currentTimeMillis()
+                vibrateFor5s(context)
+
+                while (System.currentTimeMillis() - startTime < 5000 && isActive) {
+                    shakeAnim.animateTo(
+                        targetValue = 5f,
+                        animationSpec = tween(30, easing = LinearEasing)
+                    )
+                    shakeAnim.animateTo(
+                        targetValue = -5f,
+                        animationSpec = tween(30, easing = LinearEasing)
+                    )
+                    delay(10)
+                }
+
+                delay(10_000)
+            }
+        } else {
+            shakeAnim.snapTo(0f)
+        }
+    }
+
     // Background Layer
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .offset { IntOffset(shakeAnim.value.toInt(), 0) },
         contentAlignment = Alignment.BottomCenter
     ) {
         // Static background
