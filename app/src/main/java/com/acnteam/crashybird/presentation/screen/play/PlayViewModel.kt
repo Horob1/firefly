@@ -36,6 +36,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlin.math.sin
 import kotlin.random.Random
 
 class PlayViewModel(
@@ -107,8 +108,8 @@ class PlayViewModel(
     private var velocityY = 0f
     private var screenWidth = 0
     private var screenHeight = 0
-    private val windEffectX = 0.5f
-    private val windEffectY = 0.3f
+    private val windEffectX = 1f
+    private val windEffectY = 0.5f
 
     fun initializeGame(characterName: String, levelNumber: Int) {
         val character = Character.getByName(characterName)
@@ -402,6 +403,12 @@ class PlayViewModel(
                 if (newBottomHeight < target) {
                     val riseSpeed = 5f + pipeVelocity * 0.5f
                     newBottomHeight = (newBottomHeight + riseSpeed).coerceAtMost(target)
+
+                    if (levelState?.level?.levelNumber == 2) {
+                        val time = System.currentTimeMillis() / 50f
+                        val shake = sin(time) * 5f
+                        newBottomHeight += shake
+                    }
                 }
             }
 
@@ -410,17 +417,28 @@ class PlayViewModel(
                 if (newTopHeight < target) {
                     val dropSpeed = 5f + pipeVelocity * 0.5f
                     newTopHeight = (newTopHeight + dropSpeed).coerceAtMost(target)
+
+                    if (levelState?.level?.levelNumber == 2) {
+                        val time = System.currentTimeMillis() / 50f
+                        val shake = kotlin.math.cos(time) * 5f
+                        newTopHeight += shake
+                    }
                 }
             }
 
             val gapY = screenHeight - newBottomHeight - gameConfig.pipeGapSize / 2
 
+            val shakeOffset = if (levelState?.level?.levelNumber == 2) {
+                (sin(System.currentTimeMillis() / 50.0) * 5).toFloat() // biên độ 5px
+            } else 0f
+
             pipe.copy(
-                x = pipe.x - pipeVelocity,
+                x = pipe.x - pipeVelocity + shakeOffset,
                 bottomHeight = newBottomHeight,
                 topHeight = newTopHeight,
                 y = gapY
             )
+
         }
 
         val filteredPipes = updatedPipes.filter {
@@ -441,11 +459,12 @@ class PlayViewModel(
         pipePairs = finalPipes
     }
 
+
     private fun generateNewPipe(): PipePair {
         val initialPipeX = screenWidth.toFloat() + gameConfig.pipeWidth
-        val minTopHeight = 100f
-        val maxTopHeight = screenHeight - gameConfig.pipeGapSize - 100f
-        val finalTopHeight = Random.nextFloat() * (maxTopHeight - minTopHeight) + minTopHeight
+        val minPipeHeight = 250f
+        val maxTopHeight = screenHeight - gameConfig.pipeGapSize - minPipeHeight
+        val finalTopHeight = Random.nextFloat() * (maxTopHeight - minPipeHeight) + minPipeHeight
         val finalBottomHeight = screenHeight - finalTopHeight - gameConfig.pipeGapSize
         return when (levelState?.level?.levelNumber) {
             in listOf(5, 6) -> {
@@ -663,15 +682,22 @@ class PlayViewModel(
             while (isActive) {
                 windDirectionToggle = !windDirectionToggle
                 updateWind()
-                val windDelay =
-                    if (isSlowEffectActive) 10_000L else 5_000L // Slower wind changes during slow effect
-                delay(windDelay)
+                delay(10_000L)
+                for (i in 5 downTo 1) {
+                    levelState = levelState?.copy(
+                        windX = (levelState?.windX ?: 0f) * (i / 5f),
+                        windY = (levelState?.windY ?: 0f) * (i / 5f)
+                    )
+                    delay(1_000L)
+                }
+
                 levelState = levelState?.copy(windX = 0f, windY = 0f)
-                val calmDelay = if (isSlowEffectActive) 4_000L else 2_000L
-                delay(calmDelay)
+
+                delay(10_000L)
             }
         }
     }
+
 
     private fun updateWind() {
         val level = levelState?.level ?: return
@@ -742,5 +768,6 @@ class PlayViewModel(
     fun resetToastMessage() {
         _toastMessage.value = null
     }
+
 
 }
