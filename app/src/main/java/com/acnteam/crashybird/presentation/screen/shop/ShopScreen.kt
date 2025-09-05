@@ -378,7 +378,7 @@ fun ItemCard(
                 modifier = Modifier
                     .height(itemState.item.itemHeight.dp)
                     .width(itemState.item.itemWidth.dp),
-                contentScale = ContentScale.FillBounds,
+                contentScale = ContentScale.Inside,
                 alignment = Alignment.Center
             )
         }
