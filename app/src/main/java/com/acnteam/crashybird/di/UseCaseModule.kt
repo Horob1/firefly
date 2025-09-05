@@ -9,9 +9,11 @@ import com.acnteam.crashybird.domain.usecase.GetBestScoreUseCase
 import com.acnteam.crashybird.domain.usecase.GetCharacterListUseCase
 import com.acnteam.crashybird.domain.usecase.GetCoinUseCase
 import com.acnteam.crashybird.domain.usecase.GetCurrentCharacterUseCase
+import com.acnteam.crashybird.domain.usecase.GetCurrentItemUseCase
 import com.acnteam.crashybird.domain.usecase.GetCurrentLevelUseCase
 import com.acnteam.crashybird.domain.usecase.GetFirstTimeInHomeState
 import com.acnteam.crashybird.domain.usecase.GetGraphicModeUseCase
+import com.acnteam.crashybird.domain.usecase.GetItemStateListUseCase
 import com.acnteam.crashybird.domain.usecase.GetLevelStateListUseCase
 import com.acnteam.crashybird.domain.usecase.GetOnBoardingStateUseCase
 import com.acnteam.crashybird.domain.usecase.GetRanksUseCase
@@ -20,12 +22,14 @@ import com.acnteam.crashybird.domain.usecase.InitDataUseCase
 import com.acnteam.crashybird.domain.usecase.SaveFirstTimeInHomeState
 import com.acnteam.crashybird.domain.usecase.SetBackgroundMusicSettingsUseCase
 import com.acnteam.crashybird.domain.usecase.SetCurrentCharacterUseCase
+import com.acnteam.crashybird.domain.usecase.SetCurrentItemUseCase
 import com.acnteam.crashybird.domain.usecase.SetCurrentLevelUseCase
 import com.acnteam.crashybird.domain.usecase.SetGraphicModeUseCase
 import com.acnteam.crashybird.domain.usecase.SetSoundEffectSettingsUseCase
 import com.acnteam.crashybird.domain.usecase.SyncDownUseCase
 import com.acnteam.crashybird.domain.usecase.SyncToServerUseCase
 import com.acnteam.crashybird.domain.usecase.UnlockCharacterUseCase
+import com.acnteam.crashybird.domain.usecase.UnlockItemUseCase
 import com.acnteam.crashybird.domain.usecase.UpdateLevelUseCase
 import com.acnteam.crashybird.domain.usecase.UpdatePlaySectionUseCase
 import com.acnteam.crashybird.domain.usecase.WithDrawCoinUseCase
@@ -64,7 +68,7 @@ val useCaseModule = module {
 
     single {
         InitDataUseCase(
-            get(), get()
+            get(), get(), get()
         )
     }
 
@@ -101,11 +105,11 @@ val useCaseModule = module {
     }
 
     single {
-        SyncToServerUseCase(get(), get(), get(), get())
+        SyncToServerUseCase(get(), get(), get(), get(), get())
     }
 
     single {
-        SyncDownUseCase(get(), get(), get(), get())
+        SyncDownUseCase(get(), get(), get(), get(), get())
     }
 
     single {
@@ -149,5 +153,21 @@ val useCaseModule = module {
 
     single {
         FetchMyRankOfLevelUseCase(get())
+    }
+
+    single {
+        GetItemStateListUseCase(get())
+    }
+
+    single {
+        UnlockItemUseCase(get())
+    }
+
+    single {
+        GetCurrentItemUseCase(get())
+    }
+
+    single {
+        SetCurrentItemUseCase(get())
     }
 }

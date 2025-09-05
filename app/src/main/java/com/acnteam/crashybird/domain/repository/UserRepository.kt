@@ -1,6 +1,7 @@
 package com.acnteam.crashybird.domain.repository
 
 import com.acnteam.crashybird.domain.model.CharacterState
+import com.acnteam.crashybird.domain.model.ItemState
 import com.acnteam.crashybird.domain.model.LevelState
 
 interface UserRepository {
@@ -8,7 +9,8 @@ interface UserRepository {
         coin: Int,
         levels: List<LevelState>,
         chars: List<CharacterState>,
+        items: List<ItemState>,
     ): Result<Unit>
 
-    suspend fun getUserDataFromServer(): Triple<Int, List<LevelState>, List<CharacterState>>
+    suspend fun getUserDataFromServer(): Pair<Pair<Int, List<LevelState>>, Pair<List<CharacterState>, List<ItemState>>>
 }

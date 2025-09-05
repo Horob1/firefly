@@ -2,6 +2,7 @@ package com.acnteam.crashybird.domain.repository
 
 import com.acnteam.crashybird.domain.model.Character
 import com.acnteam.crashybird.domain.model.GraphicMode
+import com.acnteam.crashybird.domain.model.Items
 import com.acnteam.crashybird.domain.model.Level
 import kotlinx.coroutines.flow.Flow
 
@@ -21,4 +22,7 @@ interface GameRepository {
 
     fun getGraphicMode(): Flow<GraphicMode>
     suspend fun setGraphicMode(mode: GraphicMode)
+
+    fun getCurrentItem(): Flow<Items>
+    suspend fun setCurrentItem(item: Items)
 }

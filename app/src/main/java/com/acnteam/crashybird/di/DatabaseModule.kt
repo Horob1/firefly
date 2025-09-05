@@ -12,5 +12,6 @@ val databaseModule = module {
 
     single { get<AppDatabase>().levelDao }
     single { get<AppDatabase>().characterDao }
+    single { get<AppDatabase>().itemDao }
 
 }

@@ -2,10 +2,13 @@ package com.acnteam.crashybird.data.repository
 
 import android.util.Log
 import com.acnteam.crashybird.data.remote.dto.CharacterDto
+import com.acnteam.crashybird.data.remote.dto.ItemDto
 import com.acnteam.crashybird.data.remote.dto.LevelDto
 import com.acnteam.crashybird.data.remote.dto.UserDto
 import com.acnteam.crashybird.domain.model.Character
 import com.acnteam.crashybird.domain.model.CharacterState
+import com.acnteam.crashybird.domain.model.ItemState
+import com.acnteam.crashybird.domain.model.Items
 import com.acnteam.crashybird.domain.model.Level
 import com.acnteam.crashybird.domain.model.LevelState
 import com.acnteam.crashybird.domain.repository.UserRepository
@@ -28,6 +31,7 @@ class UserRepositoryImpl : UserRepository {
         coin: Int,
         levels: List<LevelState>,
         chars: List<CharacterState>,
+        items: List<ItemState>,
     ): Result<Unit> {
         return try {
             val levelList = levels.map {
@@ -43,6 +47,12 @@ class UserRepositoryImpl : UserRepository {
                     isUnlocked = it.isUnlocked,
                 )
             }
+            val itemList = items.map {
+                ItemDto(
+                    name = it.item.name,
+                    isUnlocked = it.isUnlocked,
+                )
+            }
 
 
 
@@ -53,6 +63,7 @@ class UserRepositoryImpl : UserRepository {
                         coin = coin,
                         levels = levelList,
                         characters = characterList,
+                        items = itemList
                     )
                 )
                 .await()
@@ -64,13 +75,20 @@ class UserRepositoryImpl : UserRepository {
     }
 
 
-    override suspend fun getUserDataFromServer(): Triple<Int, List<LevelState>, List<CharacterState>> {
-        val default = Triple(
-            0,
-            Level.getAll()
-                .map { LevelState(it, isUnlocked = it.levelNumber == 1, highestScore = 0) },
-            Character.getAll()
-                .map { CharacterState(it, isUnlocked = Character.Jack.name == it.name) }
+    override suspend fun getUserDataFromServer(): Pair<Pair<Int, List<LevelState>>, Pair<List<CharacterState>, List<ItemState>>> {
+        val default = Pair(
+            Pair(
+                0,
+                Level.getAll()
+                    .map { LevelState(it, isUnlocked = it.levelNumber == 1, highestScore = 0) }
+            ),
+            Pair(
+                Character.getAll()
+                    .map { CharacterState(it, isUnlocked = it.name == Character.Jack.name) },
+                Items.getAll()
+                    .map { ItemState(it, isUnlocked = it.name == Items.ChildFirefly.name) }
+            )
+
         )
         return try {
             val snapshot = store.collection(COLLECTION_NAME)
@@ -84,27 +102,37 @@ class UserRepositoryImpl : UserRepository {
 
             val userDto = snapshot.toObject(UserDto::class.java)
 
-            if (userDto == null || userDto.levels.isEmpty() || userDto.characters.isEmpty()) {
+            if (userDto == null || userDto.levels.isEmpty() || userDto.characters.isEmpty() || userDto.items.isEmpty()) {
                 return default
             }
 
             Log.d("UserRepositoryImpl", "getUserDataFromServer: $userDto")
 
-            Triple(
-                userDto.coin,
-                userDto.levels.map {
-                    LevelState(
-                        Level.getByLevelNumber(it.levelNumber),
-                        isUnlocked = it.isUnlocked,
-                        highestScore = it.highScore
-                    )
-                },
-                userDto.characters.map {
-                    CharacterState(
-                        Character.getByName(it.name),
-                        isUnlocked = it.isUnlocked
-                    )
-                }
+            Pair(
+                Pair(
+                    userDto.coin,
+                    userDto.levels.map {
+                        LevelState(
+                            Level.getByLevelNumber(it.levelNumber),
+                            isUnlocked = it.isUnlocked,
+                            highestScore = it.highScore
+                        )
+                    }
+                ),
+                Pair(
+                    userDto.characters.map {
+                        CharacterState(
+                            Character.getByName(it.name),
+                            isUnlocked = it.isUnlocked
+                        )
+                    },
+                    userDto.items.map {
+                        ItemState(
+                            Items.getByName(it.name),
+                            isUnlocked = it.isUnlocked
+                        )
+                    }
+                )
             )
         } catch (e: Exception) {
             Log.e("UserRepositoryImpl", "getUserDataFromServer: ${e.message}")
