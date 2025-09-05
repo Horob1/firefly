@@ -30,6 +30,4 @@ interface ItemDao {
     """
     )
     suspend fun unlockItem(name: String, isUnlocked: Boolean)
-
-
 }

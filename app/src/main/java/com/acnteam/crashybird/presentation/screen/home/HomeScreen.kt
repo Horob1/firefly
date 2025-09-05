@@ -300,6 +300,9 @@ fun HomeScreen(
                             },
                             onSettingClick = {
                                 navController.navigate(NavScreen.Setting)
+                            },
+                            onShopClick = {
+                                navController.navigate(NavScreen.Shop)
                             }
                         )
 
@@ -350,7 +353,6 @@ fun HomeScreen(
                         },
                         R.string.alert_is_not_enough_coin,
                     )
-
                 }
                 if (showNotUnlock.value) {
                     NotificationAlertDialog(

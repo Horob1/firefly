@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowLeft
 import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.ShoppingBasket
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -69,6 +70,7 @@ fun IntroShowcaseScope.GamePanel(
     onLeftMapClick: () -> Unit = {},
     onRightMapClick: () -> Unit = {},
     onUnlockClick: () -> Unit = {},
+    onShopClick: () -> Unit = {},
 ) {
 
     Column(
@@ -151,6 +153,25 @@ fun IntroShowcaseScope.GamePanel(
                 )
 
                 Icon(Icons.Default.Settings, contentDescription = "Setting button", tint = White)
+            }
+        }
+
+        CrashyBirdButton(
+            modifier = Modifier
+                .width(240.dp),
+            onClick = onShopClick,
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    stringResource(R.string.btn_shop),
+                    style = MaterialTheme.typography.titleLarge,
+                    color = White
+                )
+
+                Icon(Icons.Default.ShoppingBasket, contentDescription = "Shop button", tint = White)
             }
         }
     }

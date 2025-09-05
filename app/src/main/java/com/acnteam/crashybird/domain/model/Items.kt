@@ -17,7 +17,7 @@ sealed class Items(
                 DragonBall.name -> DragonBall
                 Shit.name -> Shit
                 Fox.name -> Fox
-                BallDor.name ->BallDor
+                BallDor.name -> BallDor
                 Meal.name -> Meal
                 WorldCup.name -> WorldCup
                 Noodles.name -> Noodles
@@ -26,7 +26,7 @@ sealed class Items(
         }
 
         fun getAll(): List<Items> {
-            return listOf(ChildFirefly, DragonBall,BallDor)
+            return listOf(ChildFirefly, WorldCup, Noodles, Fox, Meal, DragonBall, Shit, BallDor)
         }
     }
 
@@ -77,7 +77,7 @@ sealed class Items(
         price = 100,
         itemWidth = 100,
         itemHeight = 150,
-        )
+    )
 
     object Shit : Items(
         name = "Shit",

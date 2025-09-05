@@ -28,6 +28,8 @@ import com.acnteam.crashybird.presentation.screen.rankdetail.RankDetailScreen
 import com.acnteam.crashybird.presentation.screen.rankdetail.RankDetailViewModel
 import com.acnteam.crashybird.presentation.screen.setting.SettingScreen
 import com.acnteam.crashybird.presentation.screen.setting.SettingViewModel
+import com.acnteam.crashybird.presentation.screen.shop.ShopScreen
+import com.acnteam.crashybird.presentation.screen.shop.ShopViewModel
 import com.acnteam.crashybird.presentation.screen.user.UserScreen
 import com.acnteam.crashybird.presentation.screen.user.UserViewModel
 import com.acnteam.crashybird.presentation.screen.welcome.WelcomeScreen
@@ -134,13 +136,18 @@ fun SetupNavGraph(
                 }
             )
         }
-
         composable<NavScreen.RankDetail> {
             val viewModel = koinViewModel<RankDetailViewModel>()
             val arg = it.toRoute<NavScreen.RankDetail>()
             RankDetailScreen(
                 viewModel = viewModel,
                 levelNumber = arg.levelNumber
+            )
+        }
+        composable<NavScreen.Shop> {
+            val viewModel = koinViewModel<ShopViewModel>()
+            ShopScreen(
+                viewModel
             )
         }
     }

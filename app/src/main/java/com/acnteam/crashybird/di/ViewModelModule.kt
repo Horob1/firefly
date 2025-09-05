@@ -7,6 +7,7 @@ import com.acnteam.crashybird.presentation.screen.play.PlayViewModel
 import com.acnteam.crashybird.presentation.screen.rank.RankViewModel
 import com.acnteam.crashybird.presentation.screen.rankdetail.RankDetailViewModel
 import com.acnteam.crashybird.presentation.screen.setting.SettingViewModel
+import com.acnteam.crashybird.presentation.screen.shop.ShopViewModel
 import com.acnteam.crashybird.presentation.screen.splash.SplashViewModel
 import com.acnteam.crashybird.presentation.screen.user.UserViewModel
 import com.acnteam.crashybird.presentation.screen.welcome.WelcomeViewModel
@@ -84,5 +85,20 @@ val viewModelModule = module {
 
     viewModel {
         RankDetailViewModel(get(), get())
+    }
+
+    viewModel {
+        ShopViewModel(
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get()
+        )
     }
 }
