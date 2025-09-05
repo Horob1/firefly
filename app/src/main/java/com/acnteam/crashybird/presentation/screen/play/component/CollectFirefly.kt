@@ -1,5 +1,6 @@
 package com.acnteam.crashybird.presentation.screen.play.component
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -23,8 +24,9 @@ import com.acnteam.crashybird.presentation.ui.theme.White
 @Composable
 fun FirefliesUI(
     collected: Int,
-    required: Int
-) {
+    required: Int,
+    @DrawableRes itemImage: Int,
+    ) {
     Row(
         modifier = Modifier
             .wrapContentWidth()
@@ -44,7 +46,7 @@ fun FirefliesUI(
         horizontalArrangement = Arrangement.Center
     ) {
         Image(
-            painter = painterResource(id = R.drawable.dom_con),
+            painter = painterResource(id = itemImage),
             contentDescription = "Firefly Icon",
             modifier = Modifier.size(32.dp),
             contentScale = ContentScale.Crop

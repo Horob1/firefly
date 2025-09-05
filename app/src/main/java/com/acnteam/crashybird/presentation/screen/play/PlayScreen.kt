@@ -153,8 +153,10 @@ fun PlayScreen(
 
     val pipeFlippedImage: ImageBitmap = flipBitmapVertically(pipeCapImage)
 
-    val fireflyYoungImage: ImageBitmap =
-        BitmapFactory.decodeResource(context.resources, R.drawable.dom_con).asImageBitmap()
+    val currentItem by viewModel.currentItem.collectAsState()
+
+    val itemImage: ImageBitmap =
+        BitmapFactory.decodeResource(context.resources, currentItem.image).asImageBitmap()
 
     LaunchedEffect(toastMessage) {
         toastMessage?.let { message ->
@@ -490,22 +492,21 @@ fun PlayScreen(
                 )
             )
         }
-
         // Draw fireflies
-        viewModel.fireflies.forEach { firefly ->
+        viewModel.itemsOnScreen.forEach { itemState ->
+            val item = itemState.item
             drawImage(
-                image = fireflyYoungImage,
+                image = itemImage,
                 dstOffset = IntOffset(
-                    x = (firefly.x - firefly.radius).toInt(),
-                    y = (firefly.y - firefly.radius).toInt()
+                    x = (itemState.x - item.itemWidth / 2f).toInt(),
+                    y = (itemState.y - item.itemHeight / 2f).toInt()
                 ),
                 dstSize = IntSize(
-                    width = (firefly.radius * 5).toInt(),
-                    height = (firefly.radius * 5).toInt()
+                    width = item.itemWidth,
+                    height = item.itemHeight
                 )
             )
         }
-
     }
 
     if (viewModel.isInvincible) {
@@ -541,6 +542,7 @@ fun PlayScreen(
     FirefliesUI(
         collected = firefliesCollected,
         required = totalFirefly ?: 0,
+        itemImage = currentItem.image
     )
 
     // Score Banner

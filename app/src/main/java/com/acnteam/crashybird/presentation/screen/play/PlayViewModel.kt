@@ -4,23 +4,26 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.geometry.Rect
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.acnteam.crashybird.domain.model.BackgroundMusic
 import com.acnteam.crashybird.domain.model.BackgroundMusicSettings
 import com.acnteam.crashybird.domain.model.Character
 import com.acnteam.crashybird.domain.model.GraphicMode
+import com.acnteam.crashybird.domain.model.Items
 import com.acnteam.crashybird.domain.model.Level
 import com.acnteam.crashybird.domain.model.SoundEffectSettings
 import com.acnteam.crashybird.domain.model.game.CharacterPlayState
-import com.acnteam.crashybird.domain.model.game.Firefly
 import com.acnteam.crashybird.domain.model.game.Game
 import com.acnteam.crashybird.domain.model.game.GameStatus
+import com.acnteam.crashybird.domain.model.game.ItemPlayState
 import com.acnteam.crashybird.domain.model.game.LevelPlayState
 import com.acnteam.crashybird.domain.model.game.PipePair
 import com.acnteam.crashybird.domain.usecase.AddCoinUseCase
 import com.acnteam.crashybird.domain.usecase.GetBackgroundMusicSettingsUseCase
 import com.acnteam.crashybird.domain.usecase.GetBestScoreUseCase
+import com.acnteam.crashybird.domain.usecase.GetCurrentItemUseCase
 import com.acnteam.crashybird.domain.usecase.GetGraphicModeUseCase
 import com.acnteam.crashybird.domain.usecase.GetSoundEffectSettingsUseCase
 import com.acnteam.crashybird.domain.usecase.SetBackgroundMusicSettingsUseCase
@@ -50,10 +53,16 @@ class PlayViewModel(
     private val updateLevelUseCase: UpdateLevelUseCase,
     private val updatePlaySectionUseCase: UpdatePlaySectionUseCase,
     private val getBestScoreUseCase: GetBestScoreUseCase,
+    private val getCurrentItemUseCase: GetCurrentItemUseCase,
 ) : ViewModel() {
 
     private var gameConfig = Game()
 
+    val currentItem: StateFlow<Items> = getCurrentItemUseCase()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, Items.ChildFirefly)
+
+    var itemsOnScreen = mutableStateListOf< ItemPlayState>()
+        private set
     //game job
     val currentGameConfig: Game get() = gameConfig
 
@@ -82,8 +91,6 @@ class PlayViewModel(
         private set
     private var windDirectionToggle = true
 
-    var fireflies = mutableStateListOf<Firefly>()
-        private set
     var bestScore by mutableStateOf(0)
         private set
     var hasWatchedAd by mutableStateOf(false)
@@ -186,7 +193,6 @@ class PlayViewModel(
         currentScore = 0
         velocityY = 0f
         pipePairs = emptyList()
-        fireflies.clear()
         levelState = levelState?.copy(firefliesCollected = 0)
 
         hasWatchedAd = false
@@ -264,17 +270,18 @@ class PlayViewModel(
             400f
         }
 
+        // Dịch chuyển toàn bộ pipe
         pipePairs = pipePairs.map { pipe ->
             pipe.copy(x = pipe.x - dashDistance)
         }
 
-        fireflies.replaceAll { firefly ->
-            firefly.copy(x = firefly.x - dashDistance)
+        // Dịch chuyển toàn bộ item trên màn hình
+        itemsOnScreen.replaceAll { item ->
+            item.copy(x = item.x - dashDistance)
         }
 
         soundEffectPlayer.playJump()
     }
-
 
     fun useHighJumpSkill() {
         if (isHighJumpOnCooldown() || gameStatus != GameStatus.Started) return
@@ -357,12 +364,12 @@ class PlayViewModel(
         val levelWindX = levelState?.windX ?: 0f
         val fireflyVelocity = gameConfig.pipeVelocity + levelWindX * windEffectX
 
-        fireflies.replaceAll { firefly ->
-            firefly.copy(x = firefly.x - fireflyVelocity)
+        itemsOnScreen.replaceAll { item ->
+            item.copy(x = item.x - fireflyVelocity)
         }
 
-        fireflies.removeAll { it.x < -it.radius }
-        checkFireflyCollision(character)
+        itemsOnScreen.removeAll { it.x < -it.item.itemWidth }
+        checkItemCollision(character)
 
         if (!isInvincible && checkCollisions()) {
             gameOver()
@@ -449,7 +456,7 @@ class PlayViewModel(
             val newPipe = generateNewPipe()
             val previousPipe = filteredPipes.lastOrNull()
             if (previousPipe != null) {
-                spawnFirefly(previousPipe, newPipe)
+                spawnItem(previousPipe, newPipe)
             }
             filteredPipes + newPipe
         } else {
@@ -502,7 +509,7 @@ class PlayViewModel(
         }
     }
 
-    private fun spawnFirefly(pipe: PipePair, nextPipe: PipePair) {
+    private fun spawnItem(pipe: PipePair, nextPipe: PipePair) {
         val gapTop = pipe.y - gameConfig.pipeGapSize / 2
         val gapBottom = pipe.y + gameConfig.pipeGapSize / 2
 
@@ -510,44 +517,45 @@ class PlayViewModel(
 
         val minX = pipe.x + gameConfig.pipeWidth / 2
         val maxX = nextPipe.x - gameConfig.pipeWidth / 2
+        val itemX = Random.nextFloat() * (maxX - minX) + minX
 
-        val fireflyX = Random.nextFloat() * (maxX - minX) + minX
-
-        val newFirefly = Firefly(
-            x = fireflyX.toFloat(),
-            y = randomY,
-            radius = 20f
+        val newItem = ItemPlayState(
+            item = currentItem.value,
+            x = itemX,
+            y = randomY
         )
-
-        fireflies.add(newFirefly)
+        itemsOnScreen.add(newItem)
     }
 
-    private fun checkFireflyCollision(character: CharacterPlayState) {
-        val collected = mutableListOf<Firefly>()
-        val halfWidth = (character.width * 0.6) / 2f
-        val halfHeight = (character.height * 0.75) / 2f
+    private fun checkItemCollision(character: CharacterPlayState) {
+        val collected = mutableListOf<ItemPlayState>()
 
+        val characterRect = Rect(
+            left = character.x - character.width / 2f,
+            top = character.y - character.height / 2f,
+            right = character.x + character.width / 2f,
+            bottom = character.y + character.height / 2f
+        )
 
-        fireflies.forEach { firefly ->
-            val dx = character.x - firefly.x
-            val dy = character.y - firefly.y
-            val closestX = dx.coerceIn((-halfWidth).toFloat(), halfWidth.toFloat())
-            val closestY = dy.coerceIn(-halfHeight.toFloat(), halfHeight.toFloat())
-
-            val distX = dx - closestX
-            val distY = dy - closestY
-            val distanceSquared = distX * distX + distY * distY
-
-            if (distanceSquared < firefly.radius * firefly.radius) {
-                collected.add(firefly)
+        itemsOnScreen.forEach { item ->
+            if (isColliding(characterRect, item.toRect())) {
+                collected.add(item)
                 levelState = levelState?.copy(
                     firefliesCollected = (levelState?.firefliesCollected ?: 0) + 1
                 )
             }
         }
 
-        fireflies.removeAll(collected)
+        itemsOnScreen.removeAll(collected)
     }
+
+    private fun isColliding(a: Rect, b: Rect): Boolean {
+        return a.left < b.right &&
+                a.right > b.left &&
+                a.top < b.bottom &&
+                a.bottom > b.top
+    }
+
 
     //Score
     fun loadBestScore(level: Level) {
