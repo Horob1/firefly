@@ -84,6 +84,7 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.ui.unit)
     implementation(libs.ui)
+    implementation(libs.androidx.compose.testing)
 
 
     ksp(libs.androidx.room.compiler)

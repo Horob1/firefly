@@ -562,7 +562,7 @@ fun PlayScreen(
     FirefliesUI(
         collected = firefliesCollected,
         required = totalFirefly ?: 0,
-        itemImage = currentItem.image
+        itemImage = currentItem.image,
     )
 
     // Score Banner

@@ -560,13 +560,14 @@ class PlayViewModel(
 
         lastItemSpawnTime = currentTime
 
-        val gapTop = pipe.y - gameConfig.pipeGapSize / 2
-        val gapBottom = pipe.y + gameConfig.pipeGapSize / 2
+        val itemHeight = currentItem.value.itemHeight
+        val minY = itemHeight / 2f
+        val maxY = screenHeight - itemHeight / 2f
+        val randomY = Random.nextFloat() * (maxY - minY) + minY
 
-        val randomY = Random.nextFloat() * (gapBottom - gapTop) + gapTop
-
-        val minX = pipe.x + gameConfig.pipeWidth / 2
-        val maxX = nextPipe.x - gameConfig.pipeWidth / 2
+        val itemWidth = currentItem.value.itemWidth
+        val minX = pipe.x + gameConfig.pipeWidth / 2 + itemWidth / 2
+        val maxX = nextPipe.x - gameConfig.pipeWidth / 2 - itemWidth / 2
         val itemX = Random.nextFloat() * (maxX - minX) + minX
 
         val newItem = ItemPlayState(
@@ -577,19 +578,20 @@ class PlayViewModel(
         itemsOnScreen.add(newItem)
     }
 
+
     private fun spawnBoostItem(pipe: PipePair, nextPipe: PipePair) {
         val currentTime = System.currentTimeMillis()
         if (currentTime - lastBoostSpawnTime < boost_countdown) {
             return
         }
         lastBoostSpawnTime = currentTime
+
         val randomItem = allBoostItems.random()
         val itemHeight = randomItem.height
         val itemWidth = randomItem.width
 
         val gapTop = pipe.y - gameConfig.pipeGapSize / 2 + itemHeight / 2
         val gapBottom = pipe.y + gameConfig.pipeGapSize / 2 - itemHeight / 2
-
         val randomY = Random.nextFloat() * (gapBottom - gapTop) + gapTop
 
         val minX = pipe.x + gameConfig.pipeWidth / 2 + itemWidth / 2
@@ -603,6 +605,7 @@ class PlayViewModel(
         )
         boostItemsOnScreen.add(newItem)
     }
+
 
     private fun checkItemCollision(character: CharacterPlayState) {
         val collected = mutableListOf<ItemPlayState>()
