@@ -115,17 +115,15 @@ fun SpriteView(
         }
     }
 }
-
 fun DrawScope.drawSpriteView(
-    scale: Float = 1f,
     spriteState: SpriteState,
     spriteSpec: SpriteSpec,
     currentFrame: Int,
     image: ImageBitmap,
     offset: IntOffset = IntOffset.Zero,
-    spriteFlip: SpriteFlip? = null
+    spriteFlip: SpriteFlip? = null,
+    alpha: Float = 1f
 ) {
-    // Get the row and column position based on the current frame
     val row = currentFrame / spriteState.framesPerRow
     val column = currentFrame % spriteState.framesPerRow
 
@@ -138,6 +136,7 @@ fun DrawScope.drawSpriteView(
         x = column * frameSize.width,
         y = row * frameSize.height
     )
+
     withTransform(
         transformBlock = {
             if (spriteFlip != null) {
@@ -153,24 +152,9 @@ fun DrawScope.drawSpriteView(
                         else -> 1f
                     },
                     pivot = when (spriteFlip) {
-                        SpriteFlip.Horizontal -> {
-                            Offset(
-                                x = offset.x + frameSize.width / 2f,
-                                y = offset.y.toFloat()
-                            )
-                        }
-                        SpriteFlip.Vertical -> {
-                            Offset(
-                                x = offset.x.toFloat(),
-                                y = offset.y + frameSize.height / 2f
-                            )
-                        }
-                        else -> {
-                            Offset(
-                                x = offset.x + frameSize.width / 2f,
-                                y = offset.y + frameSize.height / 2f
-                            )
-                        }
+                        SpriteFlip.Horizontal -> Offset(offset.x + frameSize.width / 2f, offset.y.toFloat())
+                        SpriteFlip.Vertical -> Offset(offset.x.toFloat(), offset.y + frameSize.height / 2f)
+                        else -> Offset(offset.x + frameSize.width / 2f, offset.y + frameSize.height / 2f)
                     }
                 )
             }
@@ -181,7 +165,8 @@ fun DrawScope.drawSpriteView(
             srcOffset = frameOffset,
             srcSize = frameSize,
             dstOffset = offset,
-            dstSize = frameSize
+            dstSize = frameSize,
+            alpha = alpha
         )
     }
 }

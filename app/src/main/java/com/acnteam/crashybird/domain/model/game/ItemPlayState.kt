@@ -10,10 +10,10 @@ data class ItemPlayState(
 ) {
     fun toRect(): Rect {
         return Rect(
-            left = x,
-            top = y,
-            right = x + item.itemWidth,
-            bottom = y + item.itemHeight
+            left = x - item.itemWidth / 2f,
+            top = y - item.itemHeight / 2f,
+            right = x + item.itemWidth / 2f,
+            bottom = y + item.itemHeight / 2f
         )
     }
 }

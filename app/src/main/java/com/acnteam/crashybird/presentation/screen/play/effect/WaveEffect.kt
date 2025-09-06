@@ -1,4 +1,4 @@
-package com.acnteam.crashybird.presentation.screen.play.component
+package com.acnteam.crashybird.presentation.screen.play.effect
 
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloat

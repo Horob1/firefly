@@ -11,7 +11,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.IconButton
@@ -73,6 +75,20 @@ fun GameStatusOverlay(
                     GameButton(stringResource(R.string.btn_start)) { viewModel.start() }
                 )
             )
+            Box(
+                modifier = Modifier.fillMaxSize().padding(16.dp),
+                contentAlignment = Alignment.BottomStart
+            ) {
+                IconButton(
+                    onClick = { viewModel.pauseGame() },
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.icon_guide),
+                        contentDescription = null,
+                        modifier = Modifier.size(48.dp)
+                    )
+                }
+            }
         }
 
         GameStatus.Over -> {

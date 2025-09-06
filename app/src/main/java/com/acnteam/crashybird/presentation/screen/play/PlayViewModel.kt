@@ -14,12 +14,17 @@ import com.acnteam.crashybird.domain.model.GraphicMode
 import com.acnteam.crashybird.domain.model.Items
 import com.acnteam.crashybird.domain.model.Level
 import com.acnteam.crashybird.domain.model.SoundEffectSettings
+import com.acnteam.crashybird.domain.model.game.BoostItem
+import com.acnteam.crashybird.domain.model.game.BoostItemState
 import com.acnteam.crashybird.domain.model.game.CharacterPlayState
 import com.acnteam.crashybird.domain.model.game.Game
 import com.acnteam.crashybird.domain.model.game.GameStatus
 import com.acnteam.crashybird.domain.model.game.ItemPlayState
 import com.acnteam.crashybird.domain.model.game.LevelPlayState
 import com.acnteam.crashybird.domain.model.game.PipePair
+import com.acnteam.crashybird.domain.model.game.big_item
+import com.acnteam.crashybird.domain.model.game.immortal
+import com.acnteam.crashybird.domain.model.game.mini_item
 import com.acnteam.crashybird.domain.usecase.AddCoinUseCase
 import com.acnteam.crashybird.domain.usecase.GetBackgroundMusicSettingsUseCase
 import com.acnteam.crashybird.domain.usecase.GetBestScoreUseCase
@@ -30,7 +35,7 @@ import com.acnteam.crashybird.domain.usecase.SetBackgroundMusicSettingsUseCase
 import com.acnteam.crashybird.domain.usecase.SetSoundEffectSettingsUseCase
 import com.acnteam.crashybird.domain.usecase.UpdateLevelUseCase
 import com.acnteam.crashybird.domain.usecase.UpdatePlaySectionUseCase
-import com.acnteam.crashybird.presentation.screen.play.component.SoundEffectPlayer
+import com.acnteam.crashybird.presentation.screen.play.effect.SoundEffectPlayer
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -53,16 +58,11 @@ class PlayViewModel(
     private val updateLevelUseCase: UpdateLevelUseCase,
     private val updatePlaySectionUseCase: UpdatePlaySectionUseCase,
     private val getBestScoreUseCase: GetBestScoreUseCase,
-    private val getCurrentItemUseCase: GetCurrentItemUseCase,
+    getCurrentItemUseCase: GetCurrentItemUseCase,
 ) : ViewModel() {
 
     private var gameConfig = Game()
 
-    val currentItem: StateFlow<Items> = getCurrentItemUseCase()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, Items.ChildFirefly)
-
-    var itemsOnScreen = mutableStateListOf< ItemPlayState>()
-        private set
     //game job
     val currentGameConfig: Game get() = gameConfig
 
@@ -97,8 +97,6 @@ class PlayViewModel(
         private set
     var isInvincible by mutableStateOf(false)
         private set
-    private val _toastMessage = MutableStateFlow<String?>(null)
-    val toastMessage: StateFlow<String?> = _toastMessage
 
     //recovery time
     private var dashCooldownUntil = 0L
@@ -117,6 +115,24 @@ class PlayViewModel(
     private var screenHeight = 0
     private val windEffectX = 1f
     private val windEffectY = 0.5f
+
+    private var lastUpdateTime = 0L
+    private val targetFPS = 60f
+    private val targetFrameTime = 1000f / targetFPS
+
+    //item
+    val currentItem: StateFlow<Items> = getCurrentItemUseCase()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, Items.ChildFirefly)
+
+    var itemsOnScreen = mutableStateListOf< ItemPlayState>()
+        private set
+    var boostItemsOnScreen = mutableStateListOf< BoostItemState>()
+        private set
+    val allBoostItems = listOf(mini_item, big_item, immortal)
+    private var lastBoostSpawnTime = 0L
+    private val boost_countdown = 60_000L
+    private var lastItemSpawnTime = 0L
+    private val item_countdown = 5_000L
 
     fun initializeGame(characterName: String, levelNumber: Int) {
         val character = Character.getByName(characterName)
@@ -204,7 +220,7 @@ class PlayViewModel(
         slowCooldownUntil = 0L
         isSlowEffectActive = false
         slowEffectJob?.cancel()
-
+        lastUpdateTime = 0L
         val character = characterState?.character ?: return
         characterState = CharacterPlayState(
             character = character,
@@ -219,7 +235,6 @@ class PlayViewModel(
 
     fun revive() {
         val character = characterState?.character ?: return
-
         hasWatchedAd = true
         gameStatus = GameStatus.Reviving
 
@@ -252,50 +267,55 @@ class PlayViewModel(
     }
 
     //skill
-    fun useDashSkill() {
-        if (isDashOnCooldown() || gameStatus != GameStatus.Started) return
+    fun useDashSkill(): Boolean {
+        if (isDashOnCooldown() || gameStatus != GameStatus.Started) return false
 
         dashCooldownUntil = System.currentTimeMillis() + DASH_COOLDOWN
 
-        val character = characterState ?: return
+        val character = characterState ?: return false
         val sortedPipes = pipePairs.sortedBy { it.x }.filter { it.x > character.x }
 
-        val dashDistance = if (sortedPipes.size >= 2) {
-            val secondPipe = sortedPipes[1]
-            secondPipe.x + gameConfig.pipeWidth + 50f - character.x
-        } else if (sortedPipes.size == 1) {
-            val firstPipe = sortedPipes[0]
-            firstPipe.x + gameConfig.pipeWidth + 50f - character.x
-        } else {
-            400f
+        val dashDistance = when {
+            sortedPipes.size >= 2 -> {
+                val secondPipe = sortedPipes[1]
+                secondPipe.x + gameConfig.pipeWidth + 50f - character.x
+            }
+            sortedPipes.size == 1 -> {
+                val firstPipe = sortedPipes[0]
+                firstPipe.x + gameConfig.pipeWidth + 50f - character.x
+            }
+            else -> 400f
         }
 
-        // Dịch chuyển toàn bộ pipe
         pipePairs = pipePairs.map { pipe ->
             pipe.copy(x = pipe.x - dashDistance)
         }
 
-        // Dịch chuyển toàn bộ item trên màn hình
         itemsOnScreen.replaceAll { item ->
             item.copy(x = item.x - dashDistance)
         }
 
         soundEffectPlayer.playJump()
+        return true
     }
 
-    fun useHighJumpSkill() {
-        if (isHighJumpOnCooldown() || gameStatus != GameStatus.Started) return
+    fun useHighJumpSkill(): Boolean {
+        if (isHighJumpOnCooldown() || gameStatus != GameStatus.Started) return false
+
         highJumpCooldownUntil = System.currentTimeMillis() + HIGH_JUMP_COOLDOWN
         val level = levelState
         velocityY = if (level?.level?.levelNumber == 6)
             -(gameConfig.birdJumpImpulse * 10.0f) - (level.windY * windEffectY)
         else
             (gameConfig.birdJumpImpulse * 10.0f) - (level?.windY ?: 0f) * windEffectY
+
         soundEffectPlayer.playJump()
+        return true
     }
 
-    fun useSlowSkill() {
-        if (isSlowOnCooldown() || gameStatus != GameStatus.Started) return
+    fun useSlowSkill(): Boolean {
+        if (isSlowOnCooldown() || gameStatus != GameStatus.Started) return false
+
         slowCooldownUntil = System.currentTimeMillis() + SLOW_COOLDOWN
         isSlowEffectActive = true
         slowEffectJob?.cancel()
@@ -303,7 +323,9 @@ class PlayViewModel(
             delay(SLOW_EFFECT_DURATION)
             isSlowEffectActive = false
         }
+
         soundEffectPlayer.playJump()
+        return true
     }
 
     fun isDashOnCooldown(): Boolean {
@@ -321,30 +343,37 @@ class PlayViewModel(
     private fun startGameLoop() {
         loopJob?.cancel()
         loopJob = viewModelScope.launch {
+            lastUpdateTime = System.currentTimeMillis()
             while (isActive && gameStatus == GameStatus.Started) {
-                updateFrame()
+                val currentTime = System.currentTimeMillis()
+                val deltaTime = if (lastUpdateTime == 0L) {
+                    1f
+                } else {
+                    (currentTime - lastUpdateTime) / targetFrameTime
+                }
+                lastUpdateTime = currentTime
+
+                updateFrame(deltaTime)
+
                 val gameFps = _graphicMode.value.fps
-                val frameDelay =
-                    if (isSlowEffectActive) (1000L / gameFps) * 2 else (1000L / gameFps)
+                val frameDelay = if (isSlowEffectActive) (1000L / gameFps) * 2 else (1000L / gameFps)
                 delay(frameDelay)
             }
         }
     }
 
-    private fun updateFrame() {
+    private fun updateFrame(deltaTime: Float) {
         val character = characterState ?: return
         val level = levelState ?: return
 
-        val gravityEffect =
-            if (level.level.levelNumber == 6) -gameConfig.gravity else gameConfig.gravity
-        val windEffect =
-            if (level.level.levelNumber == 6) -level.windY * windEffectY else level.windY * windEffectY
+        val gravityEffect = if (level.level.levelNumber == 6) -gameConfig.gravity else gameConfig.gravity
+        val windEffect = if (level.level.levelNumber == 6) -level.windY * windEffectY else level.windY * windEffectY
 
-        velocityY = velocityY + gravityEffect + windEffect
+        velocityY = velocityY + (gravityEffect + windEffect) * deltaTime
 
         val newX = character.x
         val halfHeight = character.height / 2f
-        val newY = (character.y + velocityY).coerceIn(halfHeight, screenHeight - halfHeight)
+        val newY = (character.y + velocityY * deltaTime).coerceIn(halfHeight, screenHeight - halfHeight)
 
         characterState = character.copy(x = newX, y = newY)
 
@@ -360,16 +389,31 @@ class PlayViewModel(
             }
         }
 
-        updatePipes()
+        updatePipes(deltaTime)
+
         val levelWindX = levelState?.windX ?: 0f
-        val fireflyVelocity = gameConfig.pipeVelocity + levelWindX * windEffectX
+        val itemVelocity = (gameConfig.pipeVelocity + levelWindX * windEffectX) * deltaTime
 
         itemsOnScreen.replaceAll { item ->
-            item.copy(x = item.x - fireflyVelocity)
+            item.copy(x = item.x - itemVelocity)
         }
 
         itemsOnScreen.removeAll { it.x < -it.item.itemWidth }
+
+        val boostItemVelocity = if (isSlowEffectActive) {
+            ((gameConfig.pipeVelocity * 0.3f) + (levelWindX * windEffectX * 0.3f)) * deltaTime
+        } else {
+            (gameConfig.pipeVelocity + levelWindX * windEffectX) * deltaTime
+        }
+
+        boostItemsOnScreen.replaceAll { boost ->
+            boost.copy(x = boost.x - boostItemVelocity)
+        }
+
+        boostItemsOnScreen.removeAll { it.x < -it.boostItem.width }
+
         checkItemCollision(character)
+        checkBoostItemCollision(character)
 
         if (!isInvincible && checkCollisions()) {
             gameOver()
@@ -394,26 +438,26 @@ class PlayViewModel(
     }
 
     //pipe
-    private fun updatePipes() {
+    private fun updatePipes(deltaTime: Float) {
         val levelWindX = levelState?.windX ?: 0f
         val baseVelocity = gameConfig.pipeVelocity
 
         val pipeVelocity = if (isSlowEffectActive) {
-            (baseVelocity * 0.3f) + levelWindX * windEffectX * 0.3f
+            ((baseVelocity * 0.3f) + levelWindX * windEffectX * 0.3f) * deltaTime
         } else {
-            baseVelocity + levelWindX * windEffectX
+            (baseVelocity + levelWindX * windEffectX) * deltaTime
         }
 
         val updatedPipes = pipePairs.map { pipe ->
             var newBottomHeight = pipe.bottomHeight
             pipe.targetBottomHeight?.let { target ->
                 if (newBottomHeight < target) {
-                    val riseSpeed = 5f + pipeVelocity * 0.5f
+                    val riseSpeed = (5f + baseVelocity * 0.5f) * deltaTime
                     newBottomHeight = (newBottomHeight + riseSpeed).coerceAtMost(target)
 
                     if (levelState?.level?.levelNumber == 2) {
-                        val time = System.currentTimeMillis() / 50f
-                        val shake = sin(time) * 5f
+                        val time = System.currentTimeMillis() / 200f
+                        val shake = sin(time) * 1f
                         newBottomHeight += shake
                     }
                 }
@@ -422,12 +466,12 @@ class PlayViewModel(
             var newTopHeight = pipe.topHeight
             pipe.targetTopHeight?.let { target ->
                 if (newTopHeight < target) {
-                    val dropSpeed = 5f + pipeVelocity * 0.5f
+                    val dropSpeed = (5f + baseVelocity * 0.5f) * deltaTime
                     newTopHeight = (newTopHeight + dropSpeed).coerceAtMost(target)
 
                     if (levelState?.level?.levelNumber == 2) {
-                        val time = System.currentTimeMillis() / 50f
-                        val shake = kotlin.math.cos(time) * 5f
+                        val time = System.currentTimeMillis() / 200f
+                        val shake = kotlin.math.cos(time) * 1f
                         newTopHeight += shake
                     }
                 }
@@ -436,7 +480,7 @@ class PlayViewModel(
             val gapY = screenHeight - newBottomHeight - gameConfig.pipeGapSize / 2
 
             val shakeOffset = if (levelState?.level?.levelNumber == 2) {
-                (sin(System.currentTimeMillis() / 50.0) * 5).toFloat() // biên độ 5px
+                (sin(System.currentTimeMillis() / 50.0) * 5).toFloat() * deltaTime
             } else 0f
 
             pipe.copy(
@@ -445,7 +489,6 @@ class PlayViewModel(
                 topHeight = newTopHeight,
                 y = gapY
             )
-
         }
 
         val filteredPipes = updatedPipes.filter {
@@ -457,6 +500,7 @@ class PlayViewModel(
             val previousPipe = filteredPipes.lastOrNull()
             if (previousPipe != null) {
                 spawnItem(previousPipe, newPipe)
+                spawnBoostItem(previousPipe, newPipe)
             }
             filteredPipes + newPipe
         } else {
@@ -466,10 +510,9 @@ class PlayViewModel(
         pipePairs = finalPipes
     }
 
-
     private fun generateNewPipe(): PipePair {
         val initialPipeX = screenWidth.toFloat() + gameConfig.pipeWidth
-        val minPipeHeight = 250f
+        val minPipeHeight = 400f
         val maxTopHeight = screenHeight - gameConfig.pipeGapSize - minPipeHeight
         val finalTopHeight = Random.nextFloat() * (maxTopHeight - minPipeHeight) + minPipeHeight
         val finalBottomHeight = screenHeight - finalTopHeight - gameConfig.pipeGapSize
@@ -510,6 +553,13 @@ class PlayViewModel(
     }
 
     private fun spawnItem(pipe: PipePair, nextPipe: PipePair) {
+        val currentTime = System.currentTimeMillis()
+        if (currentTime - lastItemSpawnTime < item_countdown) {
+            return
+        }
+
+        lastItemSpawnTime = currentTime
+
         val gapTop = pipe.y - gameConfig.pipeGapSize / 2
         val gapBottom = pipe.y + gameConfig.pipeGapSize / 2
 
@@ -525,6 +575,33 @@ class PlayViewModel(
             y = randomY
         )
         itemsOnScreen.add(newItem)
+    }
+
+    private fun spawnBoostItem(pipe: PipePair, nextPipe: PipePair) {
+        val currentTime = System.currentTimeMillis()
+        if (currentTime - lastBoostSpawnTime < boost_countdown) {
+            return
+        }
+        lastBoostSpawnTime = currentTime
+        val randomItem = allBoostItems.random()
+        val itemHeight = randomItem.height
+        val itemWidth = randomItem.width
+
+        val gapTop = pipe.y - gameConfig.pipeGapSize / 2 + itemHeight / 2
+        val gapBottom = pipe.y + gameConfig.pipeGapSize / 2 - itemHeight / 2
+
+        val randomY = Random.nextFloat() * (gapBottom - gapTop) + gapTop
+
+        val minX = pipe.x + gameConfig.pipeWidth / 2 + itemWidth / 2
+        val maxX = nextPipe.x - gameConfig.pipeWidth / 2 - itemWidth / 2
+        val itemX = Random.nextFloat() * (maxX - minX) + minX
+
+        val newItem = BoostItemState(
+            boostItem = randomItem,
+            x = itemX,
+            y = randomY
+        )
+        boostItemsOnScreen.add(newItem)
     }
 
     private fun checkItemCollision(character: CharacterPlayState) {
@@ -549,11 +626,53 @@ class PlayViewModel(
         itemsOnScreen.removeAll(collected)
     }
 
-    private fun isColliding(a: Rect, b: Rect): Boolean {
-        return a.left < b.right &&
-                a.right > b.left &&
-                a.top < b.bottom &&
-                a.bottom > b.top
+    private fun checkBoostItemCollision(character: CharacterPlayState) {
+        val collected = mutableListOf<BoostItemState>()
+
+        val characterRect = Rect(
+            left = character.x - character.width / 2f,
+            top = character.y - character.height / 2f,
+            right = character.x + character.width / 2f,
+            bottom = character.y + character.height / 2f
+        )
+
+        boostItemsOnScreen.forEach { item ->
+            if (isColliding(characterRect, item.toRect())) {
+                collected.add(item)
+                levelState = levelState?.copy(
+                    firefliesCollected = (levelState?.firefliesCollected ?: 0) + 1
+                )
+                applyBoost(item.boostItem)
+            }
+        }
+        boostItemsOnScreen.removeAll(collected)
+    }
+    private fun isColliding(a: Rect, b: Rect): Boolean { return a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top }
+
+    fun applyBoost(boostItem: BoostItem) {
+        when (boostItem.id) {
+            1 -> { // Mini
+                characterState = characterState?.copy(
+                    scale = 0.5f,
+                )
+            }
+            2 -> { // Big
+                characterState = characterState?.copy(
+                    scale = 2f,
+                )
+            }
+            3 -> { // Immortal
+                isInvincible = true
+            }
+        }
+
+        viewModelScope.launch {
+            delay(3000L)
+            characterState = characterState?.copy(
+                scale = 1f,
+            )
+            isInvincible = false
+        }
     }
 
 
@@ -642,7 +761,6 @@ class PlayViewModel(
         val nextLevelNumber = currentLevel.levelNumber + 1
         viewModelScope.launch {
             updateLevelUseCase(Level.getByLevelNumber(nextLevelNumber))
-            _toastMessage.value = "Next map is open"
         }
     }
 
@@ -666,7 +784,7 @@ class PlayViewModel(
             bestScore = currentScore
         }
         viewModelScope.launch {
-            addCoinUseCase(currentScore * 10)
+            addCoinUseCase(currentScore * 1)
         }
     }
 
@@ -764,7 +882,7 @@ class PlayViewModel(
     fun getWindForLevel(levelNumber: Int): Pair<Float, Float> {
         return when (levelNumber) {
             1 -> Pair(0f, 0f)
-            2 -> Pair(2f, 0f)
+            2 -> Pair(0f, 0f)
             3 -> Pair(2f, 0f)
             4 -> Pair(2f, 2f)
             5 -> Pair(2f, 2f)
@@ -773,9 +891,6 @@ class PlayViewModel(
         }
     }
 
-    fun resetToastMessage() {
-        _toastMessage.value = null
-    }
 
 
 }

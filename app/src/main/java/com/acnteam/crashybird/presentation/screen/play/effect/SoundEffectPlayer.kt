@@ -1,4 +1,4 @@
-package com.acnteam.crashybird.presentation.screen.play.component
+package com.acnteam.crashybird.presentation.screen.play.effect
 
 import android.content.Context
 import android.media.SoundPool

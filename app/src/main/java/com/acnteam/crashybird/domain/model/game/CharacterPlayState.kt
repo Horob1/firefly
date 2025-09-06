@@ -7,5 +7,6 @@ data class CharacterPlayState(
     val x: Float,
     val y: Float,
     val width: Float,
-    val height: Float
+    val height: Float,
+    val scale: Float = 1f
 )

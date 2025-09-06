@@ -4,13 +4,14 @@ import PauseDialog
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
@@ -49,6 +50,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -78,12 +80,12 @@ import com.acnteam.crashybird.presentation.common.sprite.domain.SpriteSpec
 import com.acnteam.crashybird.presentation.common.sprite.domain.rememberSpriteState
 import com.acnteam.crashybird.presentation.navigation.NavScreen
 import com.acnteam.crashybird.presentation.screen.home.Banner
-import com.acnteam.crashybird.presentation.screen.play.component.BubbleEffect
+import com.acnteam.crashybird.presentation.screen.play.effect.BubbleEffect
 import com.acnteam.crashybird.presentation.screen.play.component.FirefliesUI
 import com.acnteam.crashybird.presentation.screen.play.component.GameStatusOverlay
-import com.acnteam.crashybird.presentation.screen.play.component.RainEffect
-import com.acnteam.crashybird.presentation.screen.play.component.WindEffect
-import com.acnteam.crashybird.presentation.screen.play.component.vibrateFor5s
+import com.acnteam.crashybird.presentation.screen.play.effect.RainEffect
+import com.acnteam.crashybird.presentation.screen.play.effect.VibrationHelper
+import com.acnteam.crashybird.presentation.screen.play.effect.WindEffect
 import com.acnteam.crashybird.presentation.ui.theme.White
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -112,7 +114,6 @@ fun PlayScreen(
     var screenWidth by remember { mutableIntStateOf(0) }
     var showPauseDialog by remember { mutableStateOf(false) }
     var showSkillEffect by remember { mutableStateOf<String?>(null) }
-    val toastMessage by viewModel.toastMessage.collectAsState()
     val context = LocalContext.current
 
     val character = Character.getByName(characterName)
@@ -122,11 +123,19 @@ fun PlayScreen(
     val totalFirefly = levelState?.firefliesRequired
     val firefliesCollected = viewModel.levelState?.firefliesCollected ?: 0
     val graphicMode by viewModel.graphicMode.collectAsState()
-    val shakeAnim = remember { Animatable(0f) }
     val animateAngle by animateFloatAsState(
         targetValue = viewModel.getBirdRotation()
     )
-
+    val infiniteTransition = rememberInfiniteTransition(label = "")
+    val blinkAlpha by infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = 0.3f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(300, easing = LinearEasing), // 0.3s đổi
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = ""
+    )
     val spriteState = rememberSpriteState(
         totalFrames = 9,
         framesPerRow = 3
@@ -158,12 +167,6 @@ fun PlayScreen(
     val itemImage: ImageBitmap =
         BitmapFactory.decodeResource(context.resources, currentItem.image).asImageBitmap()
 
-    LaunchedEffect(toastMessage) {
-        toastMessage?.let { message ->
-            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-            viewModel.resetToastMessage()
-        }
-    }
     val invincibleAlpha by animateFloatAsState(
         targetValue = if (viewModel.isInvincible) 0.5f else 1f,
         animationSpec = infiniteRepeatable(
@@ -209,6 +212,7 @@ fun PlayScreen(
     }
     LaunchedEffect(Unit) {
         viewModel.initializeGame(characterName, levelNumber)
+        VibrationHelper.init(context)
     }
 
     LaunchedEffect(gameStatus) {
@@ -223,6 +227,7 @@ fun PlayScreen(
         onDispose {
             spriteState.stop()
             spriteState.cleanup()
+            VibrationHelper.stopVibration()
         }
     }
 
@@ -256,31 +261,27 @@ fun PlayScreen(
         }
     }
 
-
+    val shakeAnim = remember { Animatable(0f) }
     LaunchedEffect(levelNumber, gameStatus) {
         if (levelNumber == 2 && gameStatus == GameStatus.Started) {
             while (isActive) {
                 val startTime = System.currentTimeMillis()
-                vibrateFor5s(context)
+
+                VibrationHelper.startVibration(5000)
 
                 while (System.currentTimeMillis() - startTime < 5000 && isActive) {
-                    shakeAnim.animateTo(
-                        targetValue = 5f,
-                        animationSpec = tween(30, easing = LinearEasing)
-                    )
-                    shakeAnim.animateTo(
-                        targetValue = -5f,
-                        animationSpec = tween(30, easing = LinearEasing)
-                    )
+                    shakeAnim.animateTo(5f, tween(30, easing = LinearEasing))
+                    shakeAnim.animateTo(-5f, tween(30, easing = LinearEasing))
                     delay(10)
                 }
-
                 delay(10_000)
             }
         } else {
+            VibrationHelper.stopVibration()
             shakeAnim.snapTo(0f)
         }
     }
+
 
     // Background Layer
     Box(
@@ -380,24 +381,24 @@ fun PlayScreen(
                             when {
                                 abs(totalDrag.x) > abs(totalDrag.y) && totalDrag.x > 0 &&
                                         character.skills.contains(Skill.DASH) -> {
-                                    viewModel.useDashSkill()
-                                    if (!viewModel.isDashOnCooldown()) {
+                                    val useDash =  viewModel.useDashSkill()
+                                    if (useDash) {
                                         showSkillEffect = "DASH!"
                                     }
                                 }
 
                                 abs(totalDrag.y) > abs(totalDrag.x) && totalDrag.y < 0 &&
                                         character.skills.contains(Skill.HIGH_JUMP) -> {
-                                    viewModel.useHighJumpSkill()
-                                    if (!viewModel.isHighJumpOnCooldown()) {
+                                    val useHighJump = viewModel.useHighJumpSkill()
+                                    if (useHighJump) {
                                         showSkillEffect = "HIGH JUMP!"
                                     }
                                 }
 
                                 abs(totalDrag.x) > abs(totalDrag.y) && totalDrag.x < 0 &&
                                         character.skills.contains(Skill.SLOW) -> {
-                                    viewModel.useSlowSkill()
-                                    if (!viewModel.isSlowOnCooldown()) {
+                                    val useSlow = viewModel.useSlowSkill()
+                                    if (useSlow) {
                                         showSkillEffect = "SLOW!"
                                     }
                                 }
@@ -416,26 +417,29 @@ fun PlayScreen(
             }
     ) {
         characterState?.let { character ->
-            val halfWidth = character.width / 2
-            val halfHeight = character.height / 2
-
+            val alpha = if (viewModel.isInvincible) blinkAlpha else 1f
             rotate(
                 degrees = animateAngle,
                 pivot = Offset(character.x, character.y)
             ) {
-                drawSpriteView(
-                    spriteState = spriteState,
-                    spriteSpec = spriteSpec,
-                    currentFrame = currentFrame,
-                    image = spriteImage,
-                    offset = IntOffset(
-                        x = (character.x - halfWidth).toInt(),
-                        y = (character.y - halfHeight).toInt()
-                    ),
-                )
+                scale(
+                    scale = character.scale,
+                    pivot = Offset(character.x, character.y)
+                ) {
+                    drawSpriteView(
+                        spriteState = spriteState,
+                        spriteSpec = spriteSpec,
+                        currentFrame = currentFrame,
+                        image = spriteImage,
+                        offset = IntOffset(
+                            x = (character.x - character.width / 2).toInt(),
+                            y = (character.y - character.height / 2).toInt()
+                        ),
+                        alpha = alpha
+                    )
+                }
             }
         }
-
         // Draw pipes
         pipePairs.forEach { pipePair ->
             val pipeWidth = viewModel.currentGameConfig.pipeWidth.toInt()
@@ -492,7 +496,6 @@ fun PlayScreen(
                 )
             )
         }
-        // Draw fireflies
         viewModel.itemsOnScreen.forEach { itemState ->
             val item = itemState.item
             drawImage(
@@ -503,7 +506,24 @@ fun PlayScreen(
                 ),
                 dstSize = IntSize(
                     width = item.itemWidth,
-                    height = item.itemHeight
+                    height = item.itemWidth
+                )
+            )
+        }
+
+        viewModel.boostItemsOnScreen.forEach { boostItemState ->
+            val item = boostItemState.boostItem
+            val itemImage: ImageBitmap =
+                BitmapFactory.decodeResource(context.resources, item.image).asImageBitmap()
+            drawImage(
+                image = itemImage,
+                dstOffset = IntOffset(
+                    x = (boostItemState.x - item.width / 2f).toInt(),
+                    y = (boostItemState.y - item.height / 2f).toInt()
+                ),
+                dstSize = IntSize(
+                    width = item.width,
+                    height = item.height
                 )
             )
         }

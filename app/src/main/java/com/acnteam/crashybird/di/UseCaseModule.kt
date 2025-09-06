@@ -33,7 +33,7 @@ import com.acnteam.crashybird.domain.usecase.UnlockItemUseCase
 import com.acnteam.crashybird.domain.usecase.UpdateLevelUseCase
 import com.acnteam.crashybird.domain.usecase.UpdatePlaySectionUseCase
 import com.acnteam.crashybird.domain.usecase.WithDrawCoinUseCase
-import com.acnteam.crashybird.presentation.screen.play.component.SoundEffectPlayer
+import com.acnteam.crashybird.presentation.screen.play.effect.SoundEffectPlayer
 import org.koin.dsl.module
 
 val useCaseModule = module {
