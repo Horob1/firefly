@@ -44,6 +44,7 @@ android {
 
 dependencies {
     implementation(libs.play.services.ads)
+    implementation(libs.coil.svg)
     // ShowCase
     implementation(libs.introshowcaseview)
 

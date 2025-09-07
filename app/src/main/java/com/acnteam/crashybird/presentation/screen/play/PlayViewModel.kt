@@ -529,7 +529,18 @@ class PlayViewModel(
                 )
             }
 
-            in listOf(3, 4) -> {
+            in listOf(3) -> {
+                PipePair(
+                    x = initialPipeX,
+                    y = finalTopHeight + gameConfig.pipeGapSize / 2,
+                    topHeight = 0f,
+                    bottomHeight = finalBottomHeight,
+                    scored = false,
+                    targetTopHeight = finalTopHeight
+                )
+            }
+
+            in listOf(4) -> {
                 PipePair(
                     x = initialPipeX,
                     y = finalTopHeight + gameConfig.pipeGapSize / 2,

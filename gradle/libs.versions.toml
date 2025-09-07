@@ -1,5 +1,6 @@
 [versions]
 agp = "8.12.0"
+coilSvg = "2.7.0"
 exoplayer = "2.19.1"
 glance = "1.2.0-alpha01"
 gson = "2.13.1"
@@ -43,6 +44,7 @@ androidx-glance-appwidget = { module = "androidx.glance:glance-appwidget", versi
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomRuntime" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomRuntime" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
+coil-svg = { module = "io.coil-kt:coil-svg", version.ref = "coilSvg" }
 exoplayer = { module = "com.google.android.exoplayer:exoplayer", version.ref = "exoplayer" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 introshowcaseview = { module = "com.canopas.intro-showcase-view:introshowcaseview", version.ref = "introshowcaseview" }

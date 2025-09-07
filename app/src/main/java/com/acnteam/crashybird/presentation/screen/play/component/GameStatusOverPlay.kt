@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -43,6 +42,9 @@ import com.acnteam.crashybird.presentation.common.CrashyBirdButton
 import com.acnteam.crashybird.presentation.common.TripleOrbitLoadingAnimation
 import com.acnteam.crashybird.presentation.navigation.NavScreen
 import com.acnteam.crashybird.presentation.screen.play.PlayViewModel
+import com.acnteam.crashybird.presentation.screen.play.guide.LevelIntroPage
+import com.acnteam.crashybird.presentation.screen.play.guide.PlayGuideDialog
+import com.acnteam.crashybird.presentation.screen.play.guide.getIntroLinesForLevel
 import com.acnteam.crashybird.presentation.ui.theme.White
 import com.acnteam.crashybird.utils.AdMobHelper
 import kotlinx.coroutines.delay
@@ -59,6 +61,9 @@ fun GameStatusOverlay(
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val activity = context as Activity
+    var showGuide by remember { mutableStateOf(false) }
+    val levelNumber = viewModel.levelState?.level?.levelNumber ?: return
+    var showSpecialTutorial by remember { mutableStateOf(false) }
 
     when (gameStatus) {
         GameStatus.Idle -> {
@@ -68,19 +73,30 @@ fun GameStatusOverlay(
                     "ca-app-pub-3940256099942544/5224354917"
                 )
             }
-            GameOverlay(
-                title = null,
-                score = null,
-                buttons = listOf(
-                    GameButton(stringResource(R.string.btn_start)) { viewModel.start() }
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                GameOverlay(
+                    title = null,
+                    score = null,
+                    buttons = listOf(
+                        GameButton(stringResource(R.string.btn_guideplay)) {
+                            showSpecialTutorial = true
+                        },
+                        GameButton(stringResource(R.string.btn_start)) {
+                            viewModel.start()
+                        }
+                    )
                 )
-            )
+            }
             Box(
                 modifier = Modifier.fillMaxSize().padding(16.dp),
                 contentAlignment = Alignment.BottomStart
             ) {
                 IconButton(
-                    onClick = { viewModel.pauseGame() },
+                    onClick = { showGuide = true },
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.icon_guide),
@@ -88,6 +104,18 @@ fun GameStatusOverlay(
                         modifier = Modifier.size(48.dp)
                     )
                 }
+            }
+            if (showGuide) {
+                LevelIntroPage(
+                    levelNumber = levelNumber,
+                    lines = getIntroLinesForLevel(context,levelNumber),
+                    onDismiss = { showGuide = false }
+                )
+            }
+            if (showSpecialTutorial) {
+                PlayGuideDialog(
+                    onDismiss = { showSpecialTutorial = false }
+                )
             }
         }
 

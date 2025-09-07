@@ -72,4 +72,62 @@
     <string name="coin">Coin</string>
     <string name="text_immortal">Immortal!!!</string>
     <string name="btn_shop">Shop</string>
+    <string name="text_ontap">Tap the screen to continue</string>
+
+    //guide
+    <string name="level1_line1">The father begins his journey in a primeval forest full of dangers.</string>
+    <string name="level1_line2">In the forest, nine children escaped from the witch’s grasp and got lost.</string>
+    <string name="level1_line3">Your mission is to search for and rescue those children.</string>
+    <string name="level1_line4">Make use of the character’s skills and the magical items you encounter along the way.</string>
+    <string name="level1_line5">Once completed, new challenges will await you in the next level.</string>
+    <string name="level1_line6">Good luck!</string>
+
+    <string name="level2_line1">In this level, you will face an unstable lava cave.</string>
+    <string name="level2_line2">The environment here constantly trembles slightly, and every 15 seconds a major quake will occur, lasting for 5 seconds.</string>
+    <string name="level2_line3">There are 18 children lost inside this cave.</string>
+    <string name="level2_line4">Your mission is to search for and rescue those children.</string>
+    <string name="level2_line5">Make use of the character’s skills and the magical items you encounter along the way.</string>
+    <string name="level2_line6">Once completed, new challenges will await you in the next level.</string>
+    <string name="level2_line7">Good luck!</string>
+
+    <string name="level3_line1">After passing through the molten lava cave, you must overcome the icy cavern.</string>
+    <string name="level3_line2">Here, cold winds will affect your wings and make flying more difficult.</string>
+    <string name="level3_line3">Hidden ice spikes may suddenly fall and injure you.</string>
+    <string name="level3_line4">There are 36 children lost inside this cave.</string>
+    <string name="level3_line5">Your mission is to search for and rescue those children.</string>
+    <string name="level3_line6">Make use of the character’s skills and the magical items you encounter along the way.</string>
+    <string name="level3_line7">Once completed, new challenges will await you in the next level.</string>
+    <string name="level3_line8">Good luck!</string>
+
+    <string name="level4_line1">In this challenge, you must cross the scorching desert, with the winds constantly following you.</string>
+    <string name="level4_line2">The weather is unpredictable; occasional rain can help relieve the heat but will affect your movement.</string>
+    <string name="level4_line3">Be careful, hidden obstacles may emerge from the sand beneath you.</string>
+    <string name="level4_line4">There are 36 children lost in this area.</string>
+    <string name="level4_line5">Your mission is to search for and rescue those children.</string>
+    <string name="level4_line6">Make use of the character’s skills and the magical items you encounter along the way.</string>
+    <string name="level4_line7">Once completed, new challenges will await you in the next level.</string>
+    <string name="level4_line8">Good luck!</string>
+
+    <string name="level5_line1">In this challenge, you have reached the city, which is quite chaotic.</string>
+    <string name="level5_line2">Danger is always lurking around you.</string>
+    <string name="level5_line3">Be cautious and navigate carefully through the streets.</string>
+    <string name="level5_line4">There are 36 children lost in this area.</string>
+    <string name="level5_line5">Your mission is to search for and rescue those children.</string>
+    <string name="level5_line6">Make use of the character’s skills and the magical items you encounter along the way.</string>
+    <string name="level5_line7">Once completed, new challenges will await you in the next level.</string>
+    <string name="level5_line8">Good luck!</string>
+
+    <string name="level6_line1">In this challenge, you have reached the underwater Dragon Palace.</string>
+    <string name="level6_line2">Here, everything is completely different from what you have experienced before.</string>
+    <string name="level6_line3">Be prepared for new obstacles and surprises at every turn.</string>
+    <string name="level6_line4">There are 36 children lost in this area.</string>
+    <string name="level6_line5">Your mission is to search for and rescue those children.</string>
+    <string name="level6_line6">Make use of the character’s skills and the magical items you encounter along the way.</string>
+    <string name="level6_line7">Once completed, new challenges will await you in the next level.</string>
+    <string name="level6_line8">Good luck!</string>
+    <string name="btn_guideplay">Play Guide</string>
+    <string name="text_playjump">The main action throughout your game is jumping.</string>
+    <string name="text_playskill">Next, the skills you can use if your character has them</string>
+
+
 </resources>
