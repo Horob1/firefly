@@ -1,6 +1,7 @@
 package com.acnteam.crashybird.presentation.screen.home
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -26,6 +27,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -34,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.acnteam.crashybird.R
 import com.acnteam.crashybird.domain.model.Character
+import com.acnteam.crashybird.domain.model.game.Skill
 import com.acnteam.crashybird.presentation.common.CrashyBirdButton
 import com.acnteam.crashybird.presentation.common.TextCard
 import com.acnteam.crashybird.presentation.common.sprite.component.drawSpriteView
@@ -166,23 +169,57 @@ fun UnlockDialog(
                     // Giá:
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        Text(
-                            text = stringResource(R.string.txt_price),
-                            style = MaterialTheme.typography.bodyLarge.copy(
-                                fontFamily = MyFontFamily,
-                                fontWeight = FontWeight.Bold
-                            ),
-                            color = White
-                        )
-                        TextCard(
-                            string = character.coin.toString(),
-                            bgColor = OrangeAccent,
-                            color = White
-                        )
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.txt_price),
+                                    style = MaterialTheme.typography.bodyLarge.copy(
+                                        fontFamily = MyFontFamily,
+                                        fontWeight = FontWeight.Bold
+                                    ),
+                                    color = White
+                                )
+                                TextCard(
+                                    string = character.coin.toString(),
+                                    bgColor = OrangeAccent,
+                                    color = White
+                                )
+                            }
 
-
+                            // Skills
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.text_skill),
+                                    style = MaterialTheme.typography.bodyLarge.copy(
+                                        fontFamily = MyFontFamily,
+                                        fontWeight = FontWeight.Bold
+                                    ),
+                                    color = White
+                                )
+                                character.skills.forEach { skill ->
+                                    val iconRes = when (skill) {
+                                        Skill.DASH -> R.drawable.skill_dash
+                                        Skill.SLOW -> R.drawable.skill_slow
+                                        Skill.HIGH_JUMP -> R.drawable.skill_high_jump
+                                    }
+                                    Image(
+                                        painter = painterResource(iconRes),
+                                        contentDescription = skill.name,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
 

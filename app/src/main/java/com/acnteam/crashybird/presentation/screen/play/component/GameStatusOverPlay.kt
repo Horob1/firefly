@@ -208,7 +208,7 @@ private fun GameOverlay(
 
         score?.let {
             Text(
-                text = "${stringResource(R.string.coin)}: $it",
+                text = "${stringResource(R.string.txt_score)}: $it",
                 color = Color.White,
                 fontSize = MaterialTheme.typography.titleLarge.fontSize
             )

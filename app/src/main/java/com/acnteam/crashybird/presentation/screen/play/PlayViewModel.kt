@@ -38,7 +38,6 @@ import com.acnteam.crashybird.domain.usecase.UpdatePlaySectionUseCase
 import com.acnteam.crashybird.presentation.screen.play.effect.SoundEffectPlayer
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -97,7 +96,7 @@ class PlayViewModel(
         private set
     var isInvincible by mutableStateOf(false)
         private set
-
+    private var isBig by mutableStateOf(false)
     //recovery time
     private var dashCooldownUntil = 0L
     private var highJumpCooldownUntil = 0L
@@ -674,6 +673,7 @@ class PlayViewModel(
                 characterState = characterState?.copy(
                     scale = 2f,
                 )
+                isBig = true
             }
             3 -> { // Immortal
                 isInvincible = true
@@ -709,8 +709,8 @@ class PlayViewModel(
     }
 
     private fun isCollisionWithPipe(character: CharacterPlayState, pipe: PipePair): Boolean {
-        val halfWidth = (character.width * 0.6) / 2f
-        val halfHeight = (character.height * 0.75) / 2f
+        val halfWidth = if(isBig) (character.width * 0.9) / 2f else (character.width * 0.6) / 2f
+        val halfHeight = if(isBig) (character.height * 0.9) / 2f else (character.height * 0.75) / 2f
 
         val birdLeft = character.x - halfWidth
         val birdRight = character.x + halfWidth
@@ -781,6 +781,8 @@ class PlayViewModel(
     private fun gameOver() {
         gameStatus = GameStatus.Over
         val character = characterState?.character ?: return
+        val level = levelState?.level ?: return
+        val levelNumber = level.levelNumber
         loopJob?.cancel()
         windJob?.cancel()
         invincibilityJob?.cancel()
@@ -798,7 +800,7 @@ class PlayViewModel(
             bestScore = currentScore
         }
         viewModelScope.launch {
-            addCoinUseCase(currentScore * 1)
+            addCoinUseCase(currentScore * levelNumber)
         }
     }
 
