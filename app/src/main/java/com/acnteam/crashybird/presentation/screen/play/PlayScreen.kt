@@ -80,9 +80,9 @@ import com.acnteam.crashybird.presentation.common.sprite.domain.SpriteSpec
 import com.acnteam.crashybird.presentation.common.sprite.domain.rememberSpriteState
 import com.acnteam.crashybird.presentation.navigation.NavScreen
 import com.acnteam.crashybird.presentation.screen.home.Banner
-import com.acnteam.crashybird.presentation.screen.play.effect.BubbleEffect
 import com.acnteam.crashybird.presentation.screen.play.component.FirefliesUI
 import com.acnteam.crashybird.presentation.screen.play.component.GameStatusOverlay
+import com.acnteam.crashybird.presentation.screen.play.effect.BubbleEffect
 import com.acnteam.crashybird.presentation.screen.play.effect.RainEffect
 import com.acnteam.crashybird.presentation.screen.play.effect.VibrationHelper
 import com.acnteam.crashybird.presentation.screen.play.effect.WindEffect
@@ -381,7 +381,7 @@ fun PlayScreen(
                             when {
                                 abs(totalDrag.x) > abs(totalDrag.y) && totalDrag.x > 0 &&
                                         character.skills.contains(Skill.DASH) -> {
-                                    val useDash =  viewModel.useDashSkill()
+                                    val useDash = viewModel.useDashSkill()
                                     if (useDash) {
                                         showSkillEffect = "DASH!"
                                     }
@@ -496,6 +496,7 @@ fun PlayScreen(
                 )
             )
         }
+
         viewModel.itemsOnScreen.forEach { itemState ->
             val item = itemState.item
             drawImage(

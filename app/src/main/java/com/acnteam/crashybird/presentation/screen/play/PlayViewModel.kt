@@ -36,6 +36,7 @@ import com.acnteam.crashybird.domain.usecase.SetSoundEffectSettingsUseCase
 import com.acnteam.crashybird.domain.usecase.UpdateLevelUseCase
 import com.acnteam.crashybird.domain.usecase.UpdatePlaySectionUseCase
 import com.acnteam.crashybird.presentation.screen.play.effect.SoundEffectPlayer
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
@@ -70,6 +71,8 @@ class PlayViewModel(
     private var invincibilityJob: Job? = null
     private var slowEffectJob: Job? = null
 
+    private var enemyJob: Job? = null
+
     private val _graphicMode = getGraphicModeUseCase().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
@@ -97,6 +100,7 @@ class PlayViewModel(
     var isInvincible by mutableStateOf(false)
         private set
     private var isBig by mutableStateOf(false)
+
     //recovery time
     private var dashCooldownUntil = 0L
     private var highJumpCooldownUntil = 0L
@@ -119,13 +123,23 @@ class PlayViewModel(
     private val targetFPS = 60f
     private val targetFrameTime = 1000f / targetFPS
 
+    //enemy
+    var enemyState by mutableStateOf<Triple<Float, Float, Boolean>>(
+        Triple(
+            0f,
+            0f,
+            false
+        )
+    )
+        private set
+
     //item
     val currentItem: StateFlow<Items> = getCurrentItemUseCase()
         .stateIn(viewModelScope, SharingStarted.Eagerly, Items.ChildFirefly)
 
-    var itemsOnScreen = mutableStateListOf< ItemPlayState>()
+    var itemsOnScreen = mutableStateListOf<ItemPlayState>()
         private set
-    var boostItemsOnScreen = mutableStateListOf< BoostItemState>()
+    var boostItemsOnScreen = mutableStateListOf<BoostItemState>()
         private set
     val allBoostItems = listOf(mini_item, big_item, immortal)
     private var lastBoostSpawnTime = 0L
@@ -279,10 +293,12 @@ class PlayViewModel(
                 val secondPipe = sortedPipes[1]
                 secondPipe.x + gameConfig.pipeWidth + 50f - character.x
             }
+
             sortedPipes.size == 1 -> {
                 val firstPipe = sortedPipes[0]
                 firstPipe.x + gameConfig.pipeWidth + 50f - character.x
             }
+
             else -> 400f
         }
 
@@ -355,7 +371,8 @@ class PlayViewModel(
                 updateFrame(deltaTime)
 
                 val gameFps = _graphicMode.value.fps
-                val frameDelay = if (isSlowEffectActive) (1000L / gameFps) * 2 else (1000L / gameFps)
+                val frameDelay =
+                    if (isSlowEffectActive) (1000L / gameFps) * 2 else (1000L / gameFps)
                 delay(frameDelay)
             }
         }
@@ -365,14 +382,17 @@ class PlayViewModel(
         val character = characterState ?: return
         val level = levelState ?: return
 
-        val gravityEffect = if (level.level.levelNumber == 6) -gameConfig.gravity else gameConfig.gravity
-        val windEffect = if (level.level.levelNumber == 6) -level.windY * windEffectY else level.windY * windEffectY
+        val gravityEffect =
+            if (level.level.levelNumber == 6) -gameConfig.gravity else gameConfig.gravity
+        val windEffect =
+            if (level.level.levelNumber == 6) -level.windY * windEffectY else level.windY * windEffectY
 
         velocityY = velocityY + (gravityEffect + windEffect) * deltaTime
 
         val newX = character.x
         val halfHeight = character.height / 2f
-        val newY = (character.y + velocityY * deltaTime).coerceIn(halfHeight, screenHeight - halfHeight)
+        val newY =
+            (character.y + velocityY * deltaTime).coerceIn(halfHeight, screenHeight - halfHeight)
 
         characterState = character.copy(x = newX, y = newY)
 
@@ -660,7 +680,10 @@ class PlayViewModel(
         }
         boostItemsOnScreen.removeAll(collected)
     }
-    private fun isColliding(a: Rect, b: Rect): Boolean { return a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top }
+
+    private fun isColliding(a: Rect, b: Rect): Boolean {
+        return a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top
+    }
 
     fun applyBoost(boostItem: BoostItem) {
         when (boostItem.id) {
@@ -669,12 +692,14 @@ class PlayViewModel(
                     scale = 0.5f,
                 )
             }
+
             2 -> { // Big
                 characterState = characterState?.copy(
                     scale = 2f,
                 )
                 isBig = true
             }
+
             3 -> { // Immortal
                 isInvincible = true
             }
@@ -709,8 +734,9 @@ class PlayViewModel(
     }
 
     private fun isCollisionWithPipe(character: CharacterPlayState, pipe: PipePair): Boolean {
-        val halfWidth = if(isBig) (character.width * 0.9) / 2f else (character.width * 0.6) / 2f
-        val halfHeight = if(isBig) (character.height * 0.9) / 2f else (character.height * 0.75) / 2f
+        val halfWidth = if (isBig) (character.width * 0.9) / 2f else (character.width * 0.6) / 2f
+        val halfHeight =
+            if (isBig) (character.height * 0.9) / 2f else (character.height * 0.75) / 2f
 
         val birdLeft = character.x - halfWidth
         val birdRight = character.x + halfWidth
@@ -907,6 +933,23 @@ class PlayViewModel(
         }
     }
 
+    fun startEnemy() {
+        enemyJob?.cancel()
+        if (levelState?.level?.levelNumber == 5) {
+            enemyJob = viewModelScope.launch {
+                while (isActive) {
+
+                    updateEnemy()
+
+                    delay(30 * 1000L)
+                }
+            }
+        }
+    }
+
+    private fun CoroutineScope.updateEnemy() {
+        TODO("Not yet implemented")
+    }
 
 
 }
