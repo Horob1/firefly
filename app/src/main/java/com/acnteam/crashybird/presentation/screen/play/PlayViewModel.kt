@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.acnteam.crashybird.domain.model.BackgroundMusic
 import com.acnteam.crashybird.domain.model.BackgroundMusicSettings
 import com.acnteam.crashybird.domain.model.Character
+import com.acnteam.crashybird.domain.model.Enemy
 import com.acnteam.crashybird.domain.model.GraphicMode
 import com.acnteam.crashybird.domain.model.Items
 import com.acnteam.crashybird.domain.model.Level
@@ -36,7 +37,6 @@ import com.acnteam.crashybird.domain.usecase.SetSoundEffectSettingsUseCase
 import com.acnteam.crashybird.domain.usecase.UpdateLevelUseCase
 import com.acnteam.crashybird.domain.usecase.UpdatePlaySectionUseCase
 import com.acnteam.crashybird.presentation.screen.play.effect.SoundEffectPlayer
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
@@ -116,19 +116,18 @@ class PlayViewModel(
     private var velocityY = 0f
     private var screenWidth = 0
     private var screenHeight = 0
-    private val windEffectX = 1f
-    private val windEffectY = 0.5f
+    private val windEffectX = 0.5f
+    private val windEffectY = 0.2f
 
     private var lastUpdateTime = 0L
     private val targetFPS = 60f
     private val targetFrameTime = 1000f / targetFPS
 
     //enemy
-    var enemyState by mutableStateOf<Triple<Float, Float, Boolean>>(
-        Triple(
+    var enemyState by mutableStateOf<Pair<Float, Float>>(
+        Pair(
             0f,
             0f,
-            false
         )
     )
         private set
@@ -192,6 +191,9 @@ class PlayViewModel(
         resetGame()
         startGameLoop()
         startWindLoop()
+        if (levelState?.level?.levelNumber == 5) {
+            startEnemy()
+        }
     }
 
     fun restart() {
@@ -199,6 +201,9 @@ class PlayViewModel(
         resetGame()
         startGameLoop()
         startWindLoop()
+        if (levelState?.level?.levelNumber == 5) {
+            startEnemy()
+        }
     }
 
     fun pauseGame() {
@@ -223,7 +228,6 @@ class PlayViewModel(
         velocityY = 0f
         pipePairs = emptyList()
         levelState = levelState?.copy(firefliesCollected = 0)
-
         hasWatchedAd = false
         isInvincible = false
         invincibilityJob?.cancel()
@@ -233,6 +237,8 @@ class PlayViewModel(
         slowCooldownUntil = 0L
         isSlowEffectActive = false
         slowEffectJob?.cancel()
+        cancelEnemyJob()
+        windJob?.cancel()
         lastUpdateTime = 0L
         val character = characterState?.character ?: return
         characterState = CharacterPlayState(
@@ -267,6 +273,9 @@ class PlayViewModel(
             activateInvincibility()
             startGameLoop()
             startWindLoop()
+            if (levelState?.level?.levelNumber == 5) {
+                startEnemy()
+            }
         }
     }
 
@@ -433,6 +442,9 @@ class PlayViewModel(
 
         checkItemCollision(character)
         checkBoostItemCollision(character)
+        if (level.level.levelNumber == 5) {
+            checkEnemyCollision(character)
+        }
 
         if (!isInvincible && checkCollisions()) {
             gameOver()
@@ -811,10 +823,14 @@ class PlayViewModel(
         val levelNumber = level.levelNumber
         loopJob?.cancel()
         windJob?.cancel()
+        if (level.levelNumber == 5) {
+            enemyJob?.cancel()
+        }
         invincibilityJob?.cancel()
         slowEffectJob?.cancel()
         isInvincible = false
         isSlowEffectActive = false
+
         if (character.name == "Oii") {
             soundEffectPlayer.playOiiOver()
         } else {
@@ -828,6 +844,7 @@ class PlayViewModel(
         viewModelScope.launch {
             addCoinUseCase(currentScore * levelNumber)
         }
+
     }
 
     fun getBirdRotation(): Float {
@@ -935,21 +952,61 @@ class PlayViewModel(
 
     fun startEnemy() {
         enemyJob?.cancel()
-        if (levelState?.level?.levelNumber == 5) {
-            enemyJob = viewModelScope.launch {
-                while (isActive) {
+        enemyJob = null
+        levelState = levelState?.copy(enemy = null)
+        enemyJob = viewModelScope.launch {
+            while (isActive) {
+                while (true && isActive) {
+                    val enemy = levelState?.enemy
+                    if (enemy == null) {
+                        levelState = levelState?.copy(enemy = Enemy.ShishaDog)
+                        val enemyHeight = Random.nextFloat() * gameConfig.screenHeight
+                        enemyState = enemyState.copy(gameConfig.screenWidth + 200f, enemyHeight)
+                    } else {
+                        val newX = enemyState.first - enemy.speed
+                        if (newX < -200f || newX > gameConfig.screenWidth + 200f) {
+                            levelState = levelState?.copy(enemy = null)
+                            break
+                        } else {
+                            enemyState = enemyState.copy(newX, enemyState.second)
+                        }
+                    }
+                    while (gameStatus == GameStatus.Paused && isActive) {
+                        delay(16L)
+                    }
 
-                    updateEnemy()
-
-                    delay(30 * 1000L)
+                    delay(16L)
                 }
+                delay(3000L)
             }
         }
     }
 
-    private fun CoroutineScope.updateEnemy() {
-        TODO("Not yet implemented")
+    private fun checkEnemyCollision(character: CharacterPlayState) {
+        val hitboxPadding = 20f
+        val characterRect = Rect(
+            left = character.x - character.width / 2f + hitboxPadding,
+            top = character.y - character.height / 2f + hitboxPadding,
+            right = character.x + character.width / 2f - hitboxPadding,
+            bottom = character.y + character.height / 2f - hitboxPadding
+        )
+        levelState?.enemy?.let { enemy ->
+            val enemyRect = Rect(
+                left = enemyState.first - enemy.width / 2f + hitboxPadding,
+                top = enemyState.second - enemy.height / 2f + hitboxPadding,
+                right = enemyState.first + enemy.width / 2f - hitboxPadding,
+                bottom = enemyState.second + enemy.height / 2f - hitboxPadding
+            )
+            if (isColliding(characterRect, enemyRect)) {
+                gameOver()
+            }
+        }
     }
 
 
+    private fun cancelEnemyJob() {
+        enemyJob?.cancel()
+        enemyJob = null
+        levelState = levelState?.copy(enemy = null)
+    }
 }

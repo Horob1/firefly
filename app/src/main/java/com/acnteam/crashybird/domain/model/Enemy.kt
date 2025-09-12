@@ -7,7 +7,6 @@ sealed class Enemy(
     val name: String,
     val height: Int,
     val width: Int,
-    val radius: Int,
     val speed: Int,
     @DrawableRes val image: Int,
 ) {
@@ -16,8 +15,7 @@ sealed class Enemy(
         "shishaDog",
         171,
         243,
-        20,
-        20,
+        45,
         R.drawable.cho_hut_shisha
     )
 }

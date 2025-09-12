@@ -174,6 +174,8 @@ fun PlayScreen(
             repeatMode = RepeatMode.Reverse
         )
     )
+
+    val enemyState = viewModel.enemyState
     BackHandler {
         viewModel.pauseGame()
         showPauseDialog = true
@@ -525,6 +527,23 @@ fun PlayScreen(
                 dstSize = IntSize(
                     width = item.width,
                     height = item.height
+                )
+            )
+        }
+
+        levelState?.enemy.let {
+            val enemyImage: ImageBitmap =
+                BitmapFactory.decodeResource(context.resources, it?.image ?: return@Canvas)
+                    .asImageBitmap()
+            drawImage(
+                image = enemyImage,
+                dstOffset = IntOffset(
+                    x = (enemyState.first - it.width / 2f).toInt(),
+                    y = (enemyState.second - it.height / 2f).toInt()
+                ),
+                dstSize = IntSize(
+                    width = it.width,
+                    height = it.height
                 )
             )
         }

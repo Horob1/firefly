@@ -1,5 +1,6 @@
 package com.acnteam.crashybird.domain.model.game
 
+import com.acnteam.crashybird.domain.model.Enemy
 import com.acnteam.crashybird.domain.model.Level
 
 data class LevelPlayState(
@@ -12,4 +13,5 @@ data class LevelPlayState(
     val windY: Float,
     val firefliesCollected: Int = 0,
     val firefliesRequired: Int = level.fireFlyRequire,
+    val enemy: Enemy? = null
 )
