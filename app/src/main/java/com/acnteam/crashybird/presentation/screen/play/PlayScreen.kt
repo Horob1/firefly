@@ -157,10 +157,11 @@ fun PlayScreen(
     val pipeImage: ImageBitmap =
         BitmapFactory.decodeResource(context.resources, level.pipeImage).asImageBitmap()
 
+    val pipeFlippedImage: ImageBitmap = flipBitmapVertically(pipeImage)
     val pipeCapImage: ImageBitmap =
         BitmapFactory.decodeResource(context.resources, level.pipeCapImage).asImageBitmap()
 
-    val pipeFlippedImage: ImageBitmap = flipBitmapVertically(pipeCapImage)
+    val pipeCapFlippedImage: ImageBitmap = flipBitmapVertically(pipeCapImage)
 
     val currentItem by viewModel.currentItem.collectAsState()
 
@@ -445,32 +446,50 @@ fun PlayScreen(
         // Draw pipes
         pipePairs.forEach { pipePair ->
             val pipeWidth = viewModel.currentGameConfig.pipeWidth.toInt()
+            val segmentHeight = 20 // chiều cao mỗi tile body (có thể chỉnh)
 
-            // Top pipe body
-            drawImage(
-                image = pipeImage,
-                dstOffset = IntOffset(
-                    x = (pipePair.x - pipeWidth / 2).toInt(),
-                    y = 0
-                ),
-                dstSize = IntSize(
-                    width = pipeWidth,
-                    height = (pipePair.topHeight - PIPE_CAP_HEIGHT).toInt()
+            var currentY = 0
+            while (currentY < pipePair.topHeight - PIPE_CAP_HEIGHT) {
+                val drawHeight =
+                    minOf(segmentHeight, (pipePair.topHeight - PIPE_CAP_HEIGHT - currentY).toInt())
+                drawImage(
+                    image = pipeFlippedImage,
+                    dstOffset = IntOffset(
+                        x = (pipePair.x - pipeWidth / 2).toInt(),
+                        y = currentY
+                    ),
+                    dstSize = IntSize(pipeWidth, drawHeight)
                 )
-            )
+                currentY += segmentHeight
+            }
 
             // Top pipe cap
             drawImage(
-                image = pipeFlippedImage,
+                image = pipeCapFlippedImage,
                 dstOffset = IntOffset(
                     x = (pipePair.x - pipeWidth / 2).toInt(),
                     y = (pipePair.topHeight - PIPE_CAP_HEIGHT).toInt()
                 ),
-                dstSize = IntSize(
-                    width = pipeWidth,
-                    height = PIPE_CAP_HEIGHT.toInt()
-                )
+                dstSize = IntSize(pipeWidth, PIPE_CAP_HEIGHT.toInt())
             )
+
+            val bottomStartY =
+                (pipePair.y + viewModel.currentGameConfig.pipeGapSize / 2 + PIPE_CAP_HEIGHT).toInt()
+            val bottomBodyHeight = (pipePair.bottomHeight - PIPE_CAP_HEIGHT).toInt()
+
+            var currentBottomY = 0
+            while (currentBottomY < bottomBodyHeight) {
+                val drawHeight = minOf(segmentHeight, bottomBodyHeight - currentBottomY)
+                drawImage(
+                    image = pipeImage,
+                    dstOffset = IntOffset(
+                        x = (pipePair.x - pipeWidth / 2).toInt(),
+                        y = bottomStartY + currentBottomY
+                    ),
+                    dstSize = IntSize(pipeWidth, drawHeight)
+                )
+                currentBottomY += segmentHeight
+            }
 
             // Bottom pipe cap
             drawImage(
@@ -479,23 +498,7 @@ fun PlayScreen(
                     x = (pipePair.x - pipeWidth / 2).toInt(),
                     y = (pipePair.y + viewModel.currentGameConfig.pipeGapSize / 2).toInt()
                 ),
-                dstSize = IntSize(
-                    width = pipeWidth,
-                    height = PIPE_CAP_HEIGHT.toInt()
-                )
-            )
-
-            // Bottom pipe body
-            drawImage(
-                image = pipeImage,
-                dstOffset = IntOffset(
-                    x = (pipePair.x - pipeWidth / 2).toInt(),
-                    y = (pipePair.y + viewModel.currentGameConfig.pipeGapSize / 2 + PIPE_CAP_HEIGHT).toInt()
-                ),
-                dstSize = IntSize(
-                    width = pipeWidth,
-                    height = (pipePair.bottomHeight - PIPE_CAP_HEIGHT).toInt()
-                )
+                dstSize = IntSize(pipeWidth, PIPE_CAP_HEIGHT.toInt())
             )
         }
 

@@ -81,7 +81,7 @@ fun LevelIntroPage(
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Text(
-                text = "Welcome to level $levelNumber",
+                text = "${stringResource(R.string.text_welcome_to_level)} $levelNumber",
                 color = Color.Yellow,
                 fontSize = 26.sp,
                 fontWeight = FontWeight.Bold,
@@ -109,6 +109,7 @@ fun LevelIntroPage(
         }
     }
 }
+
 fun getIntroLinesForLevel(context: Context, level: Int): List<String> {
     return when (level) {
         1 -> listOf(
@@ -119,6 +120,7 @@ fun getIntroLinesForLevel(context: Context, level: Int): List<String> {
             context.getString(R.string.level1_line5),
             context.getString(R.string.level1_line6),
         )
+
         2 -> listOf(
             context.getString(R.string.level2_line1),
             context.getString(R.string.level2_line2),
@@ -128,6 +130,7 @@ fun getIntroLinesForLevel(context: Context, level: Int): List<String> {
             context.getString(R.string.level2_line6),
             context.getString(R.string.level2_line7)
         )
+
         3 -> listOf(
             context.getString(R.string.level3_line1),
             context.getString(R.string.level3_line2),
@@ -138,6 +141,7 @@ fun getIntroLinesForLevel(context: Context, level: Int): List<String> {
             context.getString(R.string.level3_line7),
             context.getString(R.string.level3_line8)
         )
+
         4 -> listOf(
             context.getString(R.string.level4_line1),
             context.getString(R.string.level4_line2),
@@ -148,6 +152,7 @@ fun getIntroLinesForLevel(context: Context, level: Int): List<String> {
             context.getString(R.string.level4_line7),
             context.getString(R.string.level4_line8)
         )
+
         5 -> listOf(
             context.getString(R.string.level5_line1),
             context.getString(R.string.level5_line2),
@@ -158,6 +163,7 @@ fun getIntroLinesForLevel(context: Context, level: Int): List<String> {
             context.getString(R.string.level5_line7),
             context.getString(R.string.level5_line8)
         )
+
         6 -> listOf(
             context.getString(R.string.level6_line1),
             context.getString(R.string.level6_line2),
@@ -168,6 +174,7 @@ fun getIntroLinesForLevel(context: Context, level: Int): List<String> {
             context.getString(R.string.level6_line7),
             context.getString(R.string.level6_line8)
         )
+
         else -> listOf(context.getString(R.string.text_ontap))
     }
 }
