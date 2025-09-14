@@ -324,6 +324,7 @@ class PlayViewModel(
     }
 
     fun useHighJumpSkill(): Boolean {
+        val character = characterState ?: return false
         if (isHighJumpOnCooldown() || gameStatus != GameStatus.Started) return false
 
         highJumpCooldownUntil = System.currentTimeMillis() + HIGH_JUMP_COOLDOWN
@@ -333,7 +334,11 @@ class PlayViewModel(
         else
             (gameConfig.birdJumpImpulse * 10.0f) - (level?.windY ?: 0f) * windEffectY
 
-        soundEffectPlayer.playJump()
+        if (character.character.name == "Oii") {
+            soundEffectPlayer.playOiiJump()
+        } else {
+            soundEffectPlayer.playJump()
+        }
         return true
     }
 
@@ -844,7 +849,6 @@ class PlayViewModel(
         viewModelScope.launch {
             addCoinUseCase(currentScore * levelNumber)
         }
-
     }
 
     fun getBirdRotation(): Float {

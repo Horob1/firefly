@@ -12,13 +12,17 @@ class SoundEffectPlayer(context: Context) {
     private var jumpSound: Int = soundPool.load(context, R.raw.jump, 1)
     private var fallSound: Int = soundPool.load(context, R.raw.falling, 1)
     private var gameOverSound: Int = soundPool.load(context, R.raw.game_over, 1)
-    private var oiiOverSound: Int = soundPool.load(context, R.raw.oii_over, 1)
-
+    private var oiiOverSound: Int = soundPool.load(context, R.raw.metoisekhoc, 1)
+    private var oiiJumpSound: Int = soundPool.load(context, R.raw.oii_over, 1)
     var sfxEnabled = true
     var sfxVolume = 1.0f
 
     fun playJump() {
         if (sfxEnabled) soundPool.play(jumpSound, sfxVolume, sfxVolume, 1, 0, 1f)
+    }
+
+    fun playOiiJump() {
+        if (sfxEnabled) soundPool.play(oiiJumpSound, sfxVolume, sfxVolume, 1, 0, 1f)
     }
 
     fun playFall() {
