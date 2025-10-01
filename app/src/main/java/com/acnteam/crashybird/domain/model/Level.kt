@@ -44,7 +44,7 @@ sealed class Level(
         R.drawable.lava_moving_background,
         R.drawable.lava_pipe,
         R.drawable.lava_pipe_cap,
-        fireFlyRequire = 18
+        fireFlyRequire = 9
     )
 
     data object Three : Level(
@@ -53,7 +53,7 @@ sealed class Level(
         R.drawable.ice_moving_background,
         R.drawable.ice_pipe_test,
         R.drawable.ice_pipe_cap,
-        fireFlyRequire = 36
+        fireFlyRequire = 9
     )
 
     data object Four : Level(
@@ -62,7 +62,7 @@ sealed class Level(
         R.drawable.desert_moving_background,
         R.drawable.desert_pipe,
         R.drawable.desert_pipe_cap,
-        fireFlyRequire = 36
+        fireFlyRequire = 9
     )
 
     data object Five : Level(
@@ -71,7 +71,7 @@ sealed class Level(
         R.drawable.city_moving_background,
         R.drawable.city_pipe,
         R.drawable.city_pipe_cap,
-        fireFlyRequire = 36
+        fireFlyRequire = 9
     )
 
     data object Six : Level(
@@ -80,6 +80,6 @@ sealed class Level(
         R.drawable.dragon_palace_moving_background,
         R.drawable.dragon_palace_pipe,
         R.drawable.dragon_palace_pipe_cap,
-        fireFlyRequire = 36
+        fireFlyRequire = 9
     )
 }

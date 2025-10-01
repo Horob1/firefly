@@ -136,6 +136,7 @@
     <string name="btn_guideplay">Play Guide</string>
     <string name="text_playjump">The main action throughout your game is jumping.</string>
     <string name="text_playskill">Next, the skills you can use if your character has them</string>
+
     <string name="level1_line1">Người cha bắt đầu hành trình trong khu rừng nguyên sinh đầy hiểm nguy.</string>
     <string name="level1_line2">Trong khu rừng, chín đứa trẻ đã thoát khỏi tay mụ phù thủy và bị lạc.</string>
     <string name="level1_line3">Nhiệm vụ của bạn là tìm kiếm và giải cứu những đứa trẻ đó.</string>
@@ -145,7 +146,7 @@
 
     <string name="level2_line1">Ở màn này, bạn sẽ đối mặt với hang dung nham không ổn định.</string>
     <string name="level2_line2">Môi trường ở đây luôn rung nhẹ, và cứ 15 giây sẽ xảy ra một cơn địa chấn lớn kéo dài 5 giây.</string>
-    <string name="level2_line3">Có 18 đứa trẻ bị lạc trong hang động này.</string>
+    <string name="level2_line3">Có 9 đứa trẻ bị lạc trong hang động này.</string>
     <string name="level2_line4">Nhiệm vụ của bạn là tìm kiếm và giải cứu những đứa trẻ đó.</string>
     <string name="level2_line5">Hãy tận dụng kỹ năng của nhân vật và các vật phẩm ma thuật bạn gặp trên đường đi.</string>
     <string name="level2_line6">Khi hoàn thành, những thử thách mới sẽ chờ bạn ở màn tiếp theo.</string>
@@ -154,7 +155,7 @@
     <string name="level3_line1">Sau khi vượt qua hang dung nham, bạn phải chinh phục hang băng giá.</string>
     <string name="level3_line2">Ở đây, gió lạnh sẽ ảnh hưởng đến đôi cánh và khiến việc bay khó khăn hơn.</string>
     <string name="level3_line3">Những mũi nhọn băng ẩn giấu có thể bất ngờ rơi xuống và làm bạn bị thương.</string>
-    <string name="level3_line4">Có 36 đứa trẻ bị lạc trong hang băng này.</string>
+    <string name="level3_line4">Có 9 đứa trẻ bị lạc trong hang băng này.</string>
     <string name="level3_line5">Nhiệm vụ của bạn là tìm kiếm và giải cứu những đứa trẻ đó.</string>
     <string name="level3_line6">Hãy tận dụng kỹ năng của nhân vật và các vật phẩm ma thuật bạn gặp trên đường đi.</string>
     <string name="level3_line7">Khi hoàn thành, những thử thách mới sẽ chờ bạn ở màn tiếp theo.</string>
@@ -163,7 +164,7 @@
     <string name="level4_line1">Trong thử thách này, bạn phải băng qua sa mạc nóng bỏng với những cơn gió không ngừng thổi theo sau.</string>
     <string name="level4_line2">Thời tiết thất thường; đôi khi mưa sẽ giúp giảm nhiệt nhưng lại ảnh hưởng đến chuyển động của bạn.</string>
     <string name="level4_line3">Hãy cẩn thận, những chướng ngại ẩn có thể bất ngờ trồi lên từ cát dưới chân bạn.</string>
-    <string name="level4_line4">Có 36 đứa trẻ bị lạc trong khu vực này.</string>
+    <string name="level4_line4">Có 9 đứa trẻ bị lạc trong khu vực này.</string>
     <string name="level4_line5">Nhiệm vụ của bạn là tìm kiếm và giải cứu những đứa trẻ đó.</string>
     <string name="level4_line6">Hãy tận dụng kỹ năng của nhân vật và các vật phẩm ma thuật bạn gặp trên đường đi.</string>
     <string name="level4_line7">Khi hoàn thành, những thử thách mới sẽ chờ bạn ở màn tiếp theo.</string>
@@ -172,16 +173,16 @@
     <string name="level5_line1">Cuối cùng, bạn tìm đến nơi trú ẩn của phù thủy, căn cứ địa 120 Yên Lãng</string>
     <string name="level5_line2">Nguy hiểm luôn rình rập quanh bạn. Bạn sẽ phải né tránh những đợt tấn công</string>
     <string name="level5_line3">Hãy cẩn thận và di chuyển khéo léo qua các cây cột.</string>
-    <string name="level5_line4">Có 36 đứa trẻ bị lạc trong khu vực này.</string>
+    <string name="level5_line4">Có 9 đứa trẻ bị lạc trong khu vực này.</string>
     <string name="level5_line5">Nhiệm vụ của bạn là tìm kiếm và giải cứu những đứa trẻ đó.</string>
     <string name="level5_line6">Hãy tận dụng kỹ năng của nhân vật và các vật phẩm ma thuật bạn gặp trên đường đi.</string>
-    <string name="level5_line7">Khi hoàn thành, gia đình bạn sẽ được đoàn tụ.</string>
+    <string name="level5_line7">Khi hoàn thành, bạn sẽ là người chiến thắng.</string>
     <string name="level5_line8">Chúc may mắn!</string>
 
-    <string name="level6_line1">Ngoại truyên,đã từng bạn  đến Long Cung dưới biển.</string>
+    <string name="level6_line1">Ngoại truyên,đã từng bạn vượt qua Long Cung dưới biển.</string>
     <string name="level6_line2">Ở đây, mọi thứ hoàn toàn khác biệt so với những gì bạn từng trải qua trước đó.</string>
     <string name="level6_line3">Hãy chuẩn bị cho những chướng ngại mới và bất ngờ ở mọi ngã rẽ.</string>
-    <string name="level6_line4">Có 36 đứa trẻ bị lạc trong khu vực này.</string>
+    <string name="level6_line4">Có 9 đứa trẻ bị lạc trong khu vực này.</string>
     <string name="level6_line5">Nhiệm vụ của bạn là tìm kiếm và giải cứu những đứa trẻ đó.</string>
     <string name="level6_line6">Hãy tận dụng kỹ năng của nhân vật và các vật phẩm ma thuật bạn gặp trên đường đi.</string>
     <string name="level6_line7">Khi hoàn thành, những thử thách mới sẽ chờ bạn ở màn tiếp theo.</string>

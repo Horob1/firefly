@@ -62,23 +62,16 @@ class PlayViewModel(
 ) : ViewModel() {
 
     private var gameConfig = Game()
-
-    //game job
     val currentGameConfig: Game get() = gameConfig
 
+    // Chỉ cần 1 loopJob duy nhất
     private var loopJob: Job? = null
-    private var windJob: Job? = null
-    private var invincibilityJob: Job? = null
-    private var slowEffectJob: Job? = null
-
-    private var enemyJob: Job? = null
 
     private val _graphicMode = getGraphicModeUseCase().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = GraphicMode.LOW
     )
-
     val graphicMode: StateFlow<GraphicMode> = _graphicMode
 
     var characterState by mutableStateOf<CharacterPlayState?>(null)
@@ -91,8 +84,8 @@ class PlayViewModel(
         private set
     var pipePairs by mutableStateOf(listOf<PipePair>())
         private set
-    private var windDirectionToggle = true
 
+    private var windDirectionToggle = true
     var bestScore by mutableStateOf(0)
         private set
     var hasWatchedAd by mutableStateOf(false)
@@ -101,17 +94,16 @@ class PlayViewModel(
         private set
     private var isBig by mutableStateOf(false)
 
-    //recovery time
+    // Cooldowns
     private var dashCooldownUntil = 0L
     private var highJumpCooldownUntil = 0L
     private var slowCooldownUntil = 0L
     private var isSlowEffectActive = false
 
-    //cooldowns
-    private val DASH_COOLDOWN = 20000L // 20 seconds
-    private val HIGH_JUMP_COOLDOWN = 13000L // 13 seconds
-    private val SLOW_COOLDOWN = 15000L // 15 seconds
-    private val SLOW_EFFECT_DURATION = 3000L // 3 seconds
+    private val DASH_COOLDOWN = 20000L
+    private val HIGH_JUMP_COOLDOWN = 13000L
+    private val SLOW_COOLDOWN = 15000L
+    private val SLOW_EFFECT_DURATION = 3000L
 
     private var velocityY = 0f
     private var screenWidth = 0
@@ -123,16 +115,31 @@ class PlayViewModel(
     private val targetFPS = 60f
     private val targetFrameTime = 1000f / targetFPS
 
-    //enemy
-    var enemyState by mutableStateOf<Pair<Float, Float>>(
-        Pair(
-            0f,
-            0f,
-        )
-    )
-        private set
+    // Wind logic tracking
+    private var lastWindChangeTime = 0L
+    private var windFadeStartTime = 0L
+    private var isWindFading = false
+    private var isWindActive = false
+    private val WIND_ACTIVE_DURATION = 10_000L
+    private val WIND_FADE_DURATION = 5_000L
+    private val WIND_PAUSE_DURATION = 10_000L
 
-    //item
+    // Enemy logic tracking
+    var enemyState by mutableStateOf<Pair<Float, Float>>(Pair(0f, 0f))
+        private set
+    private var lastEnemyUpdateTime = 0L
+    private var lastEnemySpawnTime = 0L
+    private val ENEMY_UPDATE_INTERVAL = 16L
+    private val ENEMY_RESPAWN_DELAY = 3_000L
+
+    // Effects tracking
+    private var invincibilityEndTime = 0L
+    private var slowEffectEndTime = 0L
+    private var boostEffectEndTime = 0L
+    private val INVINCIBILITY_DURATION = 3_000L
+    private val BOOST_DURATION = 3_000L
+
+    // Items
     val currentItem: StateFlow<Items> = getCurrentItemUseCase()
         .stateIn(viewModelScope, SharingStarted.Eagerly, Items.ChildFirefly)
 
@@ -189,29 +196,29 @@ class PlayViewModel(
         if (gameStatus == GameStatus.Started) return
         gameStatus = GameStatus.Started
         resetGame()
+
+        val currentTime = System.currentTimeMillis()
+        lastWindChangeTime = currentTime
+        lastEnemySpawnTime = currentTime
+
         startGameLoop()
-        startWindLoop()
-        if (levelState?.level?.levelNumber == 5) {
-            startEnemy()
-        }
     }
 
     fun restart() {
         gameStatus = GameStatus.Started
         resetGame()
+
+        val currentTime = System.currentTimeMillis()
+        lastWindChangeTime = currentTime
+        lastEnemySpawnTime = currentTime
+
         startGameLoop()
-        startWindLoop()
-        if (levelState?.level?.levelNumber == 5) {
-            startEnemy()
-        }
     }
 
     fun pauseGame() {
         if (gameStatus == GameStatus.Started) {
             gameStatus = GameStatus.Paused
             loopJob?.cancel()
-            windJob?.cancel()
-            slowEffectJob?.cancel()
         }
     }
 
@@ -219,7 +226,6 @@ class PlayViewModel(
         if (gameStatus == GameStatus.Paused) {
             gameStatus = GameStatus.Started
             startGameLoop()
-            startWindLoop()
         }
     }
 
@@ -227,19 +233,35 @@ class PlayViewModel(
         currentScore = 0
         velocityY = 0f
         pipePairs = emptyList()
-        levelState = levelState?.copy(firefliesCollected = 0)
+        levelState = levelState?.copy(firefliesCollected = 0, enemy = null)
         hasWatchedAd = false
         isInvincible = false
-        invincibilityJob?.cancel()
+        isBig = false
+        itemsOnScreen.clear()
+        boostItemsOnScreen.clear()
+        // Reset wind state
+        lastWindChangeTime = 0L
+        windFadeStartTime = 0L
+        isWindFading = false
+        isWindActive = false
+        windDirectionToggle = true
+
+        // Reset enemy state
+        lastEnemyUpdateTime = 0L
+        lastEnemySpawnTime = 0L
+
+        // Reset effects
+        invincibilityEndTime = 0L
+        slowEffectEndTime = 0L
+        isSlowEffectActive = false
+        boostEffectEndTime = 0L
 
         dashCooldownUntil = 0L
         highJumpCooldownUntil = 0L
         slowCooldownUntil = 0L
-        isSlowEffectActive = false
-        slowEffectJob?.cancel()
-        cancelEnemyJob()
-        windJob?.cancel()
+
         lastUpdateTime = 0L
+
         val character = characterState?.character ?: return
         characterState = CharacterPlayState(
             character = character,
@@ -271,21 +293,18 @@ class PlayViewModel(
             delay(3000L)
             gameStatus = GameStatus.Started
             activateInvincibility()
+
+            val currentTime = System.currentTimeMillis()
+            lastWindChangeTime = currentTime
+            lastEnemySpawnTime = currentTime
+
             startGameLoop()
-            startWindLoop()
-            if (levelState?.level?.levelNumber == 5) {
-                startEnemy()
-            }
         }
     }
 
     private fun activateInvincibility() {
         isInvincible = true
-        invincibilityJob?.cancel()
-        invincibilityJob = viewModelScope.launch {
-            delay(3000L)
-            isInvincible = false
-        }
+        invincibilityEndTime = System.currentTimeMillis() + INVINCIBILITY_DURATION
     }
 
     //skill
@@ -347,11 +366,7 @@ class PlayViewModel(
 
         slowCooldownUntil = System.currentTimeMillis() + SLOW_COOLDOWN
         isSlowEffectActive = true
-        slowEffectJob?.cancel()
-        slowEffectJob = viewModelScope.launch {
-            delay(SLOW_EFFECT_DURATION)
-            isSlowEffectActive = false
-        }
+        slowEffectEndTime = System.currentTimeMillis() + SLOW_EFFECT_DURATION
 
         soundEffectPlayer.playJump()
         return true
@@ -373,6 +388,7 @@ class PlayViewModel(
         loopJob?.cancel()
         loopJob = viewModelScope.launch {
             lastUpdateTime = System.currentTimeMillis()
+
             while (isActive && gameStatus == GameStatus.Started) {
                 val currentTime = System.currentTimeMillis()
                 val deltaTime = if (lastUpdateTime == 0L) {
@@ -382,13 +398,135 @@ class PlayViewModel(
                 }
                 lastUpdateTime = currentTime
 
+                // Update wind logic
+                updateWindLogic(currentTime)
+
+                // Update enemy logic (chỉ cho level 5)
+                if (levelState?.level?.levelNumber == 5) {
+                    updateEnemyLogic(currentTime)
+                }
+
+                // Update invincibility
+                updateInvincibilityLogic(currentTime)
+
+                // Update slow effect
+                updateSlowEffectLogic(currentTime)
+
+                // Update boost effects
+                updateBoostEffectLogic(currentTime)
+
+                // Update game frame
                 updateFrame(deltaTime)
 
                 val gameFps = _graphicMode.value.fps
-                val frameDelay =
-                    if (isSlowEffectActive) (1000L / gameFps) * 2 else (1000L / gameFps)
+                val frameDelay = if (isSlowEffectActive) {
+                    (1000L / gameFps) * 2
+                } else {
+                    (1000L / gameFps)
+                }
                 delay(frameDelay)
             }
+        }
+    }
+
+    private fun updateWindLogic(currentTime: Long) {
+        val level = levelState?.level ?: return
+
+        if (!isWindActive && !isWindFading) {
+            // Đang trong thời gian nghỉ
+            if (currentTime - lastWindChangeTime >= WIND_PAUSE_DURATION) {
+                isWindActive = true
+                windDirectionToggle = !windDirectionToggle
+                updateWind()
+                lastWindChangeTime = currentTime
+            }
+        } else if (isWindActive && !isWindFading) {
+            // Đang trong thời gian gió thổi
+            if (currentTime - lastWindChangeTime >= WIND_ACTIVE_DURATION) {
+                isWindFading = true
+                windFadeStartTime = currentTime
+            }
+        } else if (isWindFading) {
+            // Đang trong quá trình giảm dần
+            val fadeProgress = (currentTime - windFadeStartTime).toFloat() / WIND_FADE_DURATION
+
+            if (fadeProgress >= 1f) {
+                levelState = levelState?.copy(windX = 0f, windY = 0f)
+                isWindFading = false
+                isWindActive = false
+                lastWindChangeTime = currentTime
+            } else {
+                val fadeMultiplier = 1f - fadeProgress
+                val (baseWindX, baseWindY) = getWindForLevel(level.levelNumber)
+
+                var windX = baseWindX * fadeMultiplier
+                var windY = baseWindY * fadeMultiplier
+
+                if (level.levelNumber == 2 || level.levelNumber == 3) {
+                    windX = if (windDirectionToggle) windX else -windX
+                }
+
+                levelState = levelState?.copy(windX = windX, windY = windY)
+            }
+        }
+    }
+
+    private fun updateWind() {
+        val level = levelState?.level ?: return
+        var (windX, windY) = getWindForLevel(level.levelNumber)
+
+        if (level.levelNumber == 2 || level.levelNumber == 3) {
+            windX = if (windDirectionToggle) windX else -windX
+        }
+
+        levelState = levelState?.copy(windX = windX, windY = windY)
+    }
+
+    private fun updateEnemyLogic(currentTime: Long) {
+        if (currentTime - lastEnemyUpdateTime < ENEMY_UPDATE_INTERVAL) {
+            return
+        }
+        lastEnemyUpdateTime = currentTime
+
+        val enemy = levelState?.enemy
+
+        if (enemy == null) {
+            if (currentTime - lastEnemySpawnTime >= ENEMY_RESPAWN_DELAY) {
+                levelState = levelState?.copy(enemy = Enemy.ShishaDog)
+                val enemyHeight = Random.nextFloat() * gameConfig.screenHeight
+                enemyState = Pair(gameConfig.screenWidth + 200f, enemyHeight)
+            }
+        } else {
+            val newX = enemyState.first - enemy.speed
+
+            if (newX < -200f) {
+                levelState = levelState?.copy(enemy = null)
+                lastEnemySpawnTime = currentTime
+            } else {
+                enemyState = Pair(newX, enemyState.second)
+            }
+        }
+    }
+
+    private fun updateInvincibilityLogic(currentTime: Long) {
+        if (isInvincible && invincibilityEndTime > 0L && currentTime >= invincibilityEndTime) {
+            isInvincible = false
+            invincibilityEndTime = 0L
+        }
+    }
+
+    private fun updateSlowEffectLogic(currentTime: Long) {
+        if (isSlowEffectActive && currentTime >= slowEffectEndTime) {
+            isSlowEffectActive = false
+            slowEffectEndTime = 0L
+        }
+    }
+
+    private fun updateBoostEffectLogic(currentTime: Long) {
+        if (boostEffectEndTime > 0L && currentTime >= boostEffectEndTime) {
+            characterState = characterState?.copy(scale = 1f)
+            isBig = false
+            boostEffectEndTime = 0L
         }
     }
 
@@ -625,7 +763,6 @@ class PlayViewModel(
         itemsOnScreen.add(newItem)
     }
 
-
     private fun spawnBoostItem(pipe: PipePair, nextPipe: PipePair) {
         val currentTime = System.currentTimeMillis()
         if (currentTime - lastBoostSpawnTime < boost_countdown) {
@@ -652,7 +789,6 @@ class PlayViewModel(
         )
         boostItemsOnScreen.add(newItem)
     }
-
 
     private fun checkItemCollision(character: CharacterPlayState) {
         val collected = mutableListOf<ItemPlayState>()
@@ -705,32 +841,22 @@ class PlayViewModel(
     fun applyBoost(boostItem: BoostItem) {
         when (boostItem.id) {
             1 -> { // Mini
-                characterState = characterState?.copy(
-                    scale = 0.5f,
-                )
+                characterState = characterState?.copy(scale = 0.5f)
             }
 
             2 -> { // Big
-                characterState = characterState?.copy(
-                    scale = 2f,
-                )
+                characterState = characterState?.copy(scale = 2f)
                 isBig = true
             }
 
             3 -> { // Immortal
                 isInvincible = true
+                invincibilityEndTime = System.currentTimeMillis() + BOOST_DURATION
             }
         }
 
-        viewModelScope.launch {
-            delay(3000L)
-            characterState = characterState?.copy(
-                scale = 1f,
-            )
-            isInvincible = false
-        }
+        boostEffectEndTime = System.currentTimeMillis() + BOOST_DURATION
     }
-
 
     //Score
     fun loadBestScore(level: Level) {
@@ -766,7 +892,6 @@ class PlayViewModel(
         val horizontalCollision = birdRight > pipeLeft && birdLeft < pipeRight
 
         if (horizontalCollision) {
-
             val currentTopPipeHeight = pipe.topHeight
             val currentBottomPipeHeight = pipe.bottomHeight
 
@@ -821,26 +946,47 @@ class PlayViewModel(
         }
     }
 
+    private fun checkEnemyCollision(character: CharacterPlayState) {
+        val hitboxPadding = 20f
+        val characterRect = Rect(
+            left = character.x - character.width / 2f + hitboxPadding,
+            top = character.y - character.height / 2f + hitboxPadding,
+            right = character.x + character.width / 2f - hitboxPadding,
+            bottom = character.y + character.height / 2f - hitboxPadding
+        )
+        levelState?.enemy?.let { enemy ->
+            val enemyRect = Rect(
+                left = enemyState.first - enemy.width / 2f + hitboxPadding,
+                top = enemyState.second - enemy.height / 2f + hitboxPadding,
+                right = enemyState.first + enemy.width / 2f - hitboxPadding,
+                bottom = enemyState.second + enemy.height / 2f - hitboxPadding
+            )
+            if (isColliding(characterRect, enemyRect)) {
+                gameOver()
+            }
+        }
+    }
+
     private fun gameOver() {
         gameStatus = GameStatus.Over
         val character = characterState?.character ?: return
         val level = levelState?.level ?: return
         val levelNumber = level.levelNumber
+
         loopJob?.cancel()
-        windJob?.cancel()
-        if (level.levelNumber == 5) {
-            enemyJob?.cancel()
-        }
-        invincibilityJob?.cancel()
-        slowEffectJob?.cancel()
+
         isInvincible = false
         isSlowEffectActive = false
+        invincibilityEndTime = 0L
+        slowEffectEndTime = 0L
+        boostEffectEndTime = 0L
 
         if (character.name == "Oii") {
             soundEffectPlayer.playOiiOver()
         } else {
             soundEffectPlayer.playGameOver()
         }
+
         val currentLevel = levelState?.level ?: return
         if (currentScore > bestScore) {
             saveBestScore(currentLevel, currentScore)
@@ -861,42 +1007,6 @@ class PlayViewModel(
     override fun onCleared() {
         super.onCleared()
         loopJob?.cancel()
-        invincibilityJob?.cancel()
-        slowEffectJob?.cancel()
-    }
-
-    fun startWindLoop() {
-        windJob?.cancel()
-        windJob = viewModelScope.launch {
-            while (isActive) {
-                windDirectionToggle = !windDirectionToggle
-                updateWind()
-                delay(10_000L)
-                for (i in 5 downTo 1) {
-                    levelState = levelState?.copy(
-                        windX = (levelState?.windX ?: 0f) * (i / 5f),
-                        windY = (levelState?.windY ?: 0f) * (i / 5f)
-                    )
-                    delay(1_000L)
-                }
-
-                levelState = levelState?.copy(windX = 0f, windY = 0f)
-
-                delay(10_000L)
-            }
-        }
-    }
-
-
-    private fun updateWind() {
-        val level = levelState?.level ?: return
-        var (windX, windY) = getWindForLevel(level.levelNumber)
-
-        if (level.levelNumber == 2 || level.levelNumber == 3) {
-            windX = if (windDirectionToggle) windX else -windX
-        }
-
-        levelState = levelState?.copy(windX = windX, windY = windY)
     }
 
     //Sound and Music
@@ -948,69 +1058,9 @@ class PlayViewModel(
             2 -> Pair(0f, 0f)
             3 -> Pair(2f, 0f)
             4 -> Pair(2f, 2f)
-            5 -> Pair(2f, 2f)
+            5 -> Pair(0f, 1f)
             6 -> Pair(2f, 0f)
             else -> Pair(0f, 0f)
         }
-    }
-
-    fun startEnemy() {
-        enemyJob?.cancel()
-        enemyJob = null
-        levelState = levelState?.copy(enemy = null)
-        enemyJob = viewModelScope.launch {
-            while (isActive) {
-                while (true && isActive) {
-                    val enemy = levelState?.enemy
-                    if (enemy == null) {
-                        levelState = levelState?.copy(enemy = Enemy.ShishaDog)
-                        val enemyHeight = Random.nextFloat() * gameConfig.screenHeight
-                        enemyState = enemyState.copy(gameConfig.screenWidth + 200f, enemyHeight)
-                    } else {
-                        val newX = enemyState.first - enemy.speed
-                        if (newX < -200f || newX > gameConfig.screenWidth + 200f) {
-                            levelState = levelState?.copy(enemy = null)
-                            break
-                        } else {
-                            enemyState = enemyState.copy(newX, enemyState.second)
-                        }
-                    }
-                    while (gameStatus == GameStatus.Paused && isActive) {
-                        delay(16L)
-                    }
-
-                    delay(16L)
-                }
-                delay(3000L)
-            }
-        }
-    }
-
-    private fun checkEnemyCollision(character: CharacterPlayState) {
-        val hitboxPadding = 20f
-        val characterRect = Rect(
-            left = character.x - character.width / 2f + hitboxPadding,
-            top = character.y - character.height / 2f + hitboxPadding,
-            right = character.x + character.width / 2f - hitboxPadding,
-            bottom = character.y + character.height / 2f - hitboxPadding
-        )
-        levelState?.enemy?.let { enemy ->
-            val enemyRect = Rect(
-                left = enemyState.first - enemy.width / 2f + hitboxPadding,
-                top = enemyState.second - enemy.height / 2f + hitboxPadding,
-                right = enemyState.first + enemy.width / 2f - hitboxPadding,
-                bottom = enemyState.second + enemy.height / 2f - hitboxPadding
-            )
-            if (isColliding(characterRect, enemyRect)) {
-                gameOver()
-            }
-        }
-    }
-
-
-    private fun cancelEnemyJob() {
-        enemyJob?.cancel()
-        enemyJob = null
-        levelState = levelState?.copy(enemy = null)
     }
 }
