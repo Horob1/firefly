@@ -179,14 +179,15 @@
     <string name="level5_line7">Khi hoàn thành, bạn sẽ là người chiến thắng.</string>
     <string name="level5_line8">Chúc may mắn!</string>
 
-    <string name="level6_line1">Ngoại truyên,đã từng bạn vượt qua Long Cung dưới biển.</string>
+    <string name="level6_line1">Ngoại truyên, đã từng bạn vượt qua Long Cung dưới biển.</string>
     <string name="level6_line2">Ở đây, mọi thứ hoàn toàn khác biệt so với những gì bạn từng trải qua trước đó.</string>
     <string name="level6_line3">Hãy chuẩn bị cho những chướng ngại mới và bất ngờ ở mọi ngã rẽ.</string>
     <string name="level6_line4">Có 9 đứa trẻ bị lạc trong khu vực này.</string>
     <string name="level6_line5">Nhiệm vụ của bạn là tìm kiếm và giải cứu những đứa trẻ đó.</string>
     <string name="level6_line6">Hãy tận dụng kỹ năng của nhân vật và các vật phẩm ma thuật bạn gặp trên đường đi.</string>
-    <string name="level6_line7">Khi hoàn thành, những thử thách mới sẽ chờ bạn ở màn tiếp theo.</string>
     <string name="level6_line8">Chúc may mắn!</string>
     <string name="text_welcome_to_level">Chào mừng đến với thử thách</string>
+    <string name="btn_next_level">Next Level</string>
+    <string name="btn_victory">VICTORY</string>
 
 </resources>

@@ -1,6 +1,7 @@
 package com.acnteam.crashybird.di
 
 import com.acnteam.crashybird.domain.usecase.AddCoinUseCase
+import com.acnteam.crashybird.domain.usecase.CheckNextLevelUnlockedUseCase
 import com.acnteam.crashybird.domain.usecase.CompleteOnBoardingUseCase
 import com.acnteam.crashybird.domain.usecase.FetchMyRankOfLevelUseCase
 import com.acnteam.crashybird.domain.usecase.FetchRankOfLevelUseCase
@@ -169,5 +170,8 @@ val useCaseModule = module {
 
     single {
         SetCurrentItemUseCase(get())
+    }
+    single {
+        CheckNextLevelUnlockedUseCase(get())
     }
 }

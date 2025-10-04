@@ -171,7 +171,6 @@ fun getIntroLinesForLevel(context: Context, level: Int): List<String> {
             context.getString(R.string.level6_line4),
             context.getString(R.string.level6_line5),
             context.getString(R.string.level6_line6),
-            context.getString(R.string.level6_line7),
             context.getString(R.string.level6_line8)
         )
 

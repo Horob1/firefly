@@ -42,4 +42,8 @@ interface LevelDao {
 
     @Query("DELETE FROM levels")
     suspend fun deleteAllLevels()
+
+    @Query("SELECT isUnlocked FROM levels WHERE levelNumber = :levelNumber LIMIT 1")
+    suspend fun isLevelUnlocked(levelNumber: Int?): Boolean?
+
 }

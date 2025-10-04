@@ -33,4 +33,10 @@ class LevelLocalDataSourceImpl(
     override suspend fun updateLevel(level: Level) {
         levelDao.unlockLevel(level.levelNumber, isUnlocked = true)
     }
+
+    override suspend fun isNextLevelUnlocked(currentLevel: Int?): Boolean {
+        val nextLevelNumber = currentLevel?.plus(1)
+        return levelDao.isLevelUnlocked(nextLevelNumber) ?: false
+    }
+
 }

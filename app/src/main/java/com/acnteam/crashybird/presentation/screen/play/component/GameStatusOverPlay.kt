@@ -1,6 +1,7 @@
 package com.acnteam.crashybird.presentation.screen.play.component
 
 import android.app.Activity
+import android.widget.VideoView
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.foundation.Image
@@ -20,6 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +37,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.net.toUri
 import androidx.navigation.NavController
 import com.acnteam.crashybird.R
 import com.acnteam.crashybird.domain.model.game.GameStatus
@@ -56,8 +60,9 @@ fun GameStatusOverlay(
     currentScore: Int,
     viewModel: PlayViewModel,
     navController: NavController,
-    backgroundOffsetX: Animatable<Float, AnimationVector1D>
+    backgroundOffsetX: Animatable<Float, AnimationVector1D>,
 ) {
+    val isNextUnlocked by viewModel.isNextLevelUnlocked.collectAsState()
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val activity = context as Activity
@@ -92,7 +97,9 @@ fun GameStatusOverlay(
                 )
             }
             Box(
-                modifier = Modifier.fillMaxSize().padding(16.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
                 contentAlignment = Alignment.BottomStart
             ) {
                 IconButton(
@@ -108,7 +115,7 @@ fun GameStatusOverlay(
             if (showGuide) {
                 LevelIntroPage(
                     levelNumber = levelNumber,
-                    lines = getIntroLinesForLevel(context,levelNumber),
+                    lines = getIntroLinesForLevel(context, levelNumber),
                     onDismiss = { showGuide = false }
                 )
             }
@@ -122,6 +129,22 @@ fun GameStatusOverlay(
         GameStatus.Over -> {
             var isLoading by remember { mutableStateOf(false) }
             val buttons = mutableListOf<GameButton>().apply {
+                if (isNextUnlocked) {
+                    add(GameButton(stringResource(R.string.btn_next_level)) {
+                        val nextLevelNumber = (viewModel.levelState?.level?.levelNumber ?: 1) + 1
+                        val characterName =
+                            viewModel.characterState?.character?.name ?: return@GameButton
+                        viewModel.setCurrentLevel()
+                        navController.navigate(NavScreen.Play(nextLevelNumber, characterName)) {
+                            popUpTo(NavScreen.Home) {
+                                inclusive = false
+                                saveState = false
+                            }
+                            launchSingleTop = true
+                            restoreState = false
+                        }
+                    })
+                }
                 add(GameButton(stringResource(R.string.btn_restart)) {
                     viewModel.restart()
                     scope.launch { backgroundOffsetX.snapTo(0f) }
@@ -177,6 +200,82 @@ fun GameStatusOverlay(
             }
         }
 
+        GameStatus.Win -> {
+            var isVideoFinished by remember { mutableStateOf(false) }
+            var isLoading by remember { mutableStateOf(false) }
+
+            if (!isVideoFinished) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        // lớp nền mờ để che map bên dưới
+                        .background(Color.Black.copy(alpha = 0.85f))
+                ) {
+                    AndroidView(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .align(Alignment.Center),
+                        factory = { context ->
+                            VideoView(context).apply {
+                                val videoUri =
+                                    "android.resource://${context.packageName}/${R.raw.win_scene}".toUri()
+                                setVideoURI(videoUri)
+                                setOnCompletionListener {
+                                    isVideoFinished = true
+                                }
+                                start()
+                            }
+                        }
+                    )
+                }
+            } else {
+                val buttons = mutableListOf<GameButton>().apply {
+                    if (isNextUnlocked) {
+                        add(GameButton(stringResource(R.string.btn_next_level)) {
+                            val nextLevelNumber =
+                                (viewModel.levelState?.level?.levelNumber ?: 1) + 1
+                            val characterName =
+                                viewModel.characterState?.character?.name ?: return@GameButton
+                            viewModel.setCurrentLevel()
+                            navController.navigate(NavScreen.Play(nextLevelNumber, characterName)) {
+                                popUpTo(NavScreen.Home) {
+                                    inclusive = false
+                                    saveState = false
+                                }
+                                launchSingleTop = true
+                                restoreState = false
+                            }
+                        })
+                    }
+                    add(GameButton(stringResource(R.string.btn_restart)) {
+                        viewModel.restart()
+                        scope.launch { backgroundOffsetX.snapTo(0f) }
+                    })
+                    add(GameButton(stringResource(R.string.btn_home)) {
+                        navController.navigate(NavScreen.Home)
+                    })
+                }
+
+                if (isLoading) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Black.copy(alpha = 0.5f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        TripleOrbitLoadingAnimation(modifier = Modifier.size(80.dp))
+                    }
+                } else {
+                    GameOverlay(
+                        title = stringResource(R.string.btn_victory),
+                        score = currentScore,
+                        buttons = buttons
+                    )
+                }
+            }
+        }
+
+
         GameStatus.Reviving -> {
             CountdownOverlay()
         }
@@ -189,7 +288,7 @@ fun GameStatusOverlay(
 private fun GameOverlay(
     title: String?,
     score: Int?,
-    buttons: List<GameButton>
+    buttons: List<GameButton>,
 ) {
     Column(
         modifier = Modifier

@@ -27,18 +27,21 @@ import com.acnteam.crashybird.domain.model.game.big_item
 import com.acnteam.crashybird.domain.model.game.immortal
 import com.acnteam.crashybird.domain.model.game.mini_item
 import com.acnteam.crashybird.domain.usecase.AddCoinUseCase
+import com.acnteam.crashybird.domain.usecase.CheckNextLevelUnlockedUseCase
 import com.acnteam.crashybird.domain.usecase.GetBackgroundMusicSettingsUseCase
 import com.acnteam.crashybird.domain.usecase.GetBestScoreUseCase
 import com.acnteam.crashybird.domain.usecase.GetCurrentItemUseCase
 import com.acnteam.crashybird.domain.usecase.GetGraphicModeUseCase
 import com.acnteam.crashybird.domain.usecase.GetSoundEffectSettingsUseCase
 import com.acnteam.crashybird.domain.usecase.SetBackgroundMusicSettingsUseCase
+import com.acnteam.crashybird.domain.usecase.SetCurrentLevelUseCase
 import com.acnteam.crashybird.domain.usecase.SetSoundEffectSettingsUseCase
 import com.acnteam.crashybird.domain.usecase.UpdateLevelUseCase
 import com.acnteam.crashybird.domain.usecase.UpdatePlaySectionUseCase
 import com.acnteam.crashybird.presentation.screen.play.effect.SoundEffectPlayer
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -59,13 +62,16 @@ class PlayViewModel(
     private val updatePlaySectionUseCase: UpdatePlaySectionUseCase,
     private val getBestScoreUseCase: GetBestScoreUseCase,
     getCurrentItemUseCase: GetCurrentItemUseCase,
+    private val checkNextLevelUnlockedUseCase: CheckNextLevelUnlockedUseCase,
+    private val setCurrentLevelUseCase: SetCurrentLevelUseCase
 ) : ViewModel() {
+
+    private var loopJob: Job? = null
+
 
     private var gameConfig = Game()
     val currentGameConfig: Game get() = gameConfig
 
-    // Chỉ cần 1 loopJob duy nhất
-    private var loopJob: Job? = null
 
     private val _graphicMode = getGraphicModeUseCase().stateIn(
         scope = viewModelScope,
@@ -153,6 +159,10 @@ class PlayViewModel(
     private var lastItemSpawnTime = 0L
     private val item_countdown = 5_000L
 
+    var preCheckNextLevelUnlocked by mutableStateOf(false)
+        private set
+
+
     fun initializeGame(characterName: String, levelNumber: Int) {
         val character = Character.getByName(characterName)
         val level = Level.getByLevelNumber(levelNumber)
@@ -171,6 +181,13 @@ class PlayViewModel(
             windX = windX,
             windY = windY
         )
+        viewModelScope.launch {
+            preCheckNextLevelUnlocked = checkNextLevelUnlockedUseCase(level.levelNumber)
+        }
+        viewModelScope.launch {
+            _isNextLevelUnlocked.value = checkNextLevelUnlockedUseCase(levelNumber)
+        }
+        loadBestScore(level)
     }
 
     fun updateScreenSize(width: Int, height: Int) {
@@ -825,9 +842,6 @@ class PlayViewModel(
         boostItemsOnScreen.forEach { item ->
             if (isColliding(characterRect, item.toRect())) {
                 collected.add(item)
-                levelState = levelState?.copy(
-                    firefliesCollected = (levelState?.firefliesCollected ?: 0) + 1
-                )
                 applyBoost(item.boostItem)
             }
         }
@@ -928,7 +942,12 @@ class PlayViewModel(
         pipePairs = updatedPipes
 
         if ((levelState?.firefliesCollected ?: 0) >= (levelState?.firefliesRequired ?: 0)) {
-            completeLevel()
+            if (levelState?.level?.levelNumber == 5 && !preCheckNextLevelUnlocked) {
+                completeGame()
+            } else {
+                completeLevel()
+            }
+
         }
     }
 
@@ -943,7 +962,20 @@ class PlayViewModel(
         val nextLevelNumber = currentLevel.levelNumber + 1
         viewModelScope.launch {
             updateLevelUseCase(Level.getByLevelNumber(nextLevelNumber))
+            val unlocked = checkNextLevelUnlockedUseCase(currentLevel.levelNumber)
+            _isNextLevelUnlocked.value = unlocked
         }
+    }
+
+    private fun completeGame() {
+        val currentLevel = levelState?.level ?: return
+        val nextLevelNumber = currentLevel.levelNumber + 1
+        viewModelScope.launch {
+            updateLevelUseCase(Level.getByLevelNumber(nextLevelNumber))
+            val unlocked = checkNextLevelUnlockedUseCase(currentLevel.levelNumber)
+            _isNextLevelUnlocked.value = unlocked
+        }
+        gameStatus = GameStatus.Win
     }
 
     private fun checkEnemyCollision(character: CharacterPlayState) {
@@ -1061,6 +1093,16 @@ class PlayViewModel(
             5 -> Pair(0f, 1f)
             6 -> Pair(2f, 0f)
             else -> Pair(0f, 0f)
+        }
+    }
+
+    private val _isNextLevelUnlocked = MutableStateFlow(false)
+    val isNextLevelUnlocked: StateFlow<Boolean> = _isNextLevelUnlocked
+
+    fun setCurrentLevel() {
+        val newLevel = levelState?.level ?: return
+        viewModelScope.launch {
+            setCurrentLevelUseCase(Level.getByLevelNumber(newLevel.levelNumber + 1))
         }
     }
 }

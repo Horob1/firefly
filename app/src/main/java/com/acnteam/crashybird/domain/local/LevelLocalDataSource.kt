@@ -10,4 +10,7 @@ interface LevelLocalDataSource {
     suspend fun setLevelList(levels: List<LevelState>)
 
     suspend fun updateLevel(level: Level)
+
+    suspend fun isNextLevelUnlocked(currentLevel: Int?): Boolean
+
 }
