@@ -35,7 +35,7 @@ sealed class Level(
         R.drawable.forest_moving_background,
         R.drawable.forest_pipe,
         R.drawable.forest_pipe_cap,
-        fireFlyRequire = 1
+        fireFlyRequire = 9
     )
 
     data object Two : Level(
