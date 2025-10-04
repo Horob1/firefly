@@ -502,19 +502,21 @@ fun PlayScreen(
             )
         }
 
-        viewModel.itemsOnScreen.forEach { itemState ->
-            val item = itemState.item
-            drawImage(
-                image = itemImage,
-                dstOffset = IntOffset(
-                    x = (itemState.x - item.itemWidth / 2f).toInt(),
-                    y = (itemState.y - item.itemHeight / 2f).toInt()
-                ),
-                dstSize = IntSize(
-                    width = item.itemWidth,
-                    height = item.itemWidth
+        if (!viewModel.claimFullItem) {
+            viewModel.itemsOnScreen.forEach { itemState ->
+                val item = itemState.item
+                drawImage(
+                    image = itemImage,
+                    dstOffset = IntOffset(
+                        x = (itemState.x - item.itemWidth / 2f).toInt(),
+                        y = (itemState.y - item.itemHeight / 2f).toInt()
+                    ),
+                    dstSize = IntSize(
+                        width = item.itemWidth,
+                        height = item.itemWidth
+                    )
                 )
-            )
+            }
         }
 
         viewModel.boostItemsOnScreen.forEach { boostItemState ->
