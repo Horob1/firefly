@@ -50,15 +50,6 @@ import kotlinx.coroutines.launch
 import kotlin.math.sin
 import kotlin.random.Random
 
-/**
- * ViewModel quản lý game Flappy Bird
- * Xử lý toàn bộ logic game bao gồm:
- * - Vật lý di chuyển nhân vật
- * - Sinh và di chuyển ống nước (pipes)
- * - Hệ thống kỹ năng (dash, high jump, slow)
- * - Hiệu ứng gió, enemy, và các item boost
- * - Tính điểm và lưu best score
- */
 class PlayViewModel(
     getBackgroundMusicSettingsUseCase: GetBackgroundMusicSettingsUseCase,
     getSoundEffectSettingsUseCase: GetSoundEffectSettingsUseCase,
@@ -75,14 +66,11 @@ class PlayViewModel(
     private val setCurrentLevelUseCase: SetCurrentLevelUseCase
 ) : ViewModel() {
 
-    // Job quản lý game loop - vòng lặp chính của game
     private var loopJob: Job? = null
 
-    // Cấu hình game (kích thước màn hình, tốc độ, lực hấp dẫn...)
     private var gameConfig = Game()
     val currentGameConfig: Game get() = gameConfig
 
-    // Chế độ đồ họa (LOW/MEDIUM/HIGH) - ảnh hưởng đến FPS
     private val _graphicMode = getGraphicModeUseCase().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
@@ -90,7 +78,6 @@ class PlayViewModel(
     )
     val graphicMode: StateFlow<GraphicMode> = _graphicMode
 
-    // ===== TRẠNG THÁI GAME =====
     // State nhân vật - vị trí, kích thước, scale
     var characterState by mutableStateOf<CharacterPlayState?>(null)
         private set
@@ -146,7 +133,7 @@ class PlayViewModel(
     private var screenWidth = 0         // Chiều rộng màn hình
     private var screenHeight = 0        // Chiều cao màn hình
     private val windEffectX = 0.5f      // Hệ số ảnh hưởng gió theo trục X
-    private val windEffectY = 0.2f      // Hệ số ảnh hưởng gió theo trục Y
+    private val windEffectY = 0.2f      // Hệ số ảnh hưởng mưa theo trục Y
 
     // FPS và timing
     private var lastUpdateTime = 0L     // Thời điểm update frame cuối
@@ -156,11 +143,11 @@ class PlayViewModel(
     // ===== HỆ THỐNG GIÓ =====
     // Gió có 3 giai đoạn: Active (thổi mạnh) -> Fade (giảm dần) -> Pause (nghỉ)
     private var lastWindChangeTime = 0L      // Thời điểm thay đổi trạng thái gió
-    private var windFadeStartTime = 0L       // Thời điểm bắt đầu fade
-    private var isWindFading = false         // Đang trong giai đoạn fade
+    private var windFadeStartTime = 0L       // Thời điểm bắt đầu gió
+    private var isWindFading = false         // Đang trong giai đoạn thổi
     private var isWindActive = false         // Gió đang active
-    private val WIND_ACTIVE_DURATION = 10_000L   // Thời gian gió thổi (10s)
-    private val WIND_FADE_DURATION = 5_000L      // Thời gian fade (5s)
+    private val WIND_ACTIVE_DURATION = 10_000L   // Thời gian gió bắt dau thổi (10s)
+    private val WIND_FADE_DURATION = 5_000L      // Thời gian gio thoi (5s)
     private val WIND_PAUSE_DURATION = 10_000L    // Thời gian nghỉ (10s)
 
     // ===== HỆ THỐNG ENEMY (Level 5) =====
@@ -253,7 +240,7 @@ class PlayViewModel(
                 screenHeight = screenHeight
             )
 
-            // Reset vị trí nhân vật về giữa màn hình
+            // Reset vị trí nhân vật
             val character = characterState?.character ?: return
             characterState = CharacterPlayState(
                 character = character,
@@ -369,7 +356,9 @@ class PlayViewModel(
         )
 
         val level = levelState?.level ?: return
-        loadBestScore(level)
+        if (bestScore == 0) {
+            loadBestScore(level)
+        }
     }
 
     /**
@@ -419,7 +408,6 @@ class PlayViewModel(
     /**
      * Kỹ năng Dash - lướt qua 1-2 ống tiếp theo
      * Cooldown: 20 giây
-     * @return true nếu sử dụng thành công
      */
     fun useDashSkill(): Boolean {
         if (isDashOnCooldown() || gameStatus != GameStatus.Started) return false
@@ -464,7 +452,6 @@ class PlayViewModel(
      * Kỹ năng High Jump - nhảy cao gấp 10 lần
      * Cooldown: 13 giây
      * Level 6 (ngược trọng lực) cần đảo chiều vận tốc
-     * @return true nếu sử dụng thành công
      */
     fun useHighJumpSkill(): Boolean {
         val character = characterState ?: return false
@@ -491,7 +478,6 @@ class PlayViewModel(
     /**
      * Kỹ năng Slow - làm chậm tốc độ game trong 3 giây
      * Cooldown: 15 giây
-     * @return true nếu sử dụng thành công
      */
     fun useSlowSkill(): Boolean {
         if (isSlowOnCooldown() || gameStatus != GameStatus.Started) return false
@@ -1140,7 +1126,15 @@ class PlayViewModel(
      */
     fun loadBestScore(level: Level) {
         viewModelScope.launch {
-            bestScore = getBestScoreUseCase(level)
+            try {
+                val score = getBestScoreUseCase(level)
+                bestScore = score
+                println("✅ [loadBestScore] Level ${level.levelNumber}: Loaded bestScore = $score")
+            } catch (e: Exception) {
+                println("❌ [loadBestScore] Failed to load best score: ${e.message}")
+                e.printStackTrace()
+                bestScore = 0
+            }
         }
     }
 
@@ -1245,7 +1239,12 @@ class PlayViewModel(
      */
     fun saveBestScore(level: Level, score: Int) {
         viewModelScope.launch {
-            updatePlaySectionUseCase(level, score)
+            try {
+                updatePlaySectionUseCase(level, score)
+                println("✅ [saveBestScore] Level ${level.levelNumber}: Saved bestScore = $score")
+            } catch (e: Exception) {
+                println("Failed to save best score: ${e.message}")
+            }
         }
     }
 
@@ -1337,8 +1336,9 @@ class PlayViewModel(
         // Lưu best score nếu phá kỷ lục
         val currentLevel = levelState?.level ?: return
         if (currentScore > bestScore) {
+            val newBestScore = currentScore
+            bestScore = newBestScore
             saveBestScore(currentLevel, currentScore)
-            bestScore = currentScore
         }
 
         // Thưởng coin = score * levelNumber
@@ -1413,13 +1413,6 @@ class PlayViewModel(
     /**
      * Lấy thông số gió cho từng level
      * @return Pair(windX, windY) - độ mạnh gió theo trục X và Y
-     *
-     * Level 1: Không có gió
-     * Level 2: Không có gió (nhưng có shake effect)
-     * Level 3: Gió ngang (đổi chiều)
-     * Level 4: Gió chéo (ngang + dọc)
-     * Level 5: Gió dọc
-     * Level 6: Gió ngang (trọng lực ngược)
      */
     fun getWindForLevel(levelNumber: Int): Pair<Float, Float> {
         return when (levelNumber) {

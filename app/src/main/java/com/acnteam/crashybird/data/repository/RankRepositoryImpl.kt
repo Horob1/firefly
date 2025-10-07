@@ -22,20 +22,23 @@ class RankRepositoryImpl : RankRepository {
 
     override suspend fun getBestScore(level: Level): Int {
         return try {
+            val currentUser = auth.currentUser
+            if (currentUser == null) {
+                return 0
+            }
+            val documentId = "${currentUser.uid}_${level.levelNumber}"
             val snapshot = store.collection(COLLECTION_NAME)
-                .whereEqualTo(LEVEL, level.levelNumber)
-                .orderBy(SCORE, Query.Direction.DESCENDING)
-                .limit(1)
+                .document(documentId)
                 .get()
                 .await()
-
-            if (snapshot.isEmpty) {
+            if (!snapshot.exists()) {
                 0
             } else {
-                val rankDto = snapshot.documents[0].toObject(RankDto::class.java)
+                val rankDto = snapshot.toObject(RankDto::class.java)
                 rankDto?.score ?: 0
             }
         } catch (e: Exception) {
+            e.printStackTrace()
             0
         }
     }
