@@ -20,7 +20,6 @@ class LevelLocalDataSourceImpl(
     }
 
     override suspend fun setLevelList(levels: List<LevelState>) {
-        levelDao.deleteAllLevels()
         levelDao.insertLevels(levels.map {
             LevelEntity(
                 levelNumber = it.level.levelNumber,

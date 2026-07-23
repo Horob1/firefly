@@ -17,9 +17,18 @@ class InitDataUseCase(
     private val itemDao: ItemDao,
 ) {
     suspend operator fun invoke() {
-        if (levelDao.getAllLevels().first().isEmpty()) {
+        val allLevels = Level.getAll()
+        val currentLevels = levelDao.getAllLevels().first()
+
+        // 1. Luôn đảm bảo màn 1 được mở khóa
+        levelDao.unlockLevel(1, isUnlocked = true)
+
+        if (currentLevels.size < allLevels.size) {
+            val missingLevels = allLevels.filter { level ->
+                currentLevels.none { it.levelNumber == level.levelNumber }
+            }
             levelDao.insertLevels(
-                Level.getAll().map {
+                missingLevels.map {
                     LevelEntity(
                         levelNumber = it.levelNumber,
                         isUnlocked = it.levelNumber == 1,
@@ -28,19 +37,35 @@ class InitDataUseCase(
                 }
             )
         }
-        if (characterDao.getAllCharacters().first().isEmpty()) {
+
+        val allCharacters = Character.getAll()
+        val currentCharacters = characterDao.getAllCharacters().first()
+
+        // 2. Luôn đảm bảo nhân vật mặc định (Jack) được mở khóa
+        characterDao.updateCharacter(Character.Jack.name, true)
+
+        if (currentCharacters.size < allCharacters.size) {
+            val missingCharacters = allCharacters.filter { char ->
+                currentCharacters.none { it.name == char.name }
+            }
             characterDao.insertCharacters(
-                Character.getAll().map {
+                missingCharacters.map {
                     CharacterEntity(
                         name = it.name,
-                        isUnlocked = false,
+                        isUnlocked = it.name == Character.Jack.name,
                     )
                 }
             )
         }
-        if (itemDao.getAllItems().first().isEmpty()) {
+
+        val allItems = Items.getAll()
+        val currentItems = itemDao.getAllItems().first()
+        if (currentItems.size < allItems.size) {
+            val missingItems = allItems.filter { item ->
+                currentItems.none { it.name == item.name }
+            }
             itemDao.insertItems(
-                Items.getAll().map {
+                missingItems.map {
                     ItemEntity(
                         name = it.name,
                         isUnlocked = it.name == Items.ChildFirefly.name,

@@ -20,7 +20,6 @@ class CharacterLocalDataSourceImpl(
     }
 
     override suspend fun setCharacterList(characters: List<CharacterState>) {
-        characterDao.deleteAllCharacters()
         characterDao.insertCharacters(characters.map {
             CharacterEntity(
                 name = it.character.name,

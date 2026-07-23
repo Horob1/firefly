@@ -87,11 +87,14 @@ class HomeViewModel(
         val currentLevel = data.currentLevel
         val currentLevelIndex =
             data.levels.indexOfFirst { it.level.levelNumber == currentLevel.levelNumber }
-        if (currentLevelIndex == 0 || currentLevelIndex == -1) {
+        
+        if (currentLevelIndex <= 0) {
             return
         }
+        
         val newLevel = data.levels[currentLevelIndex - 1]
-        if (newLevel.isUnlocked) {
+        // Màn 1 luôn được phép quay về, hoặc màn đó đã được mở khóa
+        if (newLevel.level.levelNumber == 1 || newLevel.isUnlocked) {
             viewModelScope.launch {
                 setCurrentLevelUseCase(newLevel.level)
             }
@@ -189,17 +192,20 @@ class HomeViewModel(
     ) {
         val data = (homeUiState.value as UiState.Success<HomeState>).data
         val currentCharacter = data.currentCharacter
+        
+        // Nhân vật mặc định (Jack) luôn được phép chơi
+        if (currentCharacter.name == Character.Jack.name) {
+            onSuccess()
+            return
+        }
+
         if (data.characterList.isEmpty()) {
             onFail()
             return
         }
-        if (data.characterList.find { it.character.name == currentCharacter.name } == null) {
-            onFail()
-            return
-        }
-        if (data.characterList.find {
-                it.character.name == currentCharacter.name
-            }?.isUnlocked == false) {
+        
+        val characterState = data.characterList.find { it.character.name == currentCharacter.name }
+        if (characterState == null || !characterState.isUnlocked) {
             onFail()
             return
         }

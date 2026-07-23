@@ -20,44 +20,56 @@ fun BackgroundMusicPlayer(
     val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
 
     val mediaPlayer = remember(musicResId) {
-        MediaPlayer.create(context, musicResId).apply {
+        MediaPlayer.create(context, musicResId)?.apply {
             isLooping = true
             setVolume(volume, volume)
         }
     }
 
+    // Release mediaPlayer when musicResId changes or Composable is disposed
+    DisposableEffect(mediaPlayer) {
+        onDispose {
+            mediaPlayer?.release()
+        }
+    }
+
     // Lắng nghe vòng đời để pause/play khi app nền
-    DisposableEffect(lifecycleOwner, mediaPlayer) {
+    DisposableEffect(lifecycleOwner, mediaPlayer, isPlaying) {
         val observer = LifecycleEventObserver { _, event ->
-            when (event) {
-                Lifecycle.Event.ON_RESUME -> if (isPlaying && !mediaPlayer.isPlaying) {
-                    mediaPlayer.start()
-                }
+            mediaPlayer?.let { player ->
+                when (event) {
+                    Lifecycle.Event.ON_RESUME -> if (isPlaying && !player.isPlaying) {
+                        player.start()
+                    }
 
-                Lifecycle.Event.ON_PAUSE -> if (mediaPlayer.isPlaying) {
-                    mediaPlayer.pause()
-                }
+                    Lifecycle.Event.ON_PAUSE -> if (player.isPlaying) {
+                        player.pause()
+                    }
 
-                else -> Unit
+                    else -> Unit
+                }
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
 
         onDispose {
             lifecycleOwner.lifecycle.removeObserver(observer)
-            mediaPlayer.release()
         }
     }
 
-    LaunchedEffect(isPlaying) {
-        if (isPlaying && !mediaPlayer.isPlaying) {
-            mediaPlayer.start()
-        } else if (!isPlaying && mediaPlayer.isPlaying) {
-            mediaPlayer.pause()
+    LaunchedEffect(mediaPlayer, isPlaying) {
+        mediaPlayer?.let { player ->
+            if (isPlaying) {
+                if (lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
+                    if (!player.isPlaying) player.start()
+                }
+            } else {
+                if (player.isPlaying) player.pause()
+            }
         }
     }
 
-    LaunchedEffect(volume) {
-        mediaPlayer.setVolume(volume, volume)
+    LaunchedEffect(mediaPlayer, volume) {
+        mediaPlayer?.setVolume(volume, volume)
     }
 }

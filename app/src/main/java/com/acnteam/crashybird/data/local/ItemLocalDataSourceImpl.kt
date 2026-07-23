@@ -14,7 +14,6 @@ class ItemLocalDataSourceImpl(
     }
 
     override suspend fun saveItems(items: List<ItemEntity>) {
-        itemDao.deleteAllItems()
         itemDao.insertItems(items)
     }
 
